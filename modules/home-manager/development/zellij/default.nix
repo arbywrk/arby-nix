@@ -1,4 +1,13 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
+let
+  # Detects whether the focused pane is running vim/nvim before deciding
+  # whether to forward the raw keystroke (letting smart-splits.nvim handle
+  # its own internal split-navigation, unmodified) or move zellij's own
+  # pane focus directly. This is what makes Ctrl h/j/k/l work bidirectionally
+  # -- into AND out of nvim -- without zellij's static keybinds ever having
+  # to guess: https://github.com/hiasr/vim-zellij-navigator
+  vimZellijNavigator = "file:${pkgs.zellijPlugins.vim-zellij-navigator}";
+in
 {
   programs.zellij = {
     enable = true;
@@ -17,7 +26,7 @@
     # the current mode's keybind hints inline at all times, which is
     # what's actually wanted while these binds aren't memorized yet.
     settings.pane_frames = false;
-    settings.theme = "catppuccin-mocha";
+    settings.theme = "vague";
 
     # Full explicit keybinds, based on zellij's own stock defaults (not
     # scoped `unbind` inside shared_except contexts -- fragile to get
@@ -26,13 +35,22 @@
     # keymaps are relocated; everything else is verbatim stock behavior.
     #
     # Relocated (collided with blink.cmp/fzf-lua/nvim keymaps):
-    #   Ctrl h (move mode)    -> Alt m  (Ctrl h freed for smart-splits.nvim)
+    #   Ctrl h (move mode)    -> Alt m  (Ctrl h now routed through vim-zellij-navigator)
     #   Ctrl n (resize mode)  -> Alt r  (blink.cmp: next completion item)
     #   Ctrl p (pane mode)    -> Alt a  (blink.cmp: prev completion item)
     #   Ctrl o (session mode) -> Alt u  (vim builtin: jumplist back)
     # Dropped entirely (tmux-compat mode, not a tmux user, its trigger
     # collided with blink.cmp/fzf-lua doc/preview scrolling):
     #   Ctrl b (tmux mode)
+    # Ctrl h/j/k/l are bound globally (shared_except "locked") to
+    # vim-zellij-navigator: it detects whether the focused pane is
+    # running vim/nvim and either forwards the raw keystroke (letting
+    # smart-splits.nvim's own internal split-navigation handle it,
+    # unmodified) or moves zellij's pane focus directly. Cost: in any
+    # NON-vim pane (shell included), these keys never reach the program
+    # underneath -- zsh's own Ctrl+H (backspace)/Ctrl+K (kill-line)/
+    # Ctrl+L (clear-screen) are unavailable, same tradeoff as a global
+    # bind would have anyway, just correctly scoped to spare nvim.
     # Untouched (no conflict found): locked (Ctrl g), scroll (Ctrl s),
     # tab (Ctrl t), quit (Ctrl q).
     extraConfig = ''
@@ -202,6 +220,34 @@
               bind "Alt p" { TogglePaneInGroup; }
               bind "Alt Shift p" { ToggleGroupMarking; }
               bind "Ctrl q" { Quit; }
+              bind "Ctrl h" {
+                  MessagePlugin "${vimZellijNavigator}" {
+                      name "move_focus_or_tab"
+                      payload "left"
+                      move_mod "ctrl"
+                  }
+              }
+              bind "Ctrl j" {
+                  MessagePlugin "${vimZellijNavigator}" {
+                      name "move_focus"
+                      payload "down"
+                      move_mod "ctrl"
+                  }
+              }
+              bind "Ctrl k" {
+                  MessagePlugin "${vimZellijNavigator}" {
+                      name "move_focus"
+                      payload "up"
+                      move_mod "ctrl"
+                  }
+              }
+              bind "Ctrl l" {
+                  MessagePlugin "${vimZellijNavigator}" {
+                      name "move_focus_or_tab"
+                      payload "right"
+                      move_mod "ctrl"
+                  }
+              }
           }
           shared_except "locked" "move" {
               bind "Alt m" { SwitchToMode "move"; }
@@ -263,5 +309,5 @@
     '';
   };
 
-  xdg.configFile."zellij/themes/catppuccin-mocha.kdl".source = ./files/themes/catppuccin-mocha.kdl;
+  xdg.configFile."zellij/themes/vague.kdl".source = ./files/themes/vague.kdl;
 }

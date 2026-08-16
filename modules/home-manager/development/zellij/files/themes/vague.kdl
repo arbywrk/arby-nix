@@ -1,0 +1,124 @@
+// Hand-built to match this config's own vague.nvim palette exactly (see
+// modules/home-manager/development/neovim/files/lua/plugins/colorscheme.lua)
+// rather than using a generic bundled theme, so zellij's chrome and nvim's
+// editor colors are the same palette.
+themes {
+    vague {
+        text_unselected {
+            base 205 205 205
+            background 20 20 21
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        text_selected {
+            base 205 205 205
+            background 51 55 56
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        ribbon_selected {
+            base 20 20 21
+            background 126 152 232
+            emphasis_0 216 100 126
+            emphasis_1 224 163 99
+            emphasis_2 187 157 189
+            emphasis_3 110 148 178
+        }
+        ribbon_unselected {
+            base 20 20 21
+            background 205 205 205
+            emphasis_0 216 100 126
+            emphasis_1 205 205 205
+            emphasis_2 110 148 178
+            emphasis_3 187 157 189
+        }
+        table_title {
+            base 127 165 99
+            background 0
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        table_cell_selected {
+            base 205 205 205
+            background 51 55 56
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        table_cell_unselected {
+            base 205 205 205
+            background 20 20 21
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        list_selected {
+            base 205 205 205
+            background 51 55 56
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        list_unselected {
+            base 205 205 205
+            background 20 20 21
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 127 165 99
+            emphasis_3 187 157 189
+        }
+        frame_selected {
+            base 126 152 232
+            background 0
+            emphasis_0 224 163 99
+            emphasis_1 126 152 232
+            emphasis_2 187 157 189
+            emphasis_3 0
+        }
+        frame_highlight {
+            base 224 163 99
+            background 0
+            emphasis_0 187 157 189
+            emphasis_1 224 163 99
+            emphasis_2 224 163 99
+            emphasis_3 224 163 99
+        }
+        exit_code_success {
+            base 127 165 99
+            background 0
+            emphasis_0 126 152 232
+            emphasis_1 20 20 21
+            emphasis_2 187 157 189
+            emphasis_3 126 152 232
+        }
+        exit_code_error {
+            base 216 100 126
+            background 0
+            emphasis_0 243 190 124
+            emphasis_1 0
+            emphasis_2 0
+            emphasis_3 0
+        }
+        multiplayer_user_colors {
+            player_1 187 157 189
+            player_2 126 152 232
+            player_3 0
+            player_4 243 190 124
+            player_5 155 180 188
+            player_6 0
+            player_7 216 100 126
+            player_8 0
+            player_9 0
+            player_10 0
+        }
+    }
+}
