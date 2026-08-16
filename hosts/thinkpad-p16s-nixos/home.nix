@@ -36,6 +36,11 @@
     # '')
   ];
 
+  xdg = {
+  	enable = true;
+	mime.enable = true;
+  };
+
   programs.git = {
   	enable = true;
 	settings.user = {
@@ -43,6 +48,17 @@
 		email = "bogdan.andrei.rares@gmail.com";
 	};
   };
+
+  programs.neovim = {
+  	enable = true;
+	defaultEditor = true;
+	vimAlias = true;
+	viAlias = true;
+  };
+
+programs.mise.enable = true;
+
+  programs.brave-origin.enable = true;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

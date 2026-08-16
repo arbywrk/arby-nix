@@ -89,7 +89,6 @@
     description = "Rares-Andrei Bogdan";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-	mise
     #  thunderbird
     ];
   };
@@ -101,18 +100,13 @@
         };
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    neovim	  
-    git
+    vim
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -122,12 +116,6 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-  programs.neovim = {
-	enable = true;
-	defaultEditor = true;
-	vimAlias = true;
-	viAlias = true;
-  };
 
   # List services that you want to enable:
 
