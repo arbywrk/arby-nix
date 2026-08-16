@@ -45,6 +45,10 @@ in
 
   # Configured plugins.
   {
+    plugin = p.smart-splits-nvim;
+    config = toLua "require('smart-splits').setup({ multiplexer_integration = 'zellij' })";
+  }
+  {
     plugin = p.blink-cmp;
     config = toLuaFile ./files/lua/plugins/blink-cmp.lua;
   }

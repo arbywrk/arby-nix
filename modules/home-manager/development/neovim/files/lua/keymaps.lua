@@ -27,13 +27,14 @@ vim.keymap.set("n", "<up>", "")
 vim.keymap.set("n", "<down>", "")
 
 -- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+--  Use CTRL+<hjkl> to switch between windows -- and, via smart-splits'
+--  zellij integration (see plugins.nix), seamlessly into the adjacent
+--  zellij pane once there's no more window to move to on this side.
+local smart_splits = require("smart-splits")
+vim.keymap.set("n", "<C-h>", smart_splits.move_cursor_left, { desc = "Move focus to the left window/pane" })
+vim.keymap.set("n", "<C-l>", smart_splits.move_cursor_right, { desc = "Move focus to the right window/pane" })
+vim.keymap.set("n", "<C-j>", smart_splits.move_cursor_down, { desc = "Move focus to the lower window/pane" })
+vim.keymap.set("n", "<C-k>", smart_splits.move_cursor_up, { desc = "Move focus to the upper window/pane" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
