@@ -14,8 +14,11 @@
     inputs@{ nixpkgs, ... }:
     let
       mkSystem = import ./lib/mksystem.nix { inherit inputs; };
+      mkHome = import ./lib/mkhome.nix { inherit inputs; };
     in
     {
       nixosConfigurations.thinkpad-p16s-nixos = mkSystem "thinkpad-p16s-nixos";
+
+      homeConfigurations.arby = mkHome { username = "arby"; };
     };
 }

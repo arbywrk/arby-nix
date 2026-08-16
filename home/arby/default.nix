@@ -4,6 +4,7 @@
   imports = [
     ../../modules/home-manager/desktop/gnome.nix
     ../../modules/home-manager/development/neovim
+    ../../modules/home-manager/development/zellij
   ];
 
   home.username = "arby";
