@@ -44,6 +44,10 @@
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
     users."arby" = import ../../home/arby;
+    # When a managed path already exists on disk (e.g. a tool wrote its own
+    # default config before home-manager took it over), rename it to
+    # <name>.backup instead of hard-failing the whole activation.
+    backupFileExtension = "backup";
   };
 
   # This value determines the NixOS release from which the default
