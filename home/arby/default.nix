@@ -2,7 +2,9 @@
 
 {
   imports = [
+    ../../modules/home-manager/common.nix
     ../../modules/home-manager/desktop/gnome.nix
+    ../../modules/home-manager/desktop/alacritty.nix
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
   ];

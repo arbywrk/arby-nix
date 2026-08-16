@@ -26,6 +26,9 @@
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
+  # xterm is pulled in by services.xserver itself; alacritty (home-manager)
+  # replaces it as the terminal emulator.
+  services.xserver.excludePackages = [ pkgs.xterm ];
 
   # Configure keymap in X11
   services.xserver.xkb = {
