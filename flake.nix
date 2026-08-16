@@ -10,16 +10,12 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs =
+    inputs@{ nixpkgs, ... }:
+    let
+      mkSystem = import ./lib/mksystem.nix { inherit inputs; };
+    in
     {
-      nixosConfigurations.thinkpad-p16s-nixos =
-        nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-
-          modules = [
-            ./system/thinkpad-p16s-nixos/configuration.nix
-            home-manager.nixosModules.default
-          ];
-        };
+      nixosConfigurations.thinkpad-p16s-nixos = mkSystem "thinkpad-p16s-nixos";
     };
 }
