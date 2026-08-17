@@ -13,5 +13,9 @@ require("mini.ai").setup({ n_lines = 500 })
 -- - sr)'  - [S]urround [R]eplace [)] [']
 require("mini.surround").setup()
 
+require("mini.indentscope").setup({
+	symbol = "│",
+})
+
 -- ... and there is more!
 --  Check out: https://github.com/echasnovski/mini.nvim

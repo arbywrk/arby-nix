@@ -219,7 +219,7 @@ in
               bind "Alt o" { MoveTab "right"; }
               bind "Alt p" { TogglePaneInGroup; }
               bind "Alt Shift p" { ToggleGroupMarking; }
-              bind "Ctrl q" { Quit; }
+              bind "Ctrl Shift q" { Quit; }
               bind "Ctrl h" {
                   MessagePlugin "${vimZellijNavigator}" {
                       name "move_focus_or_tab"
