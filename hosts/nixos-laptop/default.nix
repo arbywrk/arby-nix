@@ -21,7 +21,7 @@
   boot.initrd.luks.devices."luks-3776db7c-a9d9-4afe-80cb-b10d0bf33035".device =
     "/dev/disk/by-uuid/3776db7c-a9d9-4afe-80cb-b10d0bf33035";
 
-  networking.hostName = "thinkpad-p16s-nixos";
+  networking.hostName = "nixos-laptop";
   # NetworkManager already runs its own wpa_supplicant for Wi-Fi, so
   # networking.wireless (the standalone wpa_supplicant service) must stay
   # off to avoid both fighting over the same interface.

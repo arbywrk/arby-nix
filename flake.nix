@@ -22,7 +22,7 @@
       mkHome = import ./lib/mkhome.nix { inherit inputs; };
     in
     {
-      nixosConfigurations.thinkpad-p16s-nixos = mkSystem "thinkpad-p16s-nixos";
+      nixosConfigurations.nixos-laptop = mkSystem "nixos-laptop";
 
       homeConfigurations = {
         arby = mkHome { username = "arby"; };
