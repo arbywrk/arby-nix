@@ -10,6 +10,10 @@
       enabled-extensions = [ "caffeine@patapon.info" ];
     };
 
+    "org/gnome/shell/extensions/caffeine" = {
+      toggle-shortcut = [ "<Super>c" ];
+    };
+
     "org/gnome/desktop/wm/keybindings" = {
       switch-to-workspace-1 = [ "<Super>1" ];
       switch-to-workspace-2 = [ "<Super>2" ];

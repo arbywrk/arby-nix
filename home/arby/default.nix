@@ -8,6 +8,7 @@
     ../../modules/home-manager/development/gh
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
+    ../../modules/home-manager/development/zsh
   ];
 
   home.username = "arby";
@@ -38,8 +39,6 @@
   programs.mise.enable = true;
 
   programs.brave-origin.enable = true;
-
-  programs.zsh.enable = true;
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

@@ -6,6 +6,7 @@
     ../../modules/home-manager/common.nix
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
+    ../../modules/home-manager/development/zsh
   ];
 
   home.username = "bogdanrares";
@@ -37,8 +38,6 @@
     settings.user.name = "Rares-Andrei Bogdan";
     includes = [ { path = config.sops.templates."gitconfig-work-email".path; } ];
   };
-
-  programs.zsh.enable = true;
 
   programs.home-manager.enable = true;
 }
