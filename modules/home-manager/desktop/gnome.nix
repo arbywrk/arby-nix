@@ -1,7 +1,15 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  home.packages = [ pkgs.gnomeExtensions.caffeine ];
+
   dconf.settings = {
+    "org/gnome/shell" = {
+      # Caffeine: toggleable "prevent idle/suspend" -- click the mug icon in
+      # the top bar, or right-click it for a timed duration.
+      enabled-extensions = [ "caffeine@patapon.info" ];
+    };
+
     "org/gnome/desktop/wm/keybindings" = {
       switch-to-workspace-1 = [ "<Super>1" ];
       switch-to-workspace-2 = [ "<Super>2" ];
@@ -12,6 +20,16 @@
       switch-to-workspace-7 = [ "<Super>7" ];
       switch-to-workspace-8 = [ "<Super>8" ];
       switch-to-workspace-9 = [ "<Super>9" ];
+
+      move-to-workspace-1 = [ "<Shift><Super>1" ];
+      move-to-workspace-2 = [ "<Shift><Super>2" ];
+      move-to-workspace-3 = [ "<Shift><Super>3" ];
+      move-to-workspace-4 = [ "<Shift><Super>4" ];
+      move-to-workspace-5 = [ "<Shift><Super>5" ];
+      move-to-workspace-6 = [ "<Shift><Super>6" ];
+      move-to-workspace-7 = [ "<Shift><Super>7" ];
+      move-to-workspace-8 = [ "<Shift><Super>8" ];
+      move-to-workspace-9 = [ "<Shift><Super>9" ];
     };
 
     # Free Super+1 ... Super+9 from GNOME Shell's application launcher
