@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -27,6 +27,8 @@
     enable = true;
     mime.enable = true;
   };
+
+  home.packages = [ pkgs.signal-desktop ];
 
   programs.git = {
     enable = true;
