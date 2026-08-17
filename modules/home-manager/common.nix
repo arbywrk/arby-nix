@@ -9,4 +9,11 @@
   };
 
   home.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
+
+  programs.bat.enable = true;
+  home.shellAliases.cat = "bat";
+
+  # ls/ll/la/lt/lla/llt aliases come free via its own zsh integration --
+  # no need for a manual home.shellAliases.ls (would conflict with it).
+  programs.lsd.enable = true;
 }

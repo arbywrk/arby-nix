@@ -31,5 +31,10 @@
     '';
   };
 
-  home.packages = (import ./packages.nix { inherit pkgs; }) ++ (import ./debug-packages.nix { inherit pkgs; });
+  home.packages =
+    (import ./packages.nix { inherit pkgs; })
+    ++ (import ./debug-packages.nix { inherit pkgs; })
+    ++ [ pkgs.nerd-fonts.jetbrains-mono ];
+
+  programs.ripgrep.enable = true;
 }
