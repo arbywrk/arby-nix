@@ -1,10 +1,9 @@
 keys:
   - &laptop age1ydp6gtrg8r7s2p6crrqeg3jemmgrk0wcpav3ezt3pzefqy58curslqmfmr # thinkpad-p16s-nixos, arby's ~/.ssh/id_ed25519
-  # - &work age1...   # WSL work machine -- add its age pubkey here (nix run
-  #                    # nixpkgs#ssh-to-age -- -i ~/.ssh/id_ed25519.pub on that
-  #                    # machine), list it below alongside *laptop, then run
-  #                    # `nix run nixpkgs#sops -- updatekeys home/work/secrets.yaml`
-  #                    # from a machine that can already decrypt (this laptop).
+  # - &work age1...   # WSL work machine -- a dedicated age key (NOT an ssh
+  #                    # key -- that machine has no GitHub identity), see
+  #                    # README.md "Setting up the work home" step 4 for how
+  #                    # to generate it and register it here.
 
 creation_rules:
   - path_regex: home/work/secrets\.yaml$

@@ -16,8 +16,10 @@
   xdg.enable = true;
 
   # Decrypts home/work/secrets.yaml at activation time using this machine's
-  # own ssh key -- see .sops.yaml for which machines' keys can decrypt it.
-  sops.age.sshKeyPaths = [ "${config.home.homeDirectory}/.ssh/id_ed25519" ];
+  # own dedicated age key (generated locally with `age-keygen`, never an ssh
+  # key -- this machine has no GitHub identity and shouldn't need one) --
+  # see .sops.yaml for which machines' keys can decrypt it.
+  sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
   sops.defaultSopsFile = ./secrets.yaml;
   sops.secrets.work_email = { };
 
