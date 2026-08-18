@@ -31,6 +31,8 @@
   home.packages = [
     pkgs.signal-desktop
     pkgs.localsend
+    pkgs.wl-clipboard
+    pkgs.xclip
   ];
 
   programs.git = {
