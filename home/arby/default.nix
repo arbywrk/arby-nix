@@ -28,7 +28,10 @@
     mime.enable = true;
   };
 
-  home.packages = [ pkgs.signal-desktop ];
+  home.packages = [
+    pkgs.signal-desktop
+    pkgs.localsend
+  ];
 
   programs.git = {
     enable = true;
@@ -40,7 +43,10 @@
 
   programs.mise.enable = true;
 
-  programs.brave-origin.enable = true;
+  programs = {
+    brave-origin.enable = true;
+    firefox.enable = true;
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

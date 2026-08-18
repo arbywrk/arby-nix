@@ -37,4 +37,9 @@
     ++ [ pkgs.nerd-fonts.jetbrains-mono ];
 
   programs.ripgrep.enable = true;
+
+  # fzf-lua shells out to the real fzf binary for its picker UI -- it's a
+  # frontend, not a pure-Lua reimplementation -- and nothing else in this
+  # config was providing it.
+  programs.fzf.enable = true;
 }

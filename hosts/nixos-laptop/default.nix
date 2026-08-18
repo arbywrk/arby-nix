@@ -25,7 +25,13 @@
   # NetworkManager already runs its own wpa_supplicant for Wi-Fi, so
   # networking.wireless (the standalone wpa_supplicant service) must stay
   # off to avoid both fighting over the same interface.
-  networking.networkmanager.enable = true;
+  networking = {
+    networkmanager.enable = true;
+    firewall = {
+      allowedTCPPorts = [ 53317 ];
+      allowedUDPPorts = [ 53317 ];
+    };
+  };
 
   time.timeZone = "Europe/Bucharest";
 
