@@ -73,76 +73,53 @@ Bootstraps this repo's `homeConfigurations.work` (`home/work/`) on a machine tha
 never touched Nix before — e.g. a fresh WSL install. Nothing here needs root except
 installing Nix itself.
 
-1. **Install Nix.** Use the
-   [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer)
-   instead of the official one — it enables flakes and the `nix` command by default,
-   so there's no `nix.conf` editing before anything in this repo will build:
+1. **Install Nix** via the
+   [Determinate installer](https://github.com/DeterminateSystems/nix-installer)
+   (flakes enabled by default, no `nix.conf` editing needed):
    ```
    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
    ```
-   Open a new shell (or source the profile script the installer prints), then check:
-   ```
-   nix --version
-   ```
+   Open a new shell, then confirm with `nix --version`.
 
-2. **Clone the repo over HTTPS** — it's a public repo, so this needs no GitHub
-   credentials of any kind on this machine, no SSH key, no PAT:
+2. **Clone over HTTPS** (public repo, no GitHub credentials needed):
    ```
    git clone https://github.com/arbywrk/arby-nix.git ~/.config/nixos
    cd ~/.config/nixos
    ```
-   No system `git` package required first either — if it's missing,
-   `nix shell nixpkgs#git` gets you a temporary shell with it.
+   No `git` installed? `nix shell nixpkgs#git` gets a temporary one.
 
-3. **Generate a dedicated age key for sops-nix.** This is *not* an SSH key and
-   never touches GitHub — it's a private, local-only identity that only ever needs
-   to exist on this one machine:
+3. **Generate an age key for sops-nix** (not an SSH key, local-only, never touches
+   GitHub):
    ```
    mkdir -p ~/.config/sops/age
    nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
    ```
-   ([age](https://github.com/FiloSottile/age)) This prints the new key's public
-   half (`age1...`) to the terminal — copy it.
+   ([age](https://github.com/FiloSottile/age)) Copy the printed public key
+   (`age1...`).
 
-4. **Register this machine as a sops-nix recipient.** `home/work/secrets.yaml` (the
-   work git email, currently) is only encrypted for machines whose age key is
-   listed in `.sops.yaml` — this machine can't decrypt it yet with just the key
-   from step 3. **From a machine that already can decrypt** (not this new one),
-   follow the steps left as a comment at the top of [`.sops.yaml`](.sops.yaml): add
-   the public key from step 3 as a new recipient, run
+4. **Register this machine as a sops-nix recipient.** From a machine that can
+   already decrypt `home/work/secrets.yaml` (not this new one), add the key from
+   step 3 to [`.sops.yaml`](.sops.yaml) (see the comment there), run
    `sops updatekeys home/work/secrets.yaml`
    ([sops-nix](https://github.com/Mic92/sops-nix),
-   [Mozilla SOPS](https://github.com/getsops/sops)), commit, and push — then pull
-   that commit down onto this machine before continuing.
+   [Mozilla SOPS](https://github.com/getsops/sops)), commit, push. Then pull that
+   commit down onto this machine.
 
-5. **First activation.** No `home-manager` binary exists yet on a fresh machine, so
-   bootstrap it via `nix run` once:
+5. **First activation:**
    ```
    nix run home-manager/master -- switch --flake .#work
    ```
    ([Home Manager: standalone installation](https://nix-community.github.io/home-manager/index.html#sec-install-standalone)).
-   This also builds sops-nix's Go helper from source the first time, which can take a
-   few minutes — expected, not a hang.
+   Builds sops-nix's Go helper from source the first time — a few minutes, not a
+   hang. After this, `home-manager switch --flake .#work` works directly for
+   future changes (validate first with `nix flake check --no-build`).
 
-   After that, `programs.home-manager.enable = true` keeps a real `home-manager`
-   binary on `$PATH`, so every later change is just:
-   ```
-   home-manager switch --flake .#work
-   ```
-   Validate first with `nix flake check --no-build`, same as this repo's other homes
-   (see "How things are tackled" above).
-
-6. **Confirm it worked:**
-   - `zellij` opens with the `vague` theme and the relocated keybinds.
-   - `nvim` opens with icons rendering correctly — *if* the terminal emulator itself
-     has a Nerd Font installed. On WSL specifically, `home.packages` only installs
-     the font into the Linux-side Nix store, which Windows Terminal never reads;
-     install [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads) on
-     the **Windows** side by hand for glyphs to render there.
-   - `cd` into any git repo and run `git config user.email` — it should print the
-     decrypted work address (rendered by sops-nix into
-     `~/.config/sops-nix/secrets/rendered/gitconfig-work-email` at activation time),
-     never a plaintext value baked into a nix-store file.
+6. **Confirm it worked:** `zellij` opens themed with the relocated keybinds;
+   `nvim` icons render — on WSL specifically, also install
+   [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads) on the
+   **Windows** side, since `home.packages` only reaches the Linux-side store;
+   and `git config user.email` in any repo prints the decrypted work address
+   (rendered by sops-nix, never baked into a nix-store file as plaintext).
 
 ## Troubleshooting
 
@@ -161,6 +138,19 @@ installing Nix itself.
   4 above.
 - **nvim/zellij glyphs render as boxes or `?`** — terminal-emulator-side font issue,
   not a Nix one; see the Nerd Font note in step 6.
+- **`nix run`/`switch` fails with a TLS/certificate error on a corporate machine
+  (e.g. WSL)** — the corporate root CA is trusted by Windows but not WSL's separate
+  Linux trust store. Export the root (and intermediate, if present) cert from
+  Windows' `certmgr.msc`, install into Ubuntu:
+  ```
+  sudo cp *.crt /usr/local/share/ca-certificates/
+  sudo update-ca-certificates
+  ```
+  then point Nix at the merged bundle by adding to `/etc/nix/nix.conf`:
+  ```
+  ssl-cert-file = /etc/ssl/certs/ca-certificates.crt
+  ```
+  and restarting the daemon (`sudo systemctl restart nix-daemon`).
 
 ## Reference
 

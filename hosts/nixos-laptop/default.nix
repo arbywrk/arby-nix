@@ -42,6 +42,8 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "dialout"
+      "uucp"
     ];
   };
 
