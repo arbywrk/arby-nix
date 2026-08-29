@@ -8,7 +8,9 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/nixos/desktop/sddm.nix
     ../../modules/nixos/desktop/gnome.nix
+    ../../modules/nixos/desktop/plasma.nix
   ];
 
   # Bootloader.

@@ -19,10 +19,12 @@ home/<name>/                  one Home Manager config per person/context
 modules/
   nixos/                      reusable NixOS-level pieces
     common.nix                 applies to every host
-    desktop/                   desktop-environment-specific (gnome.nix, ...)
+    desktop/                   desktop-environment-specific (gnome.nix, plasma.nix, ...)
+                                 plus sddm.nix, the shared DE-agnostic login manager
   home-manager/                reusable Home Manager pieces
     common.nix                  applies to every home (fonts, etc.)
-    desktop/                    GUI apps (alacritty.nix, gnome.nix dconf tweaks)
+    desktop/                    GUI apps (alacritty.nix, gnome.nix dconf tweaks,
+                                  plasma.nix via plasma-manager)
     development/<tool>/         one dir per dev tool
       default.nix                 the actual config
       files/                      vendored raw config files (lua, kdl, ...)
@@ -161,5 +163,6 @@ installing Nix itself.
 - [Home Manager option search](https://home-manager-options.extranix.com/)
 - [nixpkgs package search](https://search.nixos.org/packages)
 - [Zellij documentation](https://zellij.dev/documentation/) (heavily customized here — worth reading if editing the zellij module)
+- [plasma-manager](https://github.com/nix-community/plasma-manager) / [options reference](https://nix-community.github.io/plasma-manager/options.html) — declarative KDE Plasma settings used by `modules/home-manager/desktop/plasma.nix`
 - [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) — the recommended way to install Nix itself, see "Setting up the `work` home" above
 - [sops-nix](https://github.com/Mic92/sops-nix) / [Mozilla SOPS](https://github.com/getsops/sops) — secrets management used by the `work` home (`home/work/secrets.yaml`, `.sops.yaml`)
