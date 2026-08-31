@@ -9,8 +9,17 @@ with pkgs;
   # C/C++
   clang-tools
 
-  # Rust
+  # Rust -- rust-analyzer alone can't do anything (its own error is
+  # literally "Failed to load workspaces"): it shells out to `cargo` to
+  # discover the workspace/dependencies and to `rustfmt` for LSP-based
+  # formatting, and rustacean.lua's checkOnSave is set to "clippy".
+  # Without a real toolchain installed, all of that silently has nothing
+  # to run.
+  cargo
+  clippy
   rust-analyzer
+  rustc
+  rustfmt
 
   # Lua
   lua-language-server

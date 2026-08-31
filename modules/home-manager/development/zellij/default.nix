@@ -10,6 +10,13 @@
     # assignment, no lib.mkForce needed.
     settings.default_shell = lib.mkDefault "zsh";
 
+    # Every new session/pane starts locked -- zellij intercepts nothing
+    # (besides Ctrl g to unlock) until you deliberately ask it to, so it
+    # never fights zsh's or nvim's own keybinds by default. See the
+    # `locked`/`shared_except "locked"` blocks below for what that means
+    # in practice.
+    settings.default_mode = "locked";
+
     # NOT "compact": compact-bar only ever renders the tab line -- its
     # keybind hints live behind a separate toggle-activated tooltip
     # overlay, not continuously visible. The default status-bar is the
@@ -19,107 +26,114 @@
     settings.pane_frames = false;
     settings.theme = "vague";
 
-    # Full explicit keybinds, based on zellij's own stock defaults (not
-    # scoped `unbind` inside shared_except contexts -- fragile to get
-    # right without a live session to test against). Only the mode-entry
-    # triggers that collide with this config's actual nvim/completion
-    # keymaps are relocated; everything else is verbatim stock behavior.
+    # Full explicit keybinds, based on zellij's own stock defaults
+    # (verified directly against `zellij setup --dump-config`, not
+    # guessed) -- including its own multi-key-per-bind convention for
+    # directional keys (e.g. `bind "h" "left" { MoveFocus "left"; }`
+    # instead of two separate binds), used throughout below to avoid
+    # duplicating every direction as arrow-key-bind-plus-hjkl-bind.
     #
     # Relocated (collided with blink.cmp/fzf-lua/nvim keymaps):
-    #   Ctrl h (move mode)    -> Alt m  (Ctrl h now bound to MoveFocus, see below)
+    #   Ctrl h (move mode)    -> Alt m  (Ctrl h needs to stay free to reach
+    #                                    nvim while locked -- see below)
     #   Ctrl n (resize mode)  -> Alt r  (blink.cmp: next completion item)
-    #   Ctrl p (pane mode)    -> Alt a  (blink.cmp: prev completion item)
+    #   Ctrl p (pane mode)    -> Ctrl a (blink.cmp: prev completion item)
     #   Ctrl o (session mode) -> Alt u  (vim builtin: jumplist back)
     # Dropped entirely (tmux-compat mode, not a tmux user, its trigger
     # collided with blink.cmp/fzf-lua doc/preview scrolling):
     #   Ctrl b (tmux mode)
-    # Ctrl h/j/k/l are bound globally (shared_except "locked") to plain
-    # MoveFocus -- pane movement only, never a tab-switch fallback (unlike
-    # zellij's own stock Ctrl h/l, which fall back to GoToPreviousTab/
-    # GoToNextTab at the pane edge; dropped here since it's surprising to
-    # land in a different tab from a plain pane-navigation key).
     #
-    # Getting into/out of nvim's own splits seamlessly doesn't need a
-    # keystroke-forwarding plugin (previously vim-zellij-navigator, removed
-    # -- its WriteToStdin-based forwarding into a pane needs a permission
-    # grant that a headless MessagePlugin invocation has no visible pane to
-    # prompt for, so it silently never worked). Instead:
-    #   - modules/home-manager/development/neovim's keymaps/zellij.lua
-    #     switches zellij into "locked" mode on VimEnter/FocusGained (and
-    #     back to "normal" on VimLeavePre/FocusLost), so while nvim has
-    #     focus these binds don't intercept anything -- Ctrl h/j/k/l reach
-    #     smart-splits.nvim's own keymaps directly, unmodified.
-    #   - smart-splits.nvim's own `multiplexer_integration = "zellij"`
-    #     (plugins.nix) already shells out to `zellij action move-focus`
-    #     on its own when nvim is at the edge of its own splits -- no
-    #     zellij-side plugin needed for that direction either.
-    # Cost: in any NON-vim pane (shell included), these keys never reach
-    # the program underneath -- zsh's own Ctrl+H (backspace)/Ctrl+K
-    # (kill-line)/Ctrl+L (clear-screen) are unavailable, same tradeoff a
-    # global bind would have anyway.
-    # Untouched (no conflict found): locked (Ctrl g), scroll (Ctrl s),
-    # tab (Ctrl t), quit (Ctrl q).
+    # Pane movement lives entirely under `pane` mode (Ctrl a to enter):
+    # h/j/k/l move focus repeatedly with no auto-relock per press (unlike
+    # most other binds in this config), then Enter/Esc/Ctrl a again
+    # confirms and drops back to locked -- move around as much as needed,
+    # confirm once. Same shape as tab navigation (Ctrl t enters `tab`
+    # mode, h/j/k/l/1-9 navigate, back to locked once you land on one) --
+    # deliberately not a single quick Ctrl+h/j/k/l keypress like it was
+    # before. No direct global MoveFocus bind exists anymore. Ctrl
+    # Shift h/j/k/l are unchanged -- still the direct one-shot shortcut
+    # for MovePane (reorganize panes) without entering `move` mode, still
+    # relocking after one move.
+    #
+    # No nvim-side integration for pane movement -- tried an
+    # auto-lock-on-focus approach (nvim switching zellij into "locked"
+    # while it had focus, so these binds would pass through to nvim's own
+    # window-movement keymaps unintercepted) and a keystroke-forwarding
+    # plugin (vim-zellij-navigator) before that; both removed. Zellij's
+    # "locked" mode has no concept of "which pane is focused" -- it's one
+    # global state -- so having it serve as both "the default resting
+    # state for every pane" and "specifically don't intercept these keys
+    # while nvim has focus" fought itself: unlocking anywhere (e.g. to
+    # move panes from a shell) then landing back on an nvim pane while
+    # still unlocked would intercept Ctrl h/j/k/l before nvim ever saw
+    # them, same problem as before. Cost of not having any integration:
+    # zsh's own Ctrl+H (backspace)/Ctrl+K (kill-line)/Ctrl+L
+    # (clear-screen) are unavailable while unlocked in a non-vim pane --
+    # same tradeoff any global bind on these keys would have anyway.
+    #
+    # "locked" is the resting state (default_mode above), and stays
+    # resting: every `SwitchToMode "normal"` below that means "action
+    # done, go idle" targets "locked" instead of "normal" -- so finishing
+    # any single zellij action (new pane, go to tab N, resize, ...) drops
+    # straight back to locked, and Ctrl g has to be pressed again before
+    # the next one. The one deliberate exception is the unlock action
+    # itself (`locked { bind "Ctrl g" { SwitchToMode "normal"; } }`) --
+    # that one has to stay targeting "normal", it's the only way to
+    # unlock at all. Nothing else was added to the `locked` context this
+    # round (only Ctrl g) -- revisit later if more is wanted there.
+    # Untouched (no conflict found): scroll (Ctrl s), tab (Ctrl t),
+    # quit (Ctrl q).
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {
               bind "Ctrl g" { SwitchToMode "normal"; }
           }
           pane {
-              bind "left" { MoveFocus "left"; }
-              bind "down" { MoveFocus "down"; }
-              bind "up" { MoveFocus "up"; }
-              bind "right" { MoveFocus "right"; }
+              bind "h" "left" { MoveFocus "left"; }
+              bind "j" "down" { MoveFocus "down"; }
+              bind "k" "up" { MoveFocus "up"; }
+              bind "l" "right" { MoveFocus "right"; }
               bind "c" { SwitchToMode "renamepane"; PaneNameInput 0; }
-              bind "d" { NewPane "down"; SwitchToMode "normal"; }
-              bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "normal"; }
-              bind "f" { ToggleFocusFullscreen; SwitchToMode "normal"; }
-              bind "h" { MoveFocus "left"; }
-              bind "i" { TogglePanePinned; SwitchToMode "normal"; }
-              bind "j" { MoveFocus "down"; }
-              bind "k" { MoveFocus "up"; }
-              bind "l" { MoveFocus "right"; }
-              bind "n" { NewPane; SwitchToMode "normal"; }
+              bind "d" { NewPane "down"; SwitchToMode "locked"; }
+              bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "locked"; }
+              bind "f" { ToggleFocusFullscreen; SwitchToMode "locked"; }
+              bind "i" { TogglePanePinned; SwitchToMode "locked"; }
+              bind "n" { NewPane; SwitchToMode "locked"; }
               bind "p" { SwitchFocus; }
-              bind "Alt a" { SwitchToMode "normal"; }
-              bind "r" { NewPane "right"; SwitchToMode "normal"; }
-              bind "s" { NewPane "stacked"; SwitchToMode "normal"; }
-              bind "w" { ToggleFloatingPanes; SwitchToMode "normal"; }
-              bind "x" { CloseFocus; SwitchToMode "normal"; }
-              bind "z" { TogglePaneFrames; SwitchToMode "normal"; }
+              bind "Ctrl a" { SwitchToMode "locked"; }
+              bind "r" { NewPane "right"; SwitchToMode "locked"; }
+              bind "s" { NewPane "stacked"; SwitchToMode "locked"; }
+              bind "w" { ToggleFloatingPanes; SwitchToMode "locked"; }
+              bind "x" { CloseFocus; SwitchToMode "locked"; }
+              bind "z" { TogglePaneFrames; SwitchToMode "locked"; }
           }
           tab {
-              bind "left" { GoToPreviousTab; }
-              bind "down" { GoToNextTab; }
-              bind "up" { GoToPreviousTab; }
-              bind "right" { GoToNextTab; }
-              bind "1" { GoToTab 1; SwitchToMode "normal"; }
-              bind "2" { GoToTab 2; SwitchToMode "normal"; }
-              bind "3" { GoToTab 3; SwitchToMode "normal"; }
-              bind "4" { GoToTab 4; SwitchToMode "normal"; }
-              bind "5" { GoToTab 5; SwitchToMode "normal"; }
-              bind "6" { GoToTab 6; SwitchToMode "normal"; }
-              bind "7" { GoToTab 7; SwitchToMode "normal"; }
-              bind "8" { GoToTab 8; SwitchToMode "normal"; }
-              bind "9" { GoToTab 9; SwitchToMode "normal"; }
-              bind "[" { BreakPaneLeft; SwitchToMode "normal"; }
-              bind "]" { BreakPaneRight; SwitchToMode "normal"; }
-              bind "b" { BreakPane; SwitchToMode "normal"; }
-              bind "h" { GoToPreviousTab; }
-              bind "j" { GoToNextTab; }
-              bind "k" { GoToPreviousTab; }
-              bind "l" { GoToNextTab; }
-              bind "n" { NewTab; SwitchToMode "normal"; }
+              bind "h" "left" "up" "k" { GoToPreviousTab; }
+              bind "l" "right" "down" "j" { GoToNextTab; }
+              bind "1" { GoToTab 1; SwitchToMode "locked"; }
+              bind "2" { GoToTab 2; SwitchToMode "locked"; }
+              bind "3" { GoToTab 3; SwitchToMode "locked"; }
+              bind "4" { GoToTab 4; SwitchToMode "locked"; }
+              bind "5" { GoToTab 5; SwitchToMode "locked"; }
+              bind "6" { GoToTab 6; SwitchToMode "locked"; }
+              bind "7" { GoToTab 7; SwitchToMode "locked"; }
+              bind "8" { GoToTab 8; SwitchToMode "locked"; }
+              bind "9" { GoToTab 9; SwitchToMode "locked"; }
+              bind "[" { BreakPaneLeft; SwitchToMode "locked"; }
+              bind "]" { BreakPaneRight; SwitchToMode "locked"; }
+              bind "b" { BreakPane; SwitchToMode "locked"; }
+              bind "n" { NewTab; SwitchToMode "locked"; }
               bind "r" { SwitchToMode "renametab"; TabNameInput 0; }
-              bind "s" { ToggleActiveSyncTab; SwitchToMode "normal"; }
-              bind "Ctrl t" { SwitchToMode "normal"; }
-              bind "x" { CloseTab; SwitchToMode "normal"; }
+              bind "s" { ToggleActiveSyncTab; SwitchToMode "locked"; }
+              bind "Ctrl t" { SwitchToMode "locked"; }
+              bind "x" { CloseTab; SwitchToMode "locked"; }
               bind "tab" { ToggleTab; }
           }
           resize {
-              bind "left" { Resize "Increase left"; }
-              bind "down" { Resize "Increase down"; }
-              bind "up" { Resize "Increase up"; }
-              bind "right" { Resize "Increase right"; }
+              bind "h" "left" { Resize "Increase left"; }
+              bind "j" "down" { Resize "Increase down"; }
+              bind "k" "up" { Resize "Increase up"; }
+              bind "l" "right" { Resize "Increase right"; }
               bind "+" { Resize "Increase"; }
               bind "-" { Resize "Decrease"; }
               bind "=" { Resize "Increase"; }
@@ -127,28 +141,20 @@
               bind "J" { Resize "Decrease down"; }
               bind "K" { Resize "Decrease up"; }
               bind "L" { Resize "Decrease right"; }
-              bind "h" { Resize "Increase left"; }
-              bind "j" { Resize "Increase down"; }
-              bind "k" { Resize "Increase up"; }
-              bind "l" { Resize "Increase right"; }
-              bind "Alt r" { SwitchToMode "normal"; }
+              bind "Alt r" { SwitchToMode "locked"; }
           }
           move {
-              bind "left" { MovePane "left"; }
-              bind "down" { MovePane "down"; }
-              bind "up" { MovePane "up"; }
-              bind "right" { MovePane "right"; }
-              bind "h" { MovePane "left"; }
-              bind "Alt m" { SwitchToMode "normal"; }
-              bind "j" { MovePane "down"; }
-              bind "k" { MovePane "up"; }
-              bind "l" { MovePane "right"; }
+              bind "h" "left" { MovePane "left"; }
+              bind "j" "down" { MovePane "down"; }
+              bind "k" "up" { MovePane "up"; }
+              bind "l" "right" { MovePane "right"; }
+              bind "Alt m" { SwitchToMode "locked"; }
               bind "n" { MovePane; }
               bind "p" { MovePaneBackwards; }
               bind "tab" { MovePane; }
           }
           scroll {
-              bind "e" { EditScrollback; SwitchToMode "normal"; }
+              bind "e" { EditScrollback; SwitchToMode "locked"; }
               bind "s" { SwitchToMode "entersearch"; SearchInput 0; }
           }
           search {
@@ -164,43 +170,43 @@
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
               bind "c" {
                   LaunchOrFocusPlugin "configuration" {
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
               bind "l" {
                   LaunchOrFocusPlugin "zellij:layout-manager" {
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
-              bind "Alt u" { SwitchToMode "normal"; }
+              bind "Alt u" { SwitchToMode "locked"; }
               bind "p" {
                   LaunchOrFocusPlugin "plugin-manager" {
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
               bind "s" {
                   LaunchOrFocusPlugin "zellij:share" {
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
               bind "w" {
                   LaunchOrFocusPlugin "session-manager" {
                       floating true
                       move_to_focused_tab true
                   }
-                  SwitchToMode "normal"
+                  SwitchToMode "locked"
               }
               bind "d" { Detach; }
           }
@@ -226,10 +232,10 @@
               bind "Alt p" { TogglePaneInGroup; }
               bind "Alt Shift p" { ToggleGroupMarking; }
               bind "Ctrl Shift q" { Quit; }
-              bind "Ctrl h" { MoveFocus "left"; }
-              bind "Ctrl j" { MoveFocus "down"; }
-              bind "Ctrl k" { MoveFocus "up"; }
-              bind "Ctrl l" { MoveFocus "right"; }
+              bind "Ctrl Shift h" { MovePane "left"; SwitchToMode "locked"; }
+              bind "Ctrl Shift j" { MovePane "down"; SwitchToMode "locked"; }
+              bind "Ctrl Shift k" { MovePane "up"; SwitchToMode "locked"; }
+              bind "Ctrl Shift l" { MovePane "right"; SwitchToMode "locked"; }
           }
           shared_except "locked" "move" {
               bind "Alt m" { SwitchToMode "move"; }
@@ -239,38 +245,35 @@
           }
           shared_except "locked" "scroll" "search" {
               bind "Ctrl s" { SwitchToMode "scroll"; }
+              // Excludes scroll/search specifically because both already
+              // bind Ctrl f to PageScrollDown (shared_among "scroll"
+              // "search" below) -- keeping this out of those two modes is
+              // what avoids the collision, not any implicit precedence.
+              bind "Ctrl f" { ToggleFloatingPanes; SwitchToMode "locked"; }
           }
           shared_except "locked" "tab" {
               bind "Ctrl t" { SwitchToMode "tab"; }
           }
           shared_except "locked" "pane" {
-              bind "Alt a" { SwitchToMode "pane"; }
+              bind "Ctrl a" { SwitchToMode "pane"; }
           }
           shared_except "locked" "resize" {
               bind "Alt r" { SwitchToMode "resize"; }
           }
           shared_except "normal" "locked" "entersearch" {
-              bind "enter" { SwitchToMode "normal"; }
+              bind "enter" { SwitchToMode "locked"; }
           }
           shared_except "normal" "locked" "entersearch" "renametab" "renamepane" {
-              bind "esc" { SwitchToMode "normal"; }
+              bind "esc" { SwitchToMode "locked"; }
           }
           shared_among "scroll" "search" {
-              bind "PageDown" { PageScrollDown; }
-              bind "PageUp" { PageScrollUp; }
-              bind "left" { PageScrollUp; }
-              bind "down" { ScrollDown; }
-              bind "up" { ScrollUp; }
-              bind "right" { PageScrollDown; }
-              bind "Ctrl b" { PageScrollUp; }
-              bind "Ctrl c" { ScrollToBottom; SwitchToMode "normal"; }
+              bind "h" "left" "Ctrl b" "PageUp" { PageScrollUp; }
+              bind "l" "right" "Ctrl f" "PageDown" { PageScrollDown; }
+              bind "j" "down" { ScrollDown; }
+              bind "k" "up" { ScrollUp; }
+              bind "Ctrl c" { ScrollToBottom; SwitchToMode "locked"; }
               bind "d" { HalfPageScrollDown; }
-              bind "Ctrl f" { PageScrollDown; }
-              bind "h" { PageScrollUp; }
-              bind "j" { ScrollDown; }
-              bind "k" { ScrollUp; }
-              bind "l" { PageScrollDown; }
-              bind "Ctrl s" { SwitchToMode "normal"; }
+              bind "Ctrl s" { SwitchToMode "locked"; }
               bind "u" { HalfPageScrollUp; }
           }
           entersearch {
@@ -282,7 +285,7 @@
               bind "esc" { UndoRenameTab; SwitchToMode "tab"; }
           }
           shared_among "renametab" "renamepane" {
-              bind "Ctrl c" { SwitchToMode "normal"; }
+              bind "Ctrl c" { SwitchToMode "locked"; }
           }
           renamepane {
               bind "esc" { UndoRenamePane; SwitchToMode "pane"; }

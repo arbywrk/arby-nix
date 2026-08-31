@@ -45,8 +45,7 @@ files/lua/
   keymaps.lua                   top-level keymaps + autocommands, then
                                   require()s the keymaps/ submodules below
   keymaps/
-    buffer.lua, build.lua, window.lua,
-    zellij.lua                          keymaps/behavior grouped by concern
+    buffer.lua, build.lua, window.lua   keymaps grouped by concern
   util/
     keymap.lua                  keymap.map()/buffer_map() helper used
                                   everywhere instead of raw vim.keymap.set

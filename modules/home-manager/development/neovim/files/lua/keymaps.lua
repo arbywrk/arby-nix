@@ -27,14 +27,44 @@ vim.keymap.set("n", "<up>", "")
 vim.keymap.set("n", "<down>", "")
 
 -- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows -- and, via smart-splits'
---  zellij integration (see plugins.nix), seamlessly into the adjacent
---  zellij pane once there's no more window to move to on this side.
-local smart_splits = require("smart-splits")
-vim.keymap.set("n", "<C-h>", smart_splits.move_cursor_left, { desc = "Move focus to the left window/pane" })
-vim.keymap.set("n", "<C-l>", smart_splits.move_cursor_right, { desc = "Move focus to the right window/pane" })
-vim.keymap.set("n", "<C-j>", smart_splits.move_cursor_down, { desc = "Move focus to the lower window/pane" })
-vim.keymap.set("n", "<C-k>", smart_splits.move_cursor_up, { desc = "Move focus to the upper window/pane" })
+--  Use CTRL+<hjkl> to switch between windows.
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- CTRL+SHIFT+<hjkl> to reorganize (move) the current window to the far
+-- edge in that direction, using nvim's own builtin <C-w>H/J/K/L -- mirrors
+-- Ctrl+Shift+h/j/k/l in zellij (see modules/home-manager/development/zellij),
+-- which does the equivalent MovePane there. Confirmed free of collisions
+-- (nothing else in this config binds <C-S-h/j/k/l> or their capitalized
+-- <C-H/J/K/L> form). Requires the terminal to report Ctrl and Shift as
+-- distinguishable from plain Ctrl -- if it can't, these keys simply won't
+-- fire and <C-h/j/k/l> above still works as normal focus-movement.
+vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the far left" })
+vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the far right" })
+vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the bottom" })
+vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the top" })
+
+-- ALT+<hjkl> to resize the current window -- h/l adjust width, j/k adjust
+-- height (there's no builtin "grow toward this specific screen edge" the
+-- way zellij's resize mode has; nvim's own :resize/:vertical resize just
+-- grow/shrink the current window along one axis, so that's what these
+-- map to). Confirmed free of collisions -- nothing else in this config
+-- binds <A-h/j/k/l>.
+vim.keymap.set("n", "<A-h>", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
+vim.keymap.set("n", "<A-l>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+vim.keymap.set("n", "<A-j>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })
+vim.keymap.set("n", "<A-k>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
+
+-- ]t / [t to move between tab pages -- same bracket-motion convention
+-- gitsigns already uses for hunks (]h/[h, see plugins/gitsigns.lua), and
+-- distinct from the buffer-cycling <leader>bn/<leader>bp
+-- (keymaps/buffer.lua) since tab pages and buffers are different things.
+-- <leader>t was already claimed by the [T]est group (plugins/neotest.lua),
+-- so this isn't a <leader> mapping.
+vim.keymap.set("n", "]t", "<cmd>tabnext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "[t", "<cmd>tabprevious<CR>", { desc = "Previous tab" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -66,4 +96,3 @@ vim.keymap.set("c", "w!!", "w !sudo tee > /dev/null %", { desc = "Write file wit
 require("keymaps.window")
 require("keymaps.buffer")
 require("keymaps.build")
-require("keymaps.zellij")

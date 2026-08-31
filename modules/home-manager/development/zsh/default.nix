@@ -8,6 +8,13 @@
   programs.zsh = {
     enable = true;
 
+    # "viins" (not "vicmd"): start each prompt in insert mode -- typing
+    # works like normal, Esc drops into vi command mode for editing. The
+    # other option, "vicmd", would start every prompt in command mode
+    # instead, which is the wrong default for a shell you're constantly
+    # typing into.
+    defaultKeymap = "viins";
+
     autosuggestion = {
       enable = true;
       highlight = "fg=#606079"; # vague comment gray
