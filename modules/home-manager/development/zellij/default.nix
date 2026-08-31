@@ -1,13 +1,4 @@
-{ lib, pkgs, ... }:
-let
-  # Detects whether the focused pane is running vim/nvim before deciding
-  # whether to forward the raw keystroke (letting smart-splits.nvim handle
-  # its own internal split-navigation, unmodified) or move zellij's own
-  # pane focus directly. This is what makes Ctrl h/j/k/l work bidirectionally
-  # -- into AND out of nvim -- without zellij's static keybinds ever having
-  # to guess: https://github.com/hiasr/vim-zellij-navigator
-  vimZellijNavigator = "file:${pkgs.zellijPlugins.vim-zellij-navigator}";
-in
+{ lib, ... }:
 {
   programs.zellij = {
     enable = true;
@@ -35,22 +26,37 @@ in
     # keymaps are relocated; everything else is verbatim stock behavior.
     #
     # Relocated (collided with blink.cmp/fzf-lua/nvim keymaps):
-    #   Ctrl h (move mode)    -> Alt m  (Ctrl h now routed through vim-zellij-navigator)
+    #   Ctrl h (move mode)    -> Alt m  (Ctrl h now bound to MoveFocus, see below)
     #   Ctrl n (resize mode)  -> Alt r  (blink.cmp: next completion item)
     #   Ctrl p (pane mode)    -> Alt a  (blink.cmp: prev completion item)
     #   Ctrl o (session mode) -> Alt u  (vim builtin: jumplist back)
     # Dropped entirely (tmux-compat mode, not a tmux user, its trigger
     # collided with blink.cmp/fzf-lua doc/preview scrolling):
     #   Ctrl b (tmux mode)
-    # Ctrl h/j/k/l are bound globally (shared_except "locked") to
-    # vim-zellij-navigator: it detects whether the focused pane is
-    # running vim/nvim and either forwards the raw keystroke (letting
-    # smart-splits.nvim's own internal split-navigation handle it,
-    # unmodified) or moves zellij's pane focus directly. Cost: in any
-    # NON-vim pane (shell included), these keys never reach the program
-    # underneath -- zsh's own Ctrl+H (backspace)/Ctrl+K (kill-line)/
-    # Ctrl+L (clear-screen) are unavailable, same tradeoff as a global
-    # bind would have anyway, just correctly scoped to spare nvim.
+    # Ctrl h/j/k/l are bound globally (shared_except "locked") to plain
+    # MoveFocus -- pane movement only, never a tab-switch fallback (unlike
+    # zellij's own stock Ctrl h/l, which fall back to GoToPreviousTab/
+    # GoToNextTab at the pane edge; dropped here since it's surprising to
+    # land in a different tab from a plain pane-navigation key).
+    #
+    # Getting into/out of nvim's own splits seamlessly doesn't need a
+    # keystroke-forwarding plugin (previously vim-zellij-navigator, removed
+    # -- its WriteToStdin-based forwarding into a pane needs a permission
+    # grant that a headless MessagePlugin invocation has no visible pane to
+    # prompt for, so it silently never worked). Instead:
+    #   - modules/home-manager/development/neovim's keymaps/zellij.lua
+    #     switches zellij into "locked" mode on VimEnter/FocusGained (and
+    #     back to "normal" on VimLeavePre/FocusLost), so while nvim has
+    #     focus these binds don't intercept anything -- Ctrl h/j/k/l reach
+    #     smart-splits.nvim's own keymaps directly, unmodified.
+    #   - smart-splits.nvim's own `multiplexer_integration = "zellij"`
+    #     (plugins.nix) already shells out to `zellij action move-focus`
+    #     on its own when nvim is at the edge of its own splits -- no
+    #     zellij-side plugin needed for that direction either.
+    # Cost: in any NON-vim pane (shell included), these keys never reach
+    # the program underneath -- zsh's own Ctrl+H (backspace)/Ctrl+K
+    # (kill-line)/Ctrl+L (clear-screen) are unavailable, same tradeoff a
+    # global bind would have anyway.
     # Untouched (no conflict found): locked (Ctrl g), scroll (Ctrl s),
     # tab (Ctrl t), quit (Ctrl q).
     extraConfig = ''
@@ -220,34 +226,10 @@ in
               bind "Alt p" { TogglePaneInGroup; }
               bind "Alt Shift p" { ToggleGroupMarking; }
               bind "Ctrl Shift q" { Quit; }
-              bind "Ctrl h" {
-                  MessagePlugin "${vimZellijNavigator}" {
-                      name "move_focus_or_tab"
-                      payload "left"
-                      move_mod "ctrl"
-                  }
-              }
-              bind "Ctrl j" {
-                  MessagePlugin "${vimZellijNavigator}" {
-                      name "move_focus"
-                      payload "down"
-                      move_mod "ctrl"
-                  }
-              }
-              bind "Ctrl k" {
-                  MessagePlugin "${vimZellijNavigator}" {
-                      name "move_focus"
-                      payload "up"
-                      move_mod "ctrl"
-                  }
-              }
-              bind "Ctrl l" {
-                  MessagePlugin "${vimZellijNavigator}" {
-                      name "move_focus_or_tab"
-                      payload "right"
-                      move_mod "ctrl"
-                  }
-              }
+              bind "Ctrl h" { MoveFocus "left"; }
+              bind "Ctrl j" { MoveFocus "down"; }
+              bind "Ctrl k" { MoveFocus "up"; }
+              bind "Ctrl l" { MoveFocus "right"; }
           }
           shared_except "locked" "move" {
               bind "Alt m" { SwitchToMode "move"; }

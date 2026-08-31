@@ -17,6 +17,7 @@ with pkgs;
   stylua
 
   # Zig
+  zig
   zls
 
   # Python

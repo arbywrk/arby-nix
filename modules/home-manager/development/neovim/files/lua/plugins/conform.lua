@@ -53,7 +53,7 @@ end, "Toggle [U]I: Trim trailing [W]hitespace on save")
 local formatters_by_ft = {
 	lua = { "stylua" },
 	python = { "ruff_format" },
-	zig = { "zig" },
+	zig = { "zigfmt" },
 	sh = { "shfmt" },
 	bash = { "shfmt" },
 	nix = { "nixfmt" },
