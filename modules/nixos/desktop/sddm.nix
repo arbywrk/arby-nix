@@ -1,10 +1,8 @@
 { ... }:
 
 {
-  # DE-agnostic login manager, shared by every desktop session enabled on
-  # this host (see gnome.nix, plasma.nix) -- lists whatever sessions exist
-  # in /usr/share/{x,wayland-}sessions, so it doesn't need to know about
-  # either of them.
+  # Plasma's login manager -- native SDDM/KWin integration (theme, session
+  # handling) rather than the DE-agnostic GDM used on the GNOME host.
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
 }

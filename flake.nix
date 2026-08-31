@@ -30,7 +30,10 @@
       mkHome = import ./lib/mkhome.nix { inherit inputs; };
     in
     {
-      nixosConfigurations.nixos-laptop = mkSystem "nixos-laptop";
+      nixosConfigurations = {
+        nixos-laptop-gnome = mkSystem "nixos-laptop-gnome";
+        nixos-laptop-kde = mkSystem "nixos-laptop-kde";
+      };
 
       homeConfigurations = {
         arby = mkHome { username = "arby"; };

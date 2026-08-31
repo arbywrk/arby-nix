@@ -1,13 +1,9 @@
 {
   pkgs,
-  lib,
   inputs,
   ...
 }:
 
-let
-  isolateToGNOME = import ../../../lib/isolate-to-desktop.nix { inherit lib; } "GNOME";
-in
 {
   imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
 
@@ -28,15 +24,13 @@ in
   # gnome-tour and gnome-control-center (Settings) are core-shell, not
   # core-apps, so core-apps.enable = false above doesn't touch them.
   # gnome-tour: first-run onboarding app, not wanted. gnome-control-center:
-  # excluded here only so it can be re-added below as the isolated copy.
+  # excluded here only so it can be re-added below explicitly.
   environment.gnome.excludePackages = [
     pkgs.gnome-tour
     pkgs.gnome-control-center
   ];
 
-  # Every app GNOME gets goes through isolateToGNOME -- that's what makes
-  # isolation the default instead of something to remember per package.
-  environment.systemPackages = isolateToGNOME [
+  environment.systemPackages = [
     pkgs.nautilus
     pkgs.gnome-console
     pkgs.gnome-control-center

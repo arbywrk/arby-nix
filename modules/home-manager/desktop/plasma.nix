@@ -76,19 +76,6 @@
     };
   };
 
-  # kdesystemsettings.desktop ships NotShowIn=KDE upstream (a "show in
-  # every non-KDE DE" fallback tile) -- that's exactly the leak into GNOME
-  # we don't want, since systemsettings.desktop itself is already
-  # OnlyShowIn=KDE and covers Plasma correctly on its own. Shadow it fully
-  # hidden; user data dirs win over system ones in XDG_DATA_DIRS, so no
-  # NixOS-level package surgery is needed for this one.
-  xdg.desktopEntries."kdesystemsettings" = {
-    name = "KDE System Settings";
-    exec = "systemsettings";
-    icon = "preferences-system";
-    noDisplay = true;
-  };
-
   # Natural scrolling for this laptop's touchpad (device identity confirmed
   # against /proc/bus/input/devices -- hardware-specific to this machine,
   # same as the LUKS UUID in hosts/nixos-laptop/default.nix).
