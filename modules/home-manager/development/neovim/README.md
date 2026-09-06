@@ -146,18 +146,20 @@ These are plain Nix packages, not Neovim plugins:
   `openocd_remote.lua` for the existing pattern) or `files/lua/plugins/debug.lua`
   directly for simpler cases.
 
-Formatting has two independent on-by-default toggles
-(`files/lua/plugins/conform.lua`), so autoformat can be turned off for a
-noisy legacy project without also losing trailing-whitespace trimming:
+Formatting on save is a single tri-state cycle (`files/lua/plugins/conform.lua`),
+bound to `<leader>uf`, buffer-local:
 
-- **Autoformat** (the language formatters above, plus LSP-fallback
-  formatting) — `<leader>uf`, or `:FormatDisable`/`:FormatDisable!`
-  (global/buffer-local) and `:FormatEnable` to re-enable.
-- **Trim trailing whitespace** — `<leader>uw`, or
-  `:TrimTrailingWhitespaceDisable[!]` / `:TrimTrailingWhitespaceEnable`.
+1. **All enabled** (default) — language formatters (the `formatters_by_ft`
+   table above), LSP-fallback formatting (clangd's clang-format for C/C++,
+   via `config/lsp/clangd.lua`), and trailing-whitespace trimming.
+2. **Formatters disabled** — trailing-whitespace trimming still runs.
+3. **Everything disabled** — no formatting at all on save.
+
+Cycling again from state 3 goes back to state 1. `<leader>f` always runs a
+manual format regardless of this toggle's state.
 
 To opt a specific repo out permanently instead of toggling by hand every
-session, drop a `.nvim.lua` in its root with `vim.b.disable_autoformat = true`
+session, drop a `.nvim.lua` in its root with `vim.b.format_state = 2`
 — `options.lua` already sets `exrc = true`, so a trusted per-project file
 like this runs automatically on open (`:trust` the first time you open
 that directory).

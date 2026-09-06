@@ -2,9 +2,4 @@ keys:
   - &laptop age1ydp6gtrg8r7s2p6crrqeg3jemmgrk0wcpav3ezt3pzefqy58curslqmfmr # nixos-laptop, arby's ~/.ssh/id_ed25519
   - &work age1urff4gzu6zk07pkrk7p6kxgwg2z4aqg68vt5xvs2rndxap0lyyjs2egnzn
 
-creation_rules:
-  - path_regex: home/work/secrets\.yaml$
-    key_groups:
-      - age:
-          - *laptop
-          - *work
+creation_rules: []

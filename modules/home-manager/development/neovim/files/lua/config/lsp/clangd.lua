@@ -7,8 +7,6 @@ local project_root_markers = {
     ".git",
 }
 
-local format_group = vim.api.nvim_create_augroup("user-clangd-format", { clear = false })
-
 local function read_style_file(path)
     local ok, lines = pcall(vim.fn.readfile, path)
     if not ok then
@@ -101,22 +99,9 @@ function M.on_attach(client, bufnr)
         return
     end
 
-    -- Keep C/C++ formatting pinned to clangd so Conform can stay generic.
-    vim.api.nvim_clear_autocmds({ group = format_group, buffer = bufnr })
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = format_group,
-        buffer = bufnr,
-        desc = "Format C-family buffers with clangd before save",
-        callback = function(args)
-            vim.lsp.buf.format({
-                async = false,
-                bufnr = args.buf,
-                filter = function(format_client)
-                    return format_client.name == "clangd"
-                end,
-            })
-        end,
-    })
+    -- Format-on-save for C/C++ goes through conform's LSP-fallback path
+    -- (plugins/conform.lua) instead of a bespoke autocmd here, so it's
+    -- subject to the same toggle as every other filetype.
 
     local style_file = find_style_file(bufnr)
     local style = style_file and read_style_file(style_file) or {}
