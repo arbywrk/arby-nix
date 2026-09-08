@@ -1,5 +1,21 @@
-{ lib, ... }:
+{ pkgs, lib, ... }:
+let
+  # Opens a shell that reconnects to the last ssh target run in this
+  # zellij session -- see files/zellij-resume-ssh.sh and
+  # files/record-ssh.zsh for how. Bound to "Shift s" below (pane mode:
+  # new pane; tab mode: new tab).
+  resumeSsh = pkgs.writeShellScriptBin "zellij-resume-ssh" (
+    builtins.readFile ./files/zellij-resume-ssh.sh
+  );
+in
 {
+  home.packages = [ resumeSsh ];
+
+  # The ssh() wrapper that records each ssh invocation for
+  # zellij-resume-ssh to pick back up -- lives here (not
+  # development/zsh) since it's meaningless outside a zellij session.
+  programs.zsh.initContent = builtins.readFile ./files/record-ssh.zsh;
+
   programs.zellij = {
     enable = true;
 
@@ -85,6 +101,31 @@
     # Quit is deliberately hardened, not left at stock Ctrl q: Ctrl
     # Shift q instead, so muscle-memory Ctrl q from another program
     # can't kill the whole zellij session by accident.
+    #
+    # Moving tabs/panes around (all stock zellij actions, not custom):
+    #   Alt i / Alt o           move the current tab left / right
+    #   Ctrl a then b           break the focused pane out into its own
+    #                           new tab (tab mode's `[`/`]` do the same
+    #                           but land the new tab to the left/right
+    #                           of the current one specifically)
+    # There's deliberately no bind for the reverse (folding an existing
+    # tab back into another tab as one of its panes) -- zellij has no
+    # such action, stock or otherwise; BreakPane only ever goes
+    # pane -> tab, one-way.
+    #
+    # "Shift s" in pane mode / tab mode: new pane / new tab that
+    # reconnects to the most recent ssh target run in *this* zellij
+    # session (falls back to a plain shell if nothing's been ssh'd to
+    # yet) -- see files/record-ssh.zsh (the ssh() wrapper that records
+    # the target) and files/zellij-resume-ssh.sh (the reconnect script,
+    # exposed on PATH as `zellij-resume-ssh`). This is session-wide, not
+    # per-pane -- zellij keybinds can't see what a specific pane is
+    # currently running, only a plugin could, so "same place as the
+    # pane I'm looking at" is approximated as "last ssh anywhere in this
+    # session" instead. mosh (development/mosh) is the other half of
+    # "keep remote connections alive" -- `mosh <host>` in place of `ssh`
+    # survives wifi drops/sleep that would otherwise kill a plain ssh
+    # pane outright.
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {
@@ -105,6 +146,7 @@
               bind "Ctrl a" { SwitchToMode "locked"; }
               bind "r" { NewPane "right"; SwitchToMode "locked"; }
               bind "s" { NewPane "stacked"; SwitchToMode "locked"; }
+              bind "Shift s" { Run "zellij-resume-ssh"; SwitchToMode "locked"; }
               bind "w" { ToggleFloatingPanes; SwitchToMode "locked"; }
               bind "x" { CloseFocus; SwitchToMode "locked"; }
               bind "z" { TogglePaneFrames; SwitchToMode "locked"; }
@@ -125,6 +167,12 @@
               bind "]" { BreakPaneRight; SwitchToMode "locked"; }
               bind "b" { BreakPane; SwitchToMode "locked"; }
               bind "n" { NewTab; SwitchToMode "locked"; }
+              bind "Shift s" {
+                  NewTab {
+                      layout "${./files/layouts/resume-ssh.kdl}"
+                  }
+                  SwitchToMode "locked"
+              }
               bind "r" { SwitchToMode "renametab"; TabNameInput 0; }
               bind "s" { ToggleActiveSyncTab; SwitchToMode "locked"; }
               bind "Ctrl t" { SwitchToMode "locked"; }
