@@ -313,7 +313,7 @@ in
           shared_except "normal" "locked" "entersearch" {
               bind "enter" { SwitchToMode "locked"; }
           }
-          shared_except "normal" "locked" "entersearch" "renametab" "renamepane" {
+          shared_except "locked" "entersearch" "renametab" "renamepane" {
               bind "esc" { SwitchToMode "locked"; }
           }
           shared_among "scroll" "search" {
