@@ -5,7 +5,10 @@
 -- config/debug/kinds/native.lua. Project-specific targets (e.g. a board
 -- reached through OpenOCD) are added by a trusted project-local
 -- .nvim.lua (see :h 'exrc') calling
--- require("config.debug").register_target({...}) -- see doc/debugging.md.
+-- require("config.debug").register_target({...}) -- see the neovim
+-- module's README.md ("Adding a custom function" section) for the
+-- config.debug registry shape, and the formatting section for the
+-- .nvim.lua/exrc trust mechanism itself.
 -----------------------------------------------------------------------
 
 local util = require("config.debug.util")

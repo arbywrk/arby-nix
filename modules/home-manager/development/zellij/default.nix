@@ -81,8 +81,10 @@
     # that one has to stay targeting "normal", it's the only way to
     # unlock at all. Nothing else was added to the `locked` context this
     # round (only Ctrl g) -- revisit later if more is wanted there.
-    # Untouched (no conflict found): scroll (Ctrl s), tab (Ctrl t),
-    # quit (Ctrl q).
+    # Untouched (no conflict found): scroll (Ctrl s), tab (Ctrl t).
+    # Quit is deliberately hardened, not left at stock Ctrl q: Ctrl
+    # Shift q instead, so muscle-memory Ctrl q from another program
+    # can't kill the whole zellij session by accident.
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {

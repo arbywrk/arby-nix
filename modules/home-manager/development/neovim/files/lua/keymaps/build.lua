@@ -1,7 +1,9 @@
 -- Project build/flash/clean actions. Nothing by default -- a project
 -- registers profiles via require("config.build").register_profile({...})
--- from its trusted .nvim.lua (see doc/debugging.md for the trust
--- mechanism; build profiles use the same one).
+-- from its trusted .nvim.lua (see the neovim module's README.md --
+-- "Adding a custom function" for the registry shape, the formatting
+-- section for the .nvim.lua/exrc trust mechanism itself; build profiles
+-- use the same one as config.debug).
 
 local keymap = require("util.keymap")
 local build_config = require("config.build")

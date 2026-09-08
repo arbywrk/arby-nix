@@ -66,7 +66,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 local capabilities = require("blink.cmp").get_lsp_capabilities()
 
--- Every server here comes from nixpkgs (see nix/packages.nix), not
+-- Every server here comes from nixpkgs (see packages.nix), not
 -- Mason -- installed declaratively, no runtime download.
 local servers = {
     clangd = clangd.server_config(),

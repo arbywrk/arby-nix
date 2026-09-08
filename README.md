@@ -94,7 +94,8 @@ into a different session on one shared system.
 
 Bootstraps this repo's `homeConfigurations.work` (`home/work/`) on a machine that's
 never touched Nix before — e.g. a fresh WSL install. Nothing here needs root except
-installing Nix itself.
+installing Nix itself. This profile has no home-manager-managed secrets or git
+config — see "Structure Motivation" below for why.
 
 1. **Install Nix** via the
    [Determinate installer](https://github.com/DeterminateSystems/nix-installer)
@@ -111,38 +112,24 @@ installing Nix itself.
    ```
    No `git` installed? `nix shell nixpkgs#git` gets a temporary one.
 
-3. **Generate an age key for sops-nix** (not an SSH key, local-only, never touches
-   GitHub):
-   ```
-   mkdir -p ~/.config/sops/age
-   nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
-   ```
-   ([age](https://github.com/FiloSottile/age)) Copy the printed public key
-   (`age1...`).
-
-4. **Register this machine as a sops-nix recipient.** From a machine that can
-   already decrypt `home/work/secrets.yaml` (not this new one), add the key from
-   step 3 to [`.sops.yaml`](.sops.yaml) (see the comment there), run
-   `sops updatekeys home/work/secrets.yaml`
-   ([sops-nix](https://github.com/Mic92/sops-nix),
-   [Mozilla SOPS](https://github.com/getsops/sops)), commit, push. Then pull that
-   commit down onto this machine.
-
-5. **First activation:**
+3. **First activation:**
    ```
    nix run home-manager/master -- switch --flake .#work
    ```
    ([Home Manager: standalone installation](https://nix-community.github.io/home-manager/index.html#sec-install-standalone)).
-   Builds sops-nix's Go helper from source the first time — a few minutes, not a
-   hang. After this, `home-manager switch --flake .#work` works directly for
-   future changes (validate first with `nix flake check --no-build`).
+   After this, `home-manager switch --flake .#work` works directly for future
+   changes (validate first with `nix flake check --no-build`).
 
-6. **Confirm it worked:** `zellij` opens themed with the relocated keybinds;
+4. **Set up git identity manually.** `home/work/default.nix` deliberately doesn't
+   touch `~/.gitconfig` — this profile's git config (including any work-specific
+   email/signing setup) is managed outside this repo. Set it up the way your work
+   environment expects (e.g. `git config --global user.name/user.email`, or
+   whatever your org's own tooling provides).
+
+5. **Confirm it worked:** `zellij` opens themed with the relocated keybinds;
    `nvim` icons render — on WSL specifically, also install
    [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads) on the
-   **Windows** side, since `home.packages` only reaches the Linux-side store;
-   and `git config user.email` in any repo prints the decrypted work address
-   (rendered by sops-nix, never baked into a nix-store file as plaintext).
+   **Windows** side, since `home.packages` only reaches the Linux-side store.
 
 ## Troubleshooting
 
@@ -155,12 +142,8 @@ installing Nix itself.
 - **`... is not tracked by Git`** — flakes only evaluate git-tracked content;
   `git add` the new file before `nix build`/`switch` can see it (see "How things are
   tackled" above).
-- **sops-nix fails to decrypt on activation** — this machine's age key isn't in
-  `.sops.yaml`'s recipient list yet, or you haven't pulled the commit from after
-  someone ran `sops updatekeys`. Machine and repo state both need to agree; see step
-  4 above.
 - **nvim/zellij glyphs render as boxes or `?`** — terminal-emulator-side font issue,
-  not a Nix one; see the Nerd Font note in step 6.
+  not a Nix one; see the Nerd Font note in step 5 of the `work` home setup above.
 - **`nix run`/`switch` fails with a TLS/certificate error on a corporate machine
   (e.g. WSL)** — the corporate root CA is trusted by Windows but not WSL's separate
   Linux trust store. Export the root (and intermediate, if present) cert from
@@ -186,4 +169,3 @@ installing Nix itself.
 - [Zellij documentation](https://zellij.dev/documentation/) (heavily customized here — worth reading if editing the zellij module)
 - [plasma-manager](https://github.com/nix-community/plasma-manager) / [options reference](https://nix-community.github.io/plasma-manager/options.html) — declarative KDE Plasma settings used by `modules/home-manager/desktop/plasma.nix`
 - [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) — the recommended way to install Nix itself, see "Setting up the `work` home" above
-- [sops-nix](https://github.com/Mic92/sops-nix) / [Mozilla SOPS](https://github.com/getsops/sops) — secrets management used by the `work` home (`home/work/secrets.yaml`, `.sops.yaml`)
