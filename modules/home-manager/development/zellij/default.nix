@@ -40,7 +40,7 @@ in
     # the current mode's keybind hints inline at all times, which is
     # what's actually wanted while these binds aren't memorized yet.
     settings.pane_frames = false;
-    settings.theme = "vague";
+    settings.theme = "ayu-dark";
 
     # Full explicit keybinds, based on zellij's own stock defaults
     # (verified directly against `zellij setup --dump-config`, not
@@ -344,5 +344,5 @@ in
     '';
   };
 
-  xdg.configFile."zellij/themes/vague.kdl".source = ./files/themes/vague.kdl;
+  xdg.configFile."zellij/themes/ayu-dark.kdl".source = ./files/themes/ayu-dark.kdl;
 }

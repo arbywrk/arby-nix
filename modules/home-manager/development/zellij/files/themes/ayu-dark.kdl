@@ -1,0 +1,131 @@
+// Ayu Dark -- same palette as ghostty.nix / gnome-terminal.nix / nvim's
+// ayu-dark colorscheme, values pulled from ghostty's own bundled Ayu theme
+// file (share/ghostty/themes/Ayu), converted from hex to decimal RGB. Role
+// structure (which slot feeds the mode-pill keys, the one_line_ui status
+// bar, etc.) is carried over unchanged from the previous vague.kdl this
+// replaces -- that mapping was verified against status-bar's own source
+// (default-plugins/status-bar/src/one_line_ui.rs), only the color values
+// swapped in are new. emphasis_0/2/3 collapsing onto the same accent gold
+// in several unselected slots mirrors the same collapsing vague.kdl did
+// (this terminal's one-row status bar only distinguishes a couple of these
+// roles visually, so most just reuse the single strongest accent).
+themes {
+    ayu-dark {
+        text_unselected {
+            base 191 189 182
+            background 11 14 20
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 230 180 80
+            emphasis_3 230 180 80
+        }
+        text_selected {
+            base 191 189 182
+            background 27 58 91
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        ribbon_selected {
+            base 11 14 20
+            background 89 194 255
+            emphasis_0 230 180 80
+            emphasis_1 230 180 80
+            emphasis_2 210 166 255
+            emphasis_3 230 180 80
+        }
+        ribbon_unselected {
+            base 11 14 20
+            background 191 189 182
+            emphasis_0 230 180 80
+            emphasis_1 191 189 182
+            emphasis_2 230 180 80
+            emphasis_3 210 166 255
+        }
+        table_title {
+            base 127 217 98
+            background 0
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        table_cell_selected {
+            base 191 189 182
+            background 27 58 91
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        table_cell_unselected {
+            base 191 189 182
+            background 11 14 20
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        list_selected {
+            base 191 189 182
+            background 27 58 91
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        list_unselected {
+            base 191 189 182
+            background 11 14 20
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 127 217 98
+            emphasis_3 210 166 255
+        }
+        frame_selected {
+            base 89 194 255
+            background 0
+            emphasis_0 230 180 80
+            emphasis_1 89 194 255
+            emphasis_2 210 166 255
+            emphasis_3 0
+        }
+        frame_highlight {
+            base 230 180 80
+            background 0
+            emphasis_0 210 166 255
+            emphasis_1 230 180 80
+            emphasis_2 230 180 80
+            emphasis_3 230 180 80
+        }
+        exit_code_success {
+            base 127 217 98
+            background 0
+            emphasis_0 89 194 255
+            emphasis_1 11 14 20
+            emphasis_2 210 166 255
+            emphasis_3 89 194 255
+        }
+        exit_code_error {
+            base 234 108 115
+            background 0
+            emphasis_0 255 180 84
+            emphasis_1 0
+            emphasis_2 0
+            emphasis_3 0
+        }
+        multiplayer_user_colors {
+            player_1 210 166 255
+            player_2 89 194 255
+            player_3 0
+            player_4 255 180 84
+            player_5 144 225 198
+            player_6 0
+            player_7 234 108 115
+            player_8 0
+            player_9 0
+            player_10 0
+        }
+    }
+}

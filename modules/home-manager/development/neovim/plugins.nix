@@ -65,7 +65,7 @@ in
     config = toLuaFile ./files/lua/plugins/colorizer.lua;
   }
   {
-    plugin = p.vague-nvim;
+    plugin = p.neovim-ayu;
     config = toLuaFile ./files/lua/plugins/colorscheme.lua;
   }
   {

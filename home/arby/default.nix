@@ -4,6 +4,7 @@
   imports = [
     ../../modules/home-manager/common.nix
     ../../modules/home-manager/desktop/alacritty.nix
+    ../../modules/home-manager/desktop/ghostty.nix
     ../../modules/home-manager/development/gh
     ../../modules/home-manager/development/mosh
     ../../modules/home-manager/development/neovim
@@ -34,6 +35,7 @@
     pkgs.localsend
     pkgs.wl-clipboard
     pkgs.xclip
+    pkgs.zennotes-desktop
   ];
 
   programs.git = {
