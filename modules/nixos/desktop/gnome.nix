@@ -30,9 +30,13 @@
     pkgs.gnome-control-center
   ];
 
+  # No terminal here -- ghostty and alacritty (both home-manager-managed,
+  # see home/arby/default.nix) are the only two terminals wanted in this
+  # session. gnome-console isn't re-added (core-apps.enable = false above
+  # already excludes it) and GNOME Terminal isn't installed anywhere
+  # either.
   environment.systemPackages = [
     pkgs.nautilus
-    pkgs.gnome-console
     pkgs.gnome-control-center
   ];
 }

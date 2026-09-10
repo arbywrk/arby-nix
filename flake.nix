@@ -33,6 +33,14 @@
       homeConfigurations = {
         arby = mkHome { username = "arby"; };
         work = mkHome { username = "work"; };
+
+        # Same content nixos-laptop-gnome applies for this user's home
+        # profile, exposed standalone so `home-manager switch --flake
+        # .#arby-gnome` can iterate on it without a full nixos-rebuild.
+        arby-gnome = mkHome {
+          username = "arby";
+          modules = [ ./home/arby/gnome.nix ];
+        };
       };
     };
 }

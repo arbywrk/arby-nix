@@ -36,6 +36,35 @@
     ++ (import ./debug-packages.nix { inherit pkgs; })
     ++ [ pkgs.nerd-fonts.jetbrains-mono ];
 
+  # nixpkgs' neovim package ships its own "Neovim wrapper" launcher
+  # (share/applications/nvim.desktop) that shows up in GNOME's app grid --
+  # it's meant to be run from a terminal, not launched as a GUI app.
+  # Shadowing the same desktop-entry ID under ~/.local/share/applications
+  # (which home-manager's xdg.desktopEntries writes to, and which takes
+  # priority over the nixpkgs-provided copy) with noDisplay lets the
+  # package/binary/vi-vim aliases stay exactly as they are, it just drops
+  # out of app-grid/search listings.
+  #
+  # A plain "Vim" entry also shows up even though `pkgs.vim` isn't declared
+  # anywhere in this repo (grepped to confirm) -- it's pulled in
+  # transitively by something else's build/runtime closure. Same shadow
+  # treatment rather than chasing down and possibly breaking whatever
+  # actually depends on it.
+  xdg.desktopEntries = {
+    nvim = {
+      name = "Neovim wrapper";
+      exec = "nvim %F";
+      terminal = true;
+      noDisplay = true;
+    };
+    vim = {
+      name = "Vim";
+      exec = "vim %F";
+      terminal = true;
+      noDisplay = true;
+    };
+  };
+
   programs.ripgrep.enable = true;
 
   # fzf-lua shells out to the real fzf binary for its picker UI -- it's a
