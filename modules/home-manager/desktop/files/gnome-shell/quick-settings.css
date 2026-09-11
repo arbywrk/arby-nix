@@ -1,0 +1,100 @@
+/* ============================================================
+   Quick Settings panel -- the dropdown you get from the top-right
+   tray icons: the toggle pills (Wi-Fi, Bluetooth, Dark Style, Power
+   Mode, ...), their submenu chevrons, the submenus themselves (e.g.
+   the Wi-Fi network list, Sound Output picker), and the volume/
+   brightness sliders.
+
+   The outer dropdown box itself (background, corner radius) is
+   shared with every other popup menu -- see popups.css, not here.
+   ============================================================ */
+
+/* Toggle pills (Wi-Fi, Bluetooth, Dark Style, Airplane Mode, ...).
+   Targeting the compound ".quick-toggle.button" selector (not the
+   bare ".button" buttons.css uses) keeps this scoped to just these
+   toggles. */
+.quick-toggle.button {
+  background-color: #303030; }
+  .quick-toggle.button:hover {
+    background-color: #404045; }
+  .quick-toggle.button:active {
+    background-color: st-lighten(#404045, 5%); }
+  .quick-toggle.button:focus {
+    background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #303030, 5%); }
+  /* Checked/selected stays the system accent color, untouched -- these
+     three re-state the original generated behavior explicitly (rather
+     than relying on it winning by source order) since the plain
+     ".quick-toggle.button" rule above has equal selector specificity,
+     so without this it would incorrectly win over the ":checked" rule
+     for a selected toggle. */
+  .quick-toggle.button:checked {
+    background-color: -st-accent-color; }
+    .quick-toggle.button:checked:hover {
+      background-color: st-lighten(-st-accent-color, 4%); }
+    .quick-toggle.button:checked:active {
+      background-color: st-lighten(-st-accent-color, 9%); }
+
+/* Volume/brightness ("luminosity") quick-slider row icons (the
+   speaker/sun icon to the left of each slider) -- these carry the
+   plain ".icon-button" class too, so without this they'd inherit the
+   permanent background buttons.css gives everything else. Scoped to
+   ".quick-slider .icon-button" specifically (two classes, beats the
+   plain one-class ".icon-button" rule in buttons.css) so the header-
+   row icon buttons (settings/screenshot/lock/power) keep their
+   permanent background -- only these lose it. Hover/active still
+   show a background so the icon stays clickable-looking on
+   interaction, just not permanently. */
+.quick-slider .icon-button {
+  background-color: transparent; }
+  .quick-slider .icon-button:hover {
+    background-color: #404045; }
+  .quick-slider .icon-button:active {
+    background-color: st-lighten(#404045, 5%); }
+
+/* Chevron button (the little arrow on toggles with a submenu, e.g.
+   Power Mode/Keyboard). Unselected: the generated default is
+   st-mix(#ffffff, #4a4a4f, 9%), a noticeably lighter gray than the
+   #303030 pill it's attached to -- darkened to match. Selected (e.g.
+   Wi-Fi/Bluetooth): the generated default is
+   st-mix(-st-accent-color, #ffffff, 85%), a pale near-white blue --
+   this now uses the plain -st-accent-color instead, the same solid
+   blue the rest of the pill uses, so the chevron segment reads as
+   part of the same button instead of a lighter add-on. */
+.quick-toggle-has-menu .quick-toggle-menu-button {
+  background-color: #303030; }
+  .quick-toggle-has-menu .quick-toggle-menu-button:hover {
+    background-color: #404045; }
+  .quick-toggle-has-menu .quick-toggle-menu-button:active {
+    background-color: st-lighten(#404045, 5%); }
+  .quick-toggle-has-menu .quick-toggle-menu-button:checked {
+    background-color: -st-accent-color; }
+    .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover {
+      background-color: st-lighten(-st-accent-color, 4%); }
+    .quick-toggle-has-menu .quick-toggle-menu-button:checked:active {
+      background-color: st-lighten(-st-accent-color, 9%); }
+
+/* Toggle submenu box (e.g. the Wi-Fi network list, or the Sound
+   Output device picker). Generated default background #47474c,
+   radius 24px -- Yaru-dark's own real gnome-shell.css uses 18px for
+   this box, used directly here. */
+.quick-toggle-menu {
+  background-color: #303030;
+  border-radius: 18px; }
+  .quick-toggle-menu:hover {
+    background-color: #404045; }
+  .quick-toggle-menu:active {
+    background-color: st-lighten(#404045, 5%); }
+  .quick-toggle-menu:focus {
+    background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #303030, 5%); }
+  .quick-toggle-menu:insensitive {
+    background-color: st-darken(#303030, 3%); }
+
+/* Submenu header icon (the headphone icon in the "Sound Output"
+   panel, the Wi-Fi icon in the network list header, etc.) -- the
+   generated default is a permanent rgba(255, 255, 255, 0.2) circle
+   behind the icon at rest. Only the resting state is touched here;
+   ".active" (e.g. the blue circle a connected/active device gets)
+   is untouched -- its selector has one more class than this one, so
+   it keeps winning regardless of source order. */
+.quick-toggle-menu .header .icon {
+  background-color: transparent; }

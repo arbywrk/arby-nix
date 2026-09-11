@@ -1,57 +1,23 @@
 { pkgs, ... }:
 
 let
-  # Only the raster "places" (folder/user-home/etc) icons from Yaru,
-  # copied for real (not just Inherits-referenced) so they take priority
-  # over Papirus's own folder icons below regardless of Inherits order --
-  # a theme's own files always win over anything in its Inherits chain.
-  # Symbolic icons deliberately excluded (share/icons/Yaru/scalable/places
-  # only has *-symbolic.svg, no plain folder-symbolic base icon) so status
-  # -area/tray icons that look up a symbolic "places" name still fall
-  # through to Papirus, not Yaru.
-  yaruwaitaIconTheme =
-    let
-      places-sizes = [
-        "16x16"
-        "16x16@2x"
-        "22x22"
-        "22x22@2x"
-        "24x24"
-        "24x24@2x"
-        "32x32"
-        "32x32@2x"
-        "48x48"
-        "48x48@2x"
-        "256x256"
-        "256x256@2x"
-      ];
-      directories = builtins.concatStringsSep "," (map (s: "${s}/places") places-sizes);
-      sizeSection = s: ''
-        [${s}/places]
-        Size=${builtins.head (builtins.split "x" s)}
-        Context=Places
-        Type=Fixed
-      '';
-    in
-    pkgs.runCommand "yaruwaita-icon-theme" { } ''
-      themeDir=$out/share/icons/Yaruwaita
-      mkdir -p "$themeDir"
-      ${builtins.concatStringsSep "\n" (
-        map (s: ''
-          mkdir -p "$themeDir/${s}"
-          cp -r ${pkgs.yaru-theme}/share/icons/Yaru/${s}/places "$themeDir/${s}/"
-        '') places-sizes
-      )}
-      cat > "$themeDir/index.theme" <<EOF
-      [Icon Theme]
-      Name=Yaruwaita
-      Comment=MoreWaita's app/mimetype coverage, Yaru's own full-color folder icons, Papirus's symbolic/status icons for everything else.
-      Directories=${directories}
-      Inherits=MoreWaita,Papirus-Dark,Humanity,Adwaita,AdwaitaLegacy,hicolor
-      ${builtins.concatStringsSep "\n" (map sizeSection places-sizes)}
-      EOF
-    '';
+  # GNOME Shell's own default dark stylesheet, extracted straight out of
+  # its own compiled gresource bundle -- same `gresource extract
+  # gnome-shell-theme.gresource /org/gnome/shell/theme/gnome-shell-dark
+  # .css` used by hand while developing this theme, just as a derivation
+  # now so it tracks whatever gnome-shell version is actually installed
+  # instead of a stale copy committed to this repo. This becomes
+  # _generated-base.css below -- imported first by files/gnome-shell/
+  # gnome-shell.css so every hand-written override in the other files
+  # wins the cascade on top of it, exactly like it did while hand-editing
+  # the live theme directory.
+  gnomeShellBaseCss = pkgs.runCommand "gnome-shell-dark-base.css" { } ''
+    ${pkgs.glib.dev}/bin/gresource extract \
+      ${pkgs.gnome-shell}/share/gnome-shell/gnome-shell-theme.gresource \
+      /org/gnome/shell/theme/gnome-shell-dark.css > $out
+  '';
 in
+
 {
   home.packages = [
     pkgs.gnomeExtensions.caffeine
@@ -61,45 +27,34 @@ in
     pkgs.papirus-icon-theme
   ];
 
-  # Yaru (Ubuntu's GTK/cursor/shell theme set) for the widget chrome, dark
-  # variant, config-time only -- home-manager's gtk.* options already
-  # generate the matching dconf "org/gnome/desktop/interface" keys
-  # themselves (gtk-theme, icon-theme, cursor-theme, color-scheme),
-  # confirmed by reading home-manager's own gtk3.nix, so those aren't
-  # hand-written below. GNOME's own Appearance light/dark switch keeps
-  # working normally on top of this -- nothing here fights it, it just
-  # isn't driven by it either.
+  # Widget theme is plain Adwaita now, not Yaru -- decided against Yaru's
+  # own GTK theme entirely in favor of hand-tweaking stock libadwaita's
+  # colors instead (see below). Icons/cursor stay as they were (a
+  # separate concern from color scheme -- icon coverage/shape, not
+  # widget-chrome color).
   #
-  # Icons are "Yaruwaita" (defined above, in the `let`) -- not plain
-  # MoreWaita, Yaru, or Papirus alone. Yaru's own icon set doesn't track
-  # GNOME's accent-color setting (its per-accent variants like Yaru-blue/
-  # Yaru-olive are static picks, not something that follows the live
-  # accent-color setting -- there's no built-in link between the two, and
-  # building one would mean exactly the kind of watcher this repo already
-  # decided against), so pure Yaru looked out of sync. MoreWaita
-  # (github.com/somepaulo/MoreWaita) fixes that (no accent identity of its
-  # own, wide extra app/mimetype coverage) but -- checked directly against
-  # its own icon files -- it has zero generic places icons of its own (no
-  # folder.svg/user-home.svg/etc, only per-app folder variants like
-  # "bitwig-project-folder"), so plain folders fell through to Adwaita's
-  # own (light blue) one. And Papirus's own symbolic/status-area icons
-  # (e.g. the caffeine extension's tray icon) are the ones actually wanted
-  # back -- switching straight to MoreWaita lost those. So: Yaruwaita
-  # copies Yaru's real full-color folder icons in directly (gray body,
-  # orange/maroon gradient tab -- confirmed by opening share/icons/Yaru/
-  # 256x256/places/folder.png from the built package) so they win
-  # regardless of Inherits order, then falls through to
-  # MoreWaita,Papirus-Dark,... for everything else -- MoreWaita for the
-  # broad app/mimetype coverage, Papirus for symbolic/status icons.
+  # Icons are "Yaruwaita" (defined below) -- not plain MoreWaita or Yaru.
+  # Yaru's own icon set doesn't track GNOME's accent-color setting (its
+  # per-accent variants like Yaru-blue/Yaru-olive are static picks, not
+  # something that follows the live accent-color setting -- there's no
+  # built-in link between the two, and building one would mean exactly the
+  # kind of watcher this repo already decided against), so pure Yaru
+  # looked out of sync. MoreWaita (github.com/somepaulo/MoreWaita) fixes
+  # that (no accent identity of its own, wide extra app/mimetype coverage)
+  # but has no generic places icons of its own (no folder.svg/user-home
+  # .svg/etc, checked directly, only per-app folder variants like
+  # "bitwig-project-folder") and no symbolic/status-area icons either --
+  # e.g. the caffeine extension's tray icon needs those. Papirus fills
+  # both of those gaps (its own folder icons -- plain default/MoreWaita
+  # look, not Yaru's -- plus proper symbolic coverage), so it's next in
+  # the chain. Tried also copying Yaru's own folder icons in on top at one
+  # point (see git history); explicitly undone since a plain
+  # MoreWaita/Papirus-derived folder look is what's wanted now.
   gtk = {
     enable = true;
-    theme = {
-      name = "Yaru-dark";
-      package = pkgs.yaru-theme;
-    };
     iconTheme = {
       name = "Yaruwaita";
-      package = yaruwaitaIconTheme;
+      package = null; # no package of its own, see xdg.dataFile below
     };
     cursorTheme = {
       name = "Yaru"; # one cursor set covers both light and dark
@@ -108,40 +63,42 @@ in
     };
     colorScheme = "dark";
 
-    # Background/foreground colors only, not a full GTK4 theme import
-    # (tried that -- see git history -- it did nothing, because it
-    # imported Yaru's own GTK3-era variable names like `theme_bg_color`,
-    # and modern libadwaita (1.9.3 here) has redefined that name as a pure
-    # computed alias of `window_bg_color`, not an independently settable
-    # value; extracted libadwaita's actual shipped stylesheet straight out
-    # of libadwaita-1.so.0 to confirm the real variable names below, and
-    # Yaru's own intended values straight out of its GTK4 gresource
-    # (theme_bg_color #2c2c2c, theme_base_color #272727). Only the
-    # background/foreground colors Yaru actually specifies are set;
-    # everything else (sidebar/card/popover/dialog colors, which Yaru's
-    # own GTK3-era variable set never defined in the first place) is left
-    # alone to fall back to libadwaita's own dark defaults, deliberately
-    # not inventing values Yaru itself doesn't have an opinion on.
-    # Deliberately NOT touching accent_bg_color/accent_fg_color here --
-    # accent stays whatever "org/gnome/desktop/interface accent-color"
-    # below is set to (blue), not Yaru's orange; this is the one color
-    # explicitly meant to stay native/unmatched. Wrapped in the same
-    # `@media (prefers-color-scheme: dark)` guard libadwaita's own
-    # dark-mode block uses, so it won't leak into light mode if that's
-    # ever turned on. GTK4 apps' header-bar shape/button layout still
-    # can't be touched this way -- that part really is a hard libadwaita
-    # limit, no CSS variable reaches it (more on that below).
-    gtk4.extraCss = ''
-      @media (prefers-color-scheme: dark) {
-        @define-color window_bg_color #2c2c2c;
-        @define-color window_fg_color #F7F7F7;
-        @define-color view_bg_color #272727;
-        @define-color view_fg_color #F7F7F7;
-        @define-color headerbar_bg_color #2c2c2c;
-        @define-color headerbar_fg_color #F7F7F7;
-      }
-    '';
+    # No gtk4.extraCss here anymore -- that option manages
+    # $XDG_CONFIG_HOME/gtk-4.0/gtk.css as a nix-store symlink, which meant
+    # every color tweak needed a full rebuild+switch to test. For now
+    # that file is a plain writable file instead (not managed by
+    # home-manager), seeded with the same @define-color overrides this
+    # option used to generate, so it can be hand-edited and reloaded
+    # (kill/restart the app) without touching nix at all. Once the colors
+    # are settled, bring the final values back here as gtk4.extraCss.
   };
+
+  xdg.dataFile."icons/Yaruwaita/index.theme".text = ''
+    [Icon Theme]
+    Name=Yaruwaita
+    Comment=MoreWaita's app/mimetype coverage, Papirus's folder/places and symbolic/status icons for everything else -- no icon files of its own.
+    Inherits=MoreWaita,Papirus-Dark,Humanity,Adwaita,AdwaitaLegacy,hicolor
+    Directories=
+  '';
+
+  # GNOME Shell theme "Custom" -- a from-scratch dark-mode color/roundness
+  # pass over stock Adwaita (not Yaru's own shell theme), split into one
+  # file per UI area for navigability rather than one huge stylesheet --
+  # see files/gnome-shell/gnome-shell.css's own header comment for the
+  # full rundown (color legend, table of contents, how to hand-edit and
+  # reload this after a `home-manager switch`). _generated-base.css is
+  # the one file here that ISN'T a plain source file -- see
+  # gnomeShellBaseCss above, it's extracted fresh from the installed
+  # gnome-shell package at build time instead of committed to this repo.
+  xdg.dataFile."themes/Custom/gnome-shell/_generated-base.css".source = gnomeShellBaseCss;
+  xdg.dataFile."themes/Custom/gnome-shell/gnome-shell.css".source = ./files/gnome-shell/gnome-shell.css;
+  xdg.dataFile."themes/Custom/gnome-shell/popups.css".source = ./files/gnome-shell/popups.css;
+  xdg.dataFile."themes/Custom/gnome-shell/buttons.css".source = ./files/gnome-shell/buttons.css;
+  xdg.dataFile."themes/Custom/gnome-shell/quick-settings.css".source = ./files/gnome-shell/quick-settings.css;
+  xdg.dataFile."themes/Custom/gnome-shell/calendar.css".source = ./files/gnome-shell/calendar.css;
+  xdg.dataFile."themes/Custom/gnome-shell/notifications.css".source = ./files/gnome-shell/notifications.css;
+  xdg.dataFile."themes/Custom/gnome-shell/top-bar.css".source = ./files/gnome-shell/top-bar.css;
+  xdg.dataFile."themes/Custom/gnome-shell/overview.css".source = ./files/gnome-shell/overview.css;
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -153,8 +110,10 @@ in
       # the top bar, or right-click it for a timed duration.
       #
       # user-theme: lets GNOME Shell's own chrome (top bar, overview) pick
-      # up Yaru-dark's bundled shell theme -- vanilla GNOME Shell otherwise
-      # ignores shell themes entirely without this extension.
+      # up a custom shell theme by name -- vanilla GNOME Shell otherwise
+      # ignores shell themes entirely without this extension. Active theme
+      # name is "Custom" (see the dconf key below), backed by the files
+      # under xdg.dataFile "themes/Custom/gnome-shell/*" further up.
       #
       # dash-to-dock: Ubuntu-style dock instead of GNOME's built-in
       # (non-auto-hiding) dash. Configured below to sit on the bottom edge
@@ -167,7 +126,7 @@ in
     };
 
     "org/gnome/shell/extensions/user-theme" = {
-      name = "Yaru-dark";
+      name = "Custom";
     };
 
     "org/gnome/shell/extensions/dash-to-dock" = {
@@ -182,6 +141,19 @@ in
       # workspaces rather than all of them. Our own binds own this
       # shortcut space, so dash-to-dock's copy is turned off.
       hot-keys = false;
+
+      # Match the rest of the color pass (see files/gnome-shell/*.css) --
+      # dash-to-dock's own background isn't part of the gnome-shell.css
+      # theme at all (it paints itself independently of the shell theme's
+      # popup-menu-content/etc surfaces), so it needs these set directly
+      # rather than picking the color up automatically. "FIXED" transparency
+      # mode is required for background-opacity to actually take effect as
+      # a constant value -- the default "DEFAULT" mode dynamically adjusts
+      # opacity based on window proximity instead of honoring this.
+      custom-background-color = true;
+      background-color = "#1d1d1d";
+      transparency-mode = "FIXED";
+      background-opacity = 0.8;
     };
 
     "org/gnome/shell/extensions/caffeine" = {

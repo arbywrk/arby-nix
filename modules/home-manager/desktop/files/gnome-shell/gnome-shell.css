@@ -1,0 +1,56 @@
+/* ============================================================
+   Entry point -- this is the only file GNOME Shell actually loads
+   (via the User Themes extension, theme name "Custom"). Everything
+   else is @import'd from here, in order. Confirmed St (GNOME Shell's
+   CSS engine) supports @import before splitting this up -- it does
+   NOT support @define-color/CSS custom properties the way GTK does,
+   so colors below are literal hex, repeated across files rather than
+   defined once. The legend just below is the closest thing to a
+   single source of truth for what each value means.
+
+   This is the nix-managed copy (modules/home-manager/desktop/files/
+   gnome-shell/) -- edit these files, not the live ones under
+   ~/.local/share/themes/Custom/gnome-shell/, which are read-only
+   symlinks into the nix store once this is switched in (except
+   _generated-base.css, which is never a plain file here at all --
+   see gnome.nix, it's extracted fresh from the installed gnome-shell
+   package by a small derivation, not committed to this repo).
+
+   After editing, apply with (fast path, no full system rebuild):
+     home-manager switch --flake .#arby-gnome
+   then force GNOME Shell to actually re-read it (it caches the
+   parsed stylesheet in memory -- it doesn't watch the file, and
+   Wayland has no shell-restart shortcut short of logging out):
+     gnome-extensions disable user-theme@gnome-shell-extensions.gcampax.github.com
+     gnome-extensions enable  user-theme@gnome-shell-extensions.gcampax.github.com
+
+   ---- Color legend ----
+   #1d1d1d  popup/dropdown surface background (popups.css, overview.css)
+   #303030  button/pill/card resting background (buttons.css,
+            quick-settings.css, calendar.css, notifications.css,
+            overview.css)
+   #404045  hover highlight, everywhere (all files)
+   -st-accent-color  GNOME's own accent (system setting, currently
+            blue) -- used as-is for "selected/checked" states,
+            deliberately never hardcoded.
+   ============================================================ */
+
+@import url("_generated-base.css");
+
+/* ---- Table of contents ----
+   popups.css         shared dropdown/popup-menu box (bg + radius)
+   buttons.css         generic .button/.icon-button default look
+   quick-settings.css  Quick Settings panel: toggles, chevrons, submenus, sliders
+   calendar.css        calendar dropdown: chevrons, weekday headers, month label, Today strip
+   notifications.css   notification cards/banners + the tray column itself
+   top-bar.css         panel hover highlights (Activities/clock/tray icons)
+   overview.css        search box + workspace thumbnails
+   ---------------------------------------------------------- */
+
+@import url("popups.css");
+@import url("buttons.css");
+@import url("quick-settings.css");
+@import url("calendar.css");
+@import url("notifications.css");
+@import url("top-bar.css");
+@import url("overview.css");

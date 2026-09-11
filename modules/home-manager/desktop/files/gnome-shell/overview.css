@@ -1,0 +1,27 @@
+/* ============================================================
+   Overview (Activities screen) -- the search box and workspace
+   thumbnail strip you get from Super/the hot corner.
+   ============================================================ */
+
+/* Search box -- a bare "StEntry" element selector in the generated
+   CSS, not a class, so it slipped past buttons.css's ".icon-button"/
+   ".button" fix. Also covers the unlock-dialog password field and
+   any other plain text entry (rename dialogs, etc.), since none of
+   them set their own background and all fall back to this same bare
+   element selector. Generated default was #48484c. */
+StEntry {
+  background-color: #303030; }
+  StEntry:hover {
+    background-color: #404045; }
+  StEntry:focus {
+    background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #303030, 5%); }
+  StEntry:insensitive {
+    background-color: st-darken(#303030, 3%); }
+
+/* Empty workspace thumbnails -- generated default #46464e, a lighter
+   blue-gray. Using #1d1d1d (the same tone popup menus/dropdowns use
+   for their background, see popups.css) since this reads as a
+   surface/canvas rather than a button. The accent-colored selection
+   border (".workspace-thumbnail-indicator") is untouched. */
+.workspace-thumbnails .workspace-thumbnail {
+  background-color: #1d1d1d; }

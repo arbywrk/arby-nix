@@ -1,0 +1,29 @@
+/* ============================================================
+   Popup/dropdown surfaces -- shared foundation used by every panel
+   dropdown: the calendar, quick settings, right-click/app menus,
+   IME candidate popups, all of it. This is the one class GNOME
+   Shell reuses everywhere for "a rounded box floating over the
+   desktop", so fixing it here fixes all of them at once.
+   ============================================================ */
+
+/* Outer dropdown background. Yaru-dark itself (checked its real
+   gnome-shell.css, in the nix store) uses this same single value
+   for every popup menu too, not a per-menu color. */
+.popup-menu-content, .candidate-popup-content {
+  background-color: #1d1d1d; }
+
+/* Corner radius. The generated stylesheet's defaults read as "ultra
+   round" once the boxes get big -- .quick-settings alone was 36px,
+   which is what actually won out over .popup-menu-content's own 20px
+   (equal specificity, .quick-settings declared later in the
+   generated file). Checked Yaru-dark's own real gnome-shell.css for
+   reference values: it uses 13.5px for these, rounded up to 14px
+   here for a round number. */
+.quick-settings,
+.popup-menu-content, .candidate-popup-content {
+  border-radius: 14px; }
+
+/* Individual rows inside a popup menu (Yaru: 9px, rounded to 10px
+   here to match the scale used elsewhere in this theme). */
+.popup-menu-item {
+  border-radius: 10px; }

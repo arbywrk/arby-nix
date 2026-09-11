@@ -1,0 +1,50 @@
+/* ============================================================
+   Top bar -- the Activities button, clock, and system tray icons
+   along the panel strip itself (not their dropdowns -- Quick
+   Settings' dropdown is quick-settings.css, the calendar's is
+   calendar.css).
+   ============================================================ */
+
+/* Hover/active highlight. The generated CSS fills panel buttons via
+   a giant inset box-shadow trick (translucent white/near-white), not
+   a plain background-color -- and does so once per panel *mode*
+   (plain, ":overview", ".unlock-screen", ".login-screen"), each a
+   separate, near-identical selector in the generated stylesheet.
+   Using "!important" + a single low-specificity selector instead of
+   replicating every mode-specific selector -- it matches all of them
+   regardless of mode, since !important only needs the selector to
+   match, not to out-specify the original.
+
+   One real risk with that shortcut: ".screen-recording-indicator"
+   and ".screen-sharing-indicator" are ALSO ".panel-button" (red/
+   orange status colors, not a neutral hover), so a blanket
+   ".panel-button:hover" would incorrectly grey those out too. St's
+   CSS engine has no ":not()" (checked -- unused anywhere in the
+   generated stylesheet), so instead of excluding them, their exact
+   original selectors/colors are restated below with "!important" of
+   their own -- higher specificity (id + 2 classes vs. 1 class here)
+   means they win back regardless of import order. */
+.panel-button:hover, .panel-button:focus,
+.panel-button .clock:hover, .panel-button .clock:focus {
+  box-shadow: inset 0 0 0 100px #404045 !important; }
+.panel-button:active, .panel-button:checked,
+.panel-button .clock:active, .panel-button .clock:checked {
+  box-shadow: inset 0 0 0 100px st-lighten(#404045, 5%) !important; }
+.panel-button:active:hover, .panel-button:checked:hover,
+.panel-button .clock:active:hover, .panel-button .clock:checked:hover {
+  box-shadow: inset 0 0 0 100px st-lighten(#404045, 9%) !important; }
+
+/* Reclaim the recording/sharing status colors from the blanket rule
+   above -- same selectors/values the generated CSS already used. */
+#panel:overview .panel-button.screen-recording-indicator:focus, #panel:overview .panel-button.screen-recording-indicator:hover, #panel.unlock-screen .panel-button.screen-recording-indicator:focus, #panel.unlock-screen .panel-button.screen-recording-indicator:hover, #panel.login-screen .panel-button.screen-recording-indicator:focus, #panel.login-screen .panel-button.screen-recording-indicator:hover {
+  box-shadow: inset 0 0 0 100px #d61f2d !important; }
+#panel:overview .panel-button.screen-recording-indicator:active, #panel:overview .panel-button.screen-recording-indicator:checked, #panel.unlock-screen .panel-button.screen-recording-indicator:active, #panel.unlock-screen .panel-button.screen-recording-indicator:checked, #panel.login-screen .panel-button.screen-recording-indicator:active, #panel.login-screen .panel-button.screen-recording-indicator:checked {
+  box-shadow: inset 0 0 0 100px #e02a37 !important; }
+#panel:overview .panel-button.screen-recording-indicator:active:hover, #panel:overview .panel-button.screen-recording-indicator:checked:hover, #panel.unlock-screen .panel-button.screen-recording-indicator:active:hover, #panel.unlock-screen .panel-button.screen-recording-indicator:checked:hover, #panel.login-screen .panel-button.screen-recording-indicator:active:hover, #panel.login-screen .panel-button.screen-recording-indicator:checked:hover {
+  box-shadow: inset 0 0 0 100px #e13340 !important; }
+#panel:overview .panel-button.screen-sharing-indicator:focus, #panel:overview .panel-button.screen-sharing-indicator:hover, #panel.unlock-screen .panel-button.screen-sharing-indicator:focus, #panel.unlock-screen .panel-button.screen-sharing-indicator:hover, #panel.login-screen .panel-button.screen-sharing-indicator:focus, #panel.login-screen .panel-button.screen-sharing-indicator:hover {
+  box-shadow: inset 0 0 0 100px #ff861a !important; }
+#panel:overview .panel-button.screen-sharing-indicator:active, #panel:overview .panel-button.screen-sharing-indicator:checked, #panel.unlock-screen .panel-button.screen-sharing-indicator:active, #panel.unlock-screen .panel-button.screen-sharing-indicator:checked, #panel.login-screen .panel-button.screen-sharing-indicator:active, #panel.login-screen .panel-button.screen-sharing-indicator:checked {
+  box-shadow: inset 0 0 0 100px #ff902e !important; }
+#panel:overview .panel-button.screen-sharing-indicator:active:hover, #panel:overview .panel-button.screen-sharing-indicator:checked:hover, #panel.unlock-screen .panel-button.screen-sharing-indicator:active:hover, #panel.unlock-screen .panel-button.screen-sharing-indicator:checked:hover, #panel.login-screen .panel-button.screen-sharing-indicator:active:hover, #panel.login-screen .panel-button.screen-sharing-indicator:checked:hover {
+  box-shadow: inset 0 0 0 100px #ff9638 !important; }

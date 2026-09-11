@@ -9,20 +9,11 @@
   programs.nix-ld.enable = true;
   programs.zsh.enable = true;
 
-  # Select internationalisation properties.
+  # Select internationalisation properties. Everything English -- no
+  # more per-category ro_RO overrides (that's what made the calendar,
+  # date/number formatting, etc. show up in Romanian despite LANG
+  # itself being en_US).
   i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "ro_RO.UTF-8";
-    LC_IDENTIFICATION = "ro_RO.UTF-8";
-    LC_MEASUREMENT = "ro_RO.UTF-8";
-    LC_MONETARY = "ro_RO.UTF-8";
-    LC_NAME = "ro_RO.UTF-8";
-    LC_NUMERIC = "ro_RO.UTF-8";
-    LC_PAPER = "ro_RO.UTF-8";
-    LC_TELEPHONE = "ro_RO.UTF-8";
-    LC_TIME = "ro_RO.UTF-8";
-  };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
