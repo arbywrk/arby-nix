@@ -17,7 +17,7 @@
    package by a small derivation, not committed to this repo).
 
    After editing, apply with (fast path, no full system rebuild):
-     home-manager switch --flake .#arby-gnome
+     home-manager switch --flake .#gnome
    then force GNOME Shell to actually re-read it (it caches the
    parsed stylesheet in memory -- it doesn't watch the file, and
    Wayland has no shell-restart shortcut short of logging out):
@@ -45,6 +45,7 @@
    notifications.css   notification cards/banners + the tray column itself
    top-bar.css         panel hover highlights (Activities/clock/tray icons)
    overview.css        search box + workspace thumbnails
+   modals.css           system modal dialogs (log out/restart/shutdown, ...)
    ---------------------------------------------------------- */
 
 @import url("popups.css");
@@ -54,3 +55,4 @@
 @import url("notifications.css");
 @import url("top-bar.css");
 @import url("overview.css");
+@import url("modals.css");

@@ -10,12 +10,6 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
   };
 
   outputs =
@@ -26,18 +20,17 @@
     in
     {
       nixosConfigurations = {
-        nixos-laptop-gnome = mkSystem "nixos-laptop-gnome";
-        nixos-laptop-kde = mkSystem "nixos-laptop-kde";
+        nixos = mkSystem "nixos";
       };
 
       homeConfigurations = {
         arby = mkHome { username = "arby"; };
-        work = mkHome { username = "work"; };
+        wsl = mkHome { username = "wsl"; };
 
-        # Same content nixos-laptop-gnome applies for this user's home
+        # Same content the "nixos" system applies for this user's home
         # profile, exposed standalone so `home-manager switch --flake
-        # .#arby-gnome` can iterate on it without a full nixos-rebuild.
-        arby-gnome = mkHome {
+        # .#gnome` can iterate on it without a full nixos-rebuild.
+        gnome = mkHome {
           username = "arby";
           modules = [ ./home/arby/gnome.nix ];
         };

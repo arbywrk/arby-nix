@@ -25,6 +25,7 @@ in
     pkgs.gnomeExtensions.dash-to-dock
     pkgs.morewaita-icon-theme
     pkgs.papirus-icon-theme
+    pkgs.loupe # GNOME's default image viewer
   ];
 
   # Widget theme is plain Adwaita now, not Yaru -- decided against Yaru's
@@ -99,6 +100,7 @@ in
   xdg.dataFile."themes/Custom/gnome-shell/notifications.css".source = ./files/gnome-shell/notifications.css;
   xdg.dataFile."themes/Custom/gnome-shell/top-bar.css".source = ./files/gnome-shell/top-bar.css;
   xdg.dataFile."themes/Custom/gnome-shell/overview.css".source = ./files/gnome-shell/overview.css;
+  xdg.dataFile."themes/Custom/gnome-shell/modals.css".source = ./files/gnome-shell/modals.css;
 
   dconf.settings = {
     "org/gnome/desktop/interface" = {

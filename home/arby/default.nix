@@ -36,6 +36,7 @@
     pkgs.wl-clipboard
     pkgs.xclip
     pkgs.zennotes-desktop
+    pkgs.obsidian
   ];
 
   programs.git = {

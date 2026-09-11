@@ -19,11 +19,11 @@
   # nixos-rebuild, don't also hand out a standalone CLI that tracks its
   # own separate generation history." Only add the package back in
   # ourselves in exactly that case -- the standalone homeConfigurations
-  # outputs (arby/work/arby-gnome) already get it for free from
+  # outputs (arby/wsl/gnome) already get it for free from
   # `programs.home-manager.enable` itself (submoduleSupport.enable is
   # false there), and adding it unconditionally collides with that
   # already-present copy. This lets `home-manager switch --flake
-  # .#arby-gnome` (see flake.nix) apply just the home-manager half for
+  # .#gnome` (see flake.nix) apply just the home-manager half for
   # quick iteration on the NixOS-integrated host, without a full
   # nixos-rebuild pulling in the kernel/systemd/etc rebuild every time.
   home.packages = [

@@ -1,0 +1,35 @@
+/* ============================================================
+   System modal dialogs -- log out/restart/shut down confirmations,
+   external drive prompts, delete confirmations, and anything else
+   GNOME Shell builds via its generic ModalDialog (not a popup menu,
+   which is popups.css instead).
+   ============================================================ */
+
+/* Dialog box background. Generated default #36363a -- #1d1d1d here,
+   same surface tone popups.css uses (this is functionally a popup
+   surface too, just modal instead of a dropdown). */
+.modal-dialog {
+  background-color: #1d1d1d; }
+
+/* Dialog buttons (Cancel/Log Out/Restart/...). Generated default is
+   a translucent white overlay (rgba(255, 255, 255, 0.1) at rest)
+   composited over the dialog background -- #303030 here instead,
+   matching buttons.css. Focus keeps the accent-colored ring/tint
+   (e.g. "Cancel" being the safe default action) untouched -- that's
+   -st-accent-color-based already, not a grey highlight. */
+.modal-dialog .modal-dialog-button-box .modal-dialog-button {
+  background-color: #303030; }
+  .modal-dialog .modal-dialog-button-box .modal-dialog-button:hover {
+    background-color: #404045; }
+  .modal-dialog .modal-dialog-button-box .modal-dialog-button:active {
+    background-color: st-lighten(#404045, 5%); }
+    .modal-dialog .modal-dialog-button-box .modal-dialog-button:active:hover {
+      background-color: st-lighten(#404045, 9%); }
+  .modal-dialog .modal-dialog-button-box .modal-dialog-button:focus {
+    background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #303030, 5%); }
+    .modal-dialog .modal-dialog-button-box .modal-dialog-button:focus:hover {
+      background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), #404045, 5%); }
+    .modal-dialog .modal-dialog-button-box .modal-dialog-button:active:focus {
+      background-color: st-mix(st-mix(-st-accent-color, #ffffff, 60%), st-lighten(#404045, 5%), 5%); }
+  .modal-dialog .modal-dialog-button-box .modal-dialog-button:insensitive {
+    background-color: st-darken(#303030, 3%); }
