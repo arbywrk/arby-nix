@@ -39,6 +39,7 @@
     # CLI apps
     pkgs.wl-clipboard
     pkgs.xclip
+    pkgs.proton-drive-cli
   ];
 
   programs.git = {
