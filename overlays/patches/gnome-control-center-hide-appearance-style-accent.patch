@@ -1,0 +1,18 @@
+--- a/panels/background/cc-background-panel.blp
++++ b/panels/background/cc-background-panel.blp
+@@ -24,6 +24,7 @@
+         child: Adw.PreferencesPage {
+           Adw.PreferencesGroup {
+             title: _("Style");
++            visible: false;
+ 
+             Adw.PreferencesRow {
+               accessible-role: group;
+@@ -118,6 +119,7 @@
+ 
+           Adw.PreferencesGroup {
+             title: _("Accent Color");
++            visible: false;
+ 
+             Adw.PreferencesRow {
+               accessible-role: group;

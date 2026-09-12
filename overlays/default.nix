@@ -4,4 +4,25 @@
 # lib/mkhome.nix) so `pkgs.<name>` resolves the same way everywhere.
 final: prev: {
   proton-drive-cli = final.callPackage ../pkgs/proton-drive-cli { };
+
+  # Settings' Appearance page hardcodes its "Style" (light/dark) and
+  # "Accent Color" sections -- confirmed by reading gnome-control-center
+  # 50.4's own panels/background/cc-background-panel.c: nothing gates
+  # their visibility, no gsettings/lockdown key exists to hide just
+  # these rows, and there's no runtime extension mechanism for a
+  # compiled GTK app the way gnome-shell has. Only real fix is a source
+  # patch + rebuild. The patch just adds `visible: false;` to those two
+  # Adw.PreferencesGroup blocks in the .blp (blueprint, compiled to .ui
+  # at build time by blueprint-compiler) -- GTK skips invisible widgets
+  # during size allocation entirely, so "Background" ends up as the
+  # only, ungapped section. Deliberately NOT deleting the blocks outright:
+  # that would also require ripping out the C code that binds/reloads
+  # their template children (accent_box, the color-scheme toggles, the
+  # gsettings change handlers), for zero practical difference over just
+  # hiding them.
+  gnome-control-center = prev.gnome-control-center.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./patches/gnome-control-center-hide-appearance-style-accent.patch
+    ];
+  });
 }
