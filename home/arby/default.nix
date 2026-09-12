@@ -50,6 +50,31 @@
     };
   };
 
+  # Obsidian's own packaged .desktop file (nixpkgs `obsidian`) declares no
+  # StartupWMClass, and its running Electron window reports app-id
+  # "md.Obsidian" (confirmed via `journalctl --user`: systemd names the
+  # app's cgroup scope "app-md.Obsidian-<pid>.scope") -- a case/name
+  # mismatch from the plain "obsidian.desktop" filename. The app grid
+  # matches fine (it just reads installed .desktop files directly, no
+  # window involved), but dash-to-dock has to match a *running window*
+  # back to an app, fails on that mismatch, and falls back to a generic
+  # icon. This entry lands at ~/.local/share/applications/obsidian.desktop,
+  # which XDG's search order checks before the nix-profile-provided one of
+  # the same name, so it wins outright -- same Exec/Icon/etc, just with
+  # the missing StartupWMClass hint added.
+  xdg.desktopEntries.obsidian = {
+    name = "Obsidian";
+    comment = "Knowledge base";
+    exec = "obsidian %u";
+    icon = "obsidian";
+    categories = [ "Office" ];
+    mimeType = [ "x-scheme-handler/obsidian" ];
+    settings = {
+      Version = "1.5";
+      StartupWMClass = "md.Obsidian";
+    };
+  };
+
   programs.mise.enable = true;
 
   programs = {

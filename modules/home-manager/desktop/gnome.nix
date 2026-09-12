@@ -23,7 +23,6 @@ in
     pkgs.gnomeExtensions.caffeine
     pkgs.gnomeExtensions.user-themes
     pkgs.gnomeExtensions.dash-to-dock
-    pkgs.morewaita-icon-theme
     pkgs.papirus-icon-theme
     pkgs.loupe # GNOME's default image viewer
   ];
@@ -33,27 +32,19 @@ in
   # below). Icons/cursor are a separate concern from color scheme (icon
   # coverage/shape, not widget-chrome color); no Yaru anywhere in this
   # config anymore -- neither the old "Yaruwaita" icon-theme name (never
-  # an actual dependency, see "Waitapirus" below) nor the old Yaru cursor
-  # package.
+  # an actual dependency) nor the old Yaru cursor package.
   #
-  # Icons are "Waitapirus" (defined below) -- not plain MoreWaita or
-  # Papirus alone. MoreWaita (github.com/somepaulo/MoreWaita) tracks
-  # GNOME's own accent-color setting (no fixed accent identity baked into
-  # its icons, unlike e.g. Yaru's static per-accent variants such as
-  # Yaru-blue/Yaru-olive, which don't follow the live accent-color
-  # setting at all -- there's no built-in link between the two, and
-  # building one would mean exactly the kind of watcher this repo already
-  # decided against) and has wide extra app/mimetype coverage, but has no
-  # generic places icons of its own (no folder.svg/user-home.svg/etc,
-  # checked directly, only per-app folder variants like
-  # "bitwig-project-folder") and no symbolic/status-area icons either --
-  # e.g. the caffeine extension's tray icon needs those. Papirus fills
-  # both of those gaps (its own folder/symbolic icon coverage), so it's
-  # next in the inheritance chain.
+  # Icons are "PapirusPlus" (defined below) -- plain Papirus-Dark, full
+  # stop, per explicit request after several rounds of trying to hand-pick
+  # a nicer trash/settings icon out of MoreWaita/other themes and landing
+  # on none of them. "Plus" only because the wrapper theme (rather than
+  # setting iconTheme.name = "Papirus-Dark" directly) keeps a place to
+  # drop individual per-icon overrides back in later -- see the
+  # xdg.dataFile entries below, currently empty.
   gtk = {
     enable = true;
     iconTheme = {
-      name = "Waitapirus";
+      name = "PapirusPlus";
       package = null; # no package of its own, see xdg.dataFile below
     };
     cursorTheme = {
@@ -268,12 +259,48 @@ in
     '';
   };
 
-  xdg.dataFile."icons/Waitapirus/index.theme".text = ''
+  # Per-icon override slot -- deliberately empty right now. After several
+  # rounds of trying a hand-picked trash icon (WhiteSur, then Numix) and
+  # settings icon (WhiteSur, then Colloid) on top of MoreWaita/Papirus and
+  # landing on none of them, the config went back to plain Papirus-Dark
+  # for everything (see iconTheme.name above and index.theme below)
+  # instead of keeping any of those. This block, and the
+  # scalable/places + scalable/apps directories index.theme already
+  # declares, are the reusable mechanism for dropping a replacement back
+  # in later -- add an entry the same shape as these two commented-out
+  # examples (source anything, e.g. a specific file out of another theme
+  # package's own /nix/store output) and it'll win over Papirus-Dark
+  # outright, no other wiring needed:
+  #
+  # xdg.dataFile."icons/PapirusPlus/scalable/places/user-trash.svg".source =
+  #   "${pkgs.SOME_ICON_THEME}/share/icons/SOME_THEME/.../user-trash.svg";
+  # xdg.dataFile."icons/PapirusPlus/scalable/places/user-trash-full.svg".source =
+  #   "${pkgs.SOME_ICON_THEME}/share/icons/SOME_THEME/.../user-trash-full.svg";
+  # xdg.dataFile."icons/PapirusPlus/scalable/apps/org.gnome.Settings.svg".source =
+  #   "${pkgs.SOME_ICON_THEME}/share/icons/SOME_THEME/.../preferences-system.svg";
+  # xdg.dataFile."icons/PapirusPlus/scalable/apps/preferences-system.svg".source =
+  #   "${pkgs.SOME_ICON_THEME}/share/icons/SOME_THEME/.../preferences-system.svg";
+
+  xdg.dataFile."icons/PapirusPlus/index.theme".text = ''
     [Icon Theme]
-    Name=Waitapirus
-    Comment=MoreWaita's app/mimetype coverage, Papirus's folder/places and symbolic/status icons for everything else -- no icon files of its own.
-    Inherits=MoreWaita,Papirus-Dark,Humanity,Adwaita,AdwaitaLegacy,hicolor
-    Directories=
+    Name=PapirusPlus
+    Comment=Plain Papirus-Dark, with an empty scalable/places + scalable/apps override slot (see the xdg.dataFile comment just above) for dropping individual replacement icons back in later without any other wiring.
+    Inherits=Papirus-Dark,hicolor
+    Directories=scalable/places,scalable/apps
+
+    [scalable/places]
+    Size=48
+    MinSize=8
+    MaxSize=512
+    Type=Scalable
+    Context=Places
+
+    [scalable/apps]
+    Size=48
+    MinSize=8
+    MaxSize=512
+    Type=Scalable
+    Context=Applications
   '';
 
   # GNOME Shell theme "Custom" -- a from-scratch dark-mode color/roundness
@@ -335,7 +362,7 @@ in
       # actually declared (same situation as button-layout below) -- made
       # explicit here so a fresh profile doesn't silently fall back to
       # GNOME's own Adwaita/Adwaita defaults instead.
-      icon-theme = "Waitapirus";
+      icon-theme = "PapirusPlus";
       cursor-theme = "Bibata-Modern-Ice";
       cursor-size = 24;
     };
