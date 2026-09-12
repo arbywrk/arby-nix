@@ -3,14 +3,15 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      # Light half is ghostty's own bundled "Ayu Light" theme, unmodified.
-      # Dark half is the custom "Ayu Dark Gray" theme below, not the
-      # bundled "Ayu" -- ghostty can natively follow GNOME's light/dark
-      # switch (this light:/dark: syntax is what makes it do that; a plain
-      # `theme = "Ayu"` is static and ignores the desktop setting entirely,
-      # which is why it wasn't following it before), so this is what picks
-      # that up automatically.
-      theme = "light:Ayu Light,dark:Ayu Dark Gray";
+      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- ghostty *can*
+      # natively follow GNOME's light/dark switch via that syntax, but
+      # zellij's own theme is always static ayu-dark (its color model has
+      # no transparency, so its tab-bar/status-bar can't blend into a
+      # light background), which produced a stark seam whenever ghostty
+      # went light with zellij running. Pinned dark to match zellij
+      # exactly, at the cost of never following the system light/dark
+      # toggle -- deliberate tradeoff, not an oversight.
+      theme = "Ayu Dark Gray";
       font-family = "JetBrainsMono Nerd Font Mono"; # matches alacritty.nix
       font-size = 11;
 

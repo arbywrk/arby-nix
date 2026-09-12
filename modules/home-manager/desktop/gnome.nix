@@ -102,9 +102,36 @@ in
   xdg.dataFile."themes/Custom/gnome-shell/overview.css".source = ./files/gnome-shell/overview.css;
   xdg.dataFile."themes/Custom/gnome-shell/modals.css".source = ./files/gnome-shell/modals.css;
 
+  # A tiny local extension (not a nixpkgs/extensions.gnome.org package --
+  # see files/gnome-shell-extensions/hide-dark-style/extension.js for why)
+  # that hides the built-in "Dark Style" quick-settings toggle, which has
+  # no use now that color-scheme is pinned to prefer-dark below. Its uuid
+  # (and hence its real install path, .../extensions/hide-dark-style@arby-nix/)
+  # is "hide-dark-style@arby-nix" per metadata.json -- the source directory
+  # itself is named without the "@" only because Nix path literals can't
+  # contain one unescaped.
+  xdg.dataFile."gnome-shell/extensions/hide-dark-style@arby-nix/metadata.json".source =
+    ./files/gnome-shell-extensions/hide-dark-style/metadata.json;
+  xdg.dataFile."gnome-shell/extensions/hide-dark-style@arby-nix/extension.js".source =
+    ./files/gnome-shell-extensions/hide-dark-style/extension.js;
+
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       accent-color = "blue"; # GNOME's own default
+
+      # Locked to dark: GNOME's own User Themes extension has no concept
+      # of light/dark at all (verified by reading its extension.js --
+      # `_changeTheme()` only reacts to the theme *name* setting, never to
+      # this color-scheme key), so once a custom shell theme is active
+      # the system light/dark switch stops affecting shell chrome
+      # entirely -- there's no native way to make it do both. Rather than
+      # add a watcher to fake that reactivity (exactly the kind of
+      # bespoke live-sync this repo avoids elsewhere), going dark-only:
+      # this key is pinned so GTK4/libadwaita apps that read it live stay
+      # consistent with the shell, and the now-pointless "Dark Style"
+      # quick-settings toggle is hidden (see hide-dark-style@arby-nix
+      # below).
+      color-scheme = "prefer-dark";
     };
 
     "org/gnome/shell" = {
@@ -120,10 +147,18 @@ in
       # dash-to-dock: Ubuntu-style dock instead of GNOME's built-in
       # (non-auto-hiding) dash. Configured below to sit on the bottom edge
       # and auto-hide so it doesn't eat screen real estate.
+      #
+      # hide-dark-style: local extension (see files/gnome-shell-extensions/
+      # hide-dark-style@arby-nix/) hiding the now-useless "Dark Style"
+      # toggle -- dark-only per the color-scheme lock above. Its own
+      # metadata.json declares the actual installed shell-version (50), so
+      # unlike the third-party extension this replaced, it needs no
+      # disable-extension-version-validation escape hatch.
       enabled-extensions = [
         "caffeine@patapon.info"
         "user-theme@gnome-shell-extensions.gcampax.github.com"
         "dash-to-dock@micxgx.gmail.com"
+        "hide-dark-style@arby-nix"
       ];
     };
 
