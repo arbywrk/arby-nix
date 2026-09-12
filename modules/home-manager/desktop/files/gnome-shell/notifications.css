@@ -7,9 +7,8 @@
 
 /* Notification column width + empty-state icon. GNOME has no
    built-in "shrink to nothing when empty" behavior for this -- it's
-   a hardcoded fixed width regardless of content (checked
-   js/ui/calendar.js and the generated CSS directly), so there's no
-   way to make it truly dynamic without extension-level JS watching
+   a hardcoded fixed width regardless of content, so there's no way
+   to make it truly dynamic without extension-level JS watching
    notification count, which is exactly the kind of bespoke machinery
    this repo avoids. This is a static reduction instead: narrower
    column (29em -> 22em) and a smaller, less overwhelming empty-state

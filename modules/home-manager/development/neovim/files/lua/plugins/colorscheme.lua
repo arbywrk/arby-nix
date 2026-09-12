@@ -1,7 +1,7 @@
--- Ayu Dark -- same palette as ghostty.nix / gnome-terminal.nix / zellij's
--- ayu-dark.kdl, so nvim looks in place inside either terminal. overrides
--- strip backgrounds from the surfaces vague's own `transparent = true`
--- used to cover, so the terminal's own background shows through instead.
+-- Ayu Dark -- same palette as ghostty.nix and zellij's ayu-dark.kdl, so
+-- nvim looks in place inside the terminal. overrides strip backgrounds
+-- from the surfaces vague's own `transparent = true` used to cover, so
+-- the terminal's own background shows through instead.
 require("ayu").setup({
     overrides = {
         Normal = { bg = "NONE" },

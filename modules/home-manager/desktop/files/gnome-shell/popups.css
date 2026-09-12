@@ -6,19 +6,17 @@
    desktop", so fixing it here fixes all of them at once.
    ============================================================ */
 
-/* Outer dropdown background. Yaru-dark itself (checked its real
-   gnome-shell.css, in the nix store) uses this same single value
-   for every popup menu too, not a per-menu color. */
+/* Outer dropdown background. Yaru-dark itself uses this same single
+   value for every popup menu too, not a per-menu color. */
 .popup-menu-content, .candidate-popup-content {
   background-color: #1d1d1d; }
 
 /* Corner radius. The generated stylesheet's defaults read as "ultra
    round" once the boxes get big -- .quick-settings alone was 36px,
-   which is what actually won out over .popup-menu-content's own 20px
-   (equal specificity, .quick-settings declared later in the
-   generated file). Checked Yaru-dark's own real gnome-shell.css for
-   reference values: it uses 13.5px for these, rounded up to 14px
-   here for a round number. */
+   which wins out over .popup-menu-content's own 20px (equal
+   specificity, .quick-settings declared later in the generated
+   file). Yaru-dark's own reference value is 13.5px, rounded up to
+   14px here for a round number. */
 .quick-settings,
 .popup-menu-content, .candidate-popup-content {
   border-radius: 14px; }

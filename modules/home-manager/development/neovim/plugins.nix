@@ -1,6 +1,6 @@
 # Maps lua/plugins/*.lua onto nixpkgs.vimPlugins, replacing lazy.nvim.
-# Loading is eager (no lazy-loading layer -- accepted tradeoff, see
-# implementation plan), so every plugin here is just added to the
+# Loading is eager (no lazy-loading layer -- accepted tradeoff for
+# simplicity), so every plugin here is just added to the
 # runtimepath; the ones that need setup() get their (trimmed, wrapper-free)
 # lua/plugins/*.lua file wired in as `config`, which home-manager embeds
 # as native Lua (programs.neovim.plugins.*.type defaults to "lua" at

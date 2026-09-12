@@ -10,10 +10,10 @@
 
   # `programs.home-manager.enable` (set in each home/*/default.nix) looks
   # like the standard way to get the `home-manager` CLI onto PATH, but it
-  # silently no-ops under this repo's NixOS-integrated hosts: read
-  # straight from home-manager's own programs/home-manager.nix, that
-  # option only adds its package when `!config.submoduleSupport.enable` --
-  # and home-manager's NixOS integration (how `home-manager.users.<name>`
+  # silently no-ops under this repo's NixOS-integrated hosts: that option
+  # only adds its package when `!config.submoduleSupport.enable` (see
+  # home-manager's own programs/home-manager.nix) -- and home-manager's
+  # NixOS integration (how `home-manager.users.<name>`
   # in hosts/* wires things up) sets `submoduleSupport.enable = true`
   # specifically to signal "this instance is being driven by
   # nixos-rebuild, don't also hand out a standalone CLI that tracks its

@@ -10,19 +10,16 @@
    rule in _generated-base.css); this drops the base/resting state to
    transparent while leaving hover, selected, and "today" (which
    already use their own more specific selectors in the generated
-   CSS) alone. Deliberately still a full circle (999px, untouched) --
-   round day cells were asked to stay round, unlike the pill-shaped
-   quick-settings toggles which went through and reverted a "rounded
-   square" experiment (see quick-settings.css history/buttons.css). */
+   CSS) alone. Still a full circle (999px, untouched) -- round day
+   cells stay round, same as buttons.css's icon-buttons. */
 .calendar .calendar-day {
   background-color: transparent; }
 
-/* Prev/next month chevrons -- matching the real Yaru desktop
-   screenshot used as reference: plain, no permanent circle. This
-   selector is 3 classes deep, so it beats both buttons.css's plain
-   ".icon-button, .button" fix (1 class) and the generated
-   ".icon-button.flat"-family rule (also 3 classes, but earlier in
-   the file) regardless of import order. */
+/* Prev/next month chevrons -- matches Yaru's own look: plain, no
+   permanent circle. This selector is 3 classes deep, so it beats
+   both buttons.css's plain ".icon-button, .button" fix (1 class) and
+   the generated ".icon-button.flat"-family rule (also 3 classes, but
+   earlier in the file) regardless of import order. */
 .calendar .calendar-month-header .pager-button {
   background-color: transparent; }
   .calendar .calendar-month-header .pager-button:hover {
@@ -32,36 +29,33 @@
 
 /* Weekday letter headers (L M M J V S D) -- not interactive, so no
    hover/active states needed, just drop the permanent fill.
-   !important here: confirmed via the real gnome-shell 50.4 source
-   (js/ui/calendar.js) these are plain St.Label with exactly one
-   style class ('calendar-day-heading'), nothing else going on, so
-   the plain override should have been enough on specificity alone --
-   forcing it since it wasn't visibly taking effect. */
+   !important here because these are plain St.Label widgets with
+   exactly one style class ('calendar-day-heading') -- the plain
+   override should be enough on specificity alone, but isn't. */
 .calendar .calendar-day-heading {
   background-color: transparent !important; }
 
 /* Month label pill ("September") -- Yaru-dark itself keeps a pill
-   here, but going fully transparent too, matching the rest of the
-   header row (explicit request, diverges from Yaru on this one). */
+   here; this goes fully transparent instead, matching the rest of
+   the header row. */
 .calendar .calendar-month-header .calendar-month-label {
   background-color: transparent !important; }
 
-/* Drop shadows from the month label and weekday headers. Couldn't
-   find an explicit box-shadow/text-shadow on either in the generated
-   stylesheet or their shared ".button"-family ancestor rule (just a
+/* Drop shadows from the month label and weekday headers. Neither has
+   an explicit box-shadow/text-shadow in the generated stylesheet or
+   their shared ".button"-family ancestor rule (just a
    "transition: ... box-shadow ..." timing hook, no actual shadow
-   value) -- these are here defensively in case it's coming from
-   somewhere not obvious from static analysis. */
+   value) -- these are here defensively in case one comes from
+   somewhere else. */
 .calendar .calendar-month-header .calendar-month-label,
 .calendar .calendar-day-heading {
   box-shadow: none;
   text-shadow: none; }
 
 /* "Today / No Events" strip at the bottom of the calendar -- this is
-   actually ".events-button" (not ".datemenu-today-button", which
-   turned out to already be transparent-by-default in the generated
-   CSS). Generated default #47474c, same #303030/#404045 used
-   everywhere else. */
+   actually ".events-button", not ".datemenu-today-button" (already
+   transparent by default). Generated default #47474c, same
+   #303030/#404045 used everywhere else. */
 .events-button {
   background-color: #303030; }
   .events-button:hover {

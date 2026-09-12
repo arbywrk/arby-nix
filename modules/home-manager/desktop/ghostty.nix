@@ -3,14 +3,14 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- ghostty *can*
+      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- ghostty can
       # natively follow GNOME's light/dark switch via that syntax, but
       # zellij's own theme is always static ayu-dark (its color model has
       # no transparency, so its tab-bar/status-bar can't blend into a
-      # light background), which produced a stark seam whenever ghostty
-      # went light with zellij running. Pinned dark to match zellij
+      # light background), which produces a stark seam whenever ghostty
+      # goes light with zellij running. Pinned dark to match zellij
       # exactly, at the cost of never following the system light/dark
-      # toggle -- deliberate tradeoff, not an oversight.
+      # toggle.
       theme = "Ayu Dark Gray";
       font-family = "JetBrainsMono Nerd Font Mono"; # matches alacritty.nix
       font-size = 11;
@@ -32,16 +32,14 @@
     };
 
     # Ayu Dark's own palette (ghostty's bundled "Ayu" theme file), except
-    # background/cursor-text swap Ayu's stock blue-black (#0b0e14) for
-    # Yaru-dark's actual shell panel color -- #131313, read straight out
-    # of Yaru's own gnome-shell.css (`#panel { background-color: #131313;
-    # }`), not guessed -- and selection-background swaps Ayu's sky-blue
-    # (#409fff) for a plain mid gray (#3c3c3c) -- same substitutions
-    # zellij's ayu-dark.kdl makes, for the same reason (blend with Yaru's
-    # actual near-black instead of Ayu's blue undertone). ANSI palette
-    # colors 4 and 12 are still literally blue -- untouched, since those
-    # are semantic (shell tools color actual "blue" output with them), not
-    # background decoration.
+    # background/cursor-text use Yaru-dark's actual shell panel color
+    # (#131313) instead of Ayu's stock blue-black (#0b0e14), and
+    # selection-background uses a plain mid gray (#3c3c3c) instead of
+    # Ayu's sky-blue (#409fff) -- same substitutions zellij's
+    # ayu-dark.kdl makes, so both blend with Yaru's near-black rather
+    # than carrying Ayu's blue undertone. ANSI palette colors 4 and 12
+    # stay literally blue -- those are semantic (shell tools color actual
+    # "blue" output with them), not background decoration.
     themes."Ayu Dark Gray" = {
       palette = [
         "0=#11151c"

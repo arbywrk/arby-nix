@@ -1,16 +1,12 @@
 { pkgs, ... }:
 
 let
-  # GNOME Shell's own default dark stylesheet, extracted straight out of
-  # its own compiled gresource bundle -- same `gresource extract
-  # gnome-shell-theme.gresource /org/gnome/shell/theme/gnome-shell-dark
-  # .css` used by hand while developing this theme, just as a derivation
-  # now so it tracks whatever gnome-shell version is actually installed
-  # instead of a stale copy committed to this repo. This becomes
-  # _generated-base.css below -- imported first by files/gnome-shell/
-  # gnome-shell.css so every hand-written override in the other files
-  # wins the cascade on top of it, exactly like it did while hand-editing
-  # the live theme directory.
+  # GNOME Shell's own default dark stylesheet, pulled straight out of its
+  # compiled gresource bundle so it tracks whatever gnome-shell version is
+  # actually installed instead of a stale copy committed to this repo.
+  # Becomes _generated-base.css below, imported first by
+  # files/gnome-shell/gnome-shell.css so every override in the other files
+  # wins the cascade on top of it.
   gnomeShellBaseCss = pkgs.runCommand "gnome-shell-dark-base.css" { } ''
     ${pkgs.glib.dev}/bin/gresource extract \
       ${pkgs.gnome-shell}/share/gnome-shell/gnome-shell-theme.gresource \
@@ -27,20 +23,11 @@ in
     pkgs.loupe # GNOME's default image viewer
   ];
 
-  # Widget theme is plain Adwaita -- hand-tweaking stock libadwaita's
-  # colors instead of pulling in a whole third-party GTK theme (see
-  # below). Icons/cursor are a separate concern from color scheme (icon
-  # coverage/shape, not widget-chrome color); no Yaru anywhere in this
-  # config anymore -- neither the old "Yaruwaita" icon-theme name (never
-  # an actual dependency) nor the old Yaru cursor package.
-  #
-  # Icons are "PapirusPlus" (defined below) -- plain Papirus-Dark, full
-  # stop, per explicit request after several rounds of trying to hand-pick
-  # a nicer trash/settings icon out of MoreWaita/other themes and landing
-  # on none of them. "Plus" only because the wrapper theme (rather than
-  # setting iconTheme.name = "Papirus-Dark" directly) keeps a place to
-  # drop individual per-icon overrides back in later -- see the
-  # xdg.dataFile entries below, currently empty.
+  # Widget theme is plain Adwaita, hand-tweaked below instead of pulling
+  # in a third-party GTK theme. Icons are Papirus-Dark, wrapped under the
+  # name "PapirusPlus" so a couple of directories stay reserved for
+  # swapping individual icons later (see the empty xdg.dataFile block
+  # below) without touching iconTheme.name again.
   gtk = {
     enable = true;
     iconTheme = {
@@ -55,32 +42,21 @@ in
     colorScheme = "dark";
 
     # Every named color libadwaita apps (Settings, Nautilus, Loupe, ...)
-    # read live, not just the ones this repo actually changed -- so the
-    # full palette is visible and editable in one place later. Each line
-    # says CUSTOM (with why) or DEFAULT (libadwaita 1.9's own dark-mode
-    # value, restated verbatim so this is a genuine no-op, not a frozen
-    # snapshot -- some defaults are themselves aliases like
-    # "@window_bg_color" or relative functions like oklab(...), and
-    # hardcoding a *resolved* number for those would silently stop
-    # tracking whatever they alias once that other color changes).
-    # Verified by extracting /org/gnome/Adwaita/styles/gtk.css out of the
-    # installed libadwaita-1.so via gresource.
+    # read live is listed here, not just the ones actually changed, so
+    # the full palette stays visible and editable in one place. Each
+    # line is marked CUSTOM (with why) or DEFAULT (libadwaita's own
+    # dark-mode value, restated as-is rather than as a resolved number --
+    # some defaults are aliases like "@window_bg_color" or relative
+    # functions like oklab(...) that need to keep tracking whatever they
+    # alias, not freeze to today's snapshot).
     #
-    # Deliberately NOT listed: accent_color/accent_bg_color/
-    # accent_fg_color and the destructive/success/warning/error_*
-    # semantic colors. Accent reads live from
-    # org/gnome/desktop/interface accent-color (same as the shell's own
-    # -st-accent-color) and isn't even in this static stylesheet --
-    # AdwStyleManager injects it at runtime. The semantic colors carry
-    # meaning (destructive action, error state, ...), not "look", so
-    # they're out of scope for a surface-color pass.
-    #
-    # Was a plain hand-edited $XDG_CONFIG_HOME/gtk-4.0/gtk.css (not
-    # home-manager-managed) while iterating on these colors against
-    # Settings/Nautilus/Loupe, since gtk4.extraCss needs a full
-    # rebuild+switch (and an app restart -- GTK4 doesn't hot-reload this
-    # file either way) to see a change. Moved here now that the values
-    # are settled.
+    # Accent (accent_color/accent_bg_color/accent_fg_color) and the
+    # destructive/success/warning/error_* semantic colors are left out
+    # entirely: accent reads live from org/gnome/desktop/interface
+    # accent-color (same as the shell's own -st-accent-color) and isn't
+    # even part of this static stylesheet -- AdwStyleManager injects it
+    # at runtime. The semantic colors carry meaning, not look, so they're
+    # out of scope for a surface-color pass.
     gtk4.extraCss = ''
       /* Main window surfaces. CUSTOM: darker greys/blacks, no purple
          tint, reusing the shell theme's own two tones (see
@@ -88,8 +64,7 @@ in
          theme -- #1d1d1d for recessed content (same as the shell's
          popup/dropdown surfaces), #303030 for raised chrome (same as
          the shell's buttons/pills/cards). Foreground #F7F7F7 (a touch
-         off pure white) matches what this config already used
-         everywhere before this pass, restated here rather than changed.
+         off pure white) matches the rest of this config.
          DEFAULT (libadwaita): window_bg_color #222226, window_fg_color/
          view_fg_color white, view_bg_color #1d1d20. */
       @define-color window_bg_color #303030;
@@ -106,9 +81,9 @@ in
          flat fill; left alone. */
       @define-color headerbar_border_color white;
       /* DEFAULT: an alias, not a literal -- restated as one so it keeps
-         tracking window_bg_color above (currently resolves to our
-         #303030) instead of freezing to libadwaita's own #222226. This
-         is what an unfocused window's headerbar fades to. */
+         tracking window_bg_color above (currently #303030) instead of
+         freezing to libadwaita's own #222226. This is what an unfocused
+         window's headerbar fades to. */
       @define-color headerbar_backdrop_color @window_bg_color;
       /* DEFAULT: subtle drop-shadow-style darkening under the headerbar
          (36%) and an even darker one some widgets use for emphasis
@@ -118,8 +93,8 @@ in
       @define-color headerbar_darker_shade_color RGB(0 0 12 / 90%);
 
       /* CUSTOM: sidebar (Nautilus's places list, Settings' category
-         list) matches the #303030 chrome tone too -- same reasoning as
-         headerbar above. backdrop/secondary tones nudged one step
+         list) matches the #303030 chrome tone too, same reasoning as
+         headerbar above. Backdrop/secondary tones nudged one step
          darker each to keep their relative "one step down" feel instead
          of inheriting libadwaita's own purple-tinted numbers verbatim.
          DEFAULT: sidebar_bg/fg #2e2e32/white, sidebar_backdrop #28282c,
@@ -130,8 +105,8 @@ in
       @define-color sidebar_backdrop_color #262626;
       @define-color secondary_sidebar_bg_color #262626;
       @define-color secondary_sidebar_backdrop_color #202020;
-      /* DEFAULT: not customized -- Nautilus's second-level sidebar
-         (e.g. its tag list) isn't something this pass looked at. */
+      /* DEFAULT: Nautilus's second-level sidebar (e.g. its tag list)
+         isn't part of this pass. */
       @define-color secondary_sidebar_fg_color white;
       /* DEFAULT: alpha-based edge/shadow accents on the sidebar
          boundary, same reasoning as headerbar_shade_color above. */
@@ -150,68 +125,63 @@ in
       @define-color popover_shade_color RGB(0 0 6 / 25%);
 
       /* Dialogs (file choosers, "Delete"/"Replace" confirmations).
-         CUSTOM: darker #1d1d1d -- same reasoning the shell's
-         modals.css already used for its own .modal-dialog: "this is
-         functionally a popup surface too, just modal instead of a
-         dropdown". DEFAULT: #36363a/white. */
+         CUSTOM: darker #1d1d1d, same treatment the shell's modals.css
+         gives its own .modal-dialog -- a modal is just a popup surface
+         that happens to be modal. DEFAULT: #36363a/white. */
       @define-color dialog_bg_color #1d1d1d;
       @define-color dialog_fg_color #F7F7F7;
 
       /* DEFAULT, left alone: card_bg_color is a translucent white
          overlay (8%), not a literal color -- a relative "lighten
-         whatever's underneath" mix, so it already adapts correctly to
-         window_bg_color above without needing its own override. Same
-         reasoning for its shade/foreground. */
+         whatever's underneath" mix, so it already adapts to
+         window_bg_color above without its own override. Same for its
+         shade/foreground. */
       @define-color card_bg_color RGB(255 255 255 / 8%);
       @define-color card_fg_color white;
       @define-color card_shade_color RGB(0 0 6 / 36%);
 
       /* DEFAULT: image/file thumbnail backing (e.g. behind a
          letterboxed image in Loupe or a file-manager preview) --
-         Loupe's own actual image canvas is view_bg_color above, not
-         this; not customized. */
+         Loupe's actual image canvas is view_bg_color above, not this. */
       @define-color thumbnail_bg_color #39393d;
       @define-color thumbnail_fg_color white;
 
-      /* DEFAULT: generic overlay-darkening used in a handful of odd
-         corners (e.g. some dimmed/disabled overlays) and the outline
-         GTK draws around scrollbars over content -- both alpha-based. */
+      /* DEFAULT: generic overlay-darkening for a handful of odd corners
+         (e.g. dimmed/disabled overlays) and the outline GTK draws
+         around scrollbars over content -- both alpha-based. */
       @define-color shade_color RGB(0 0 6 / 25%);
       @define-color scrollbar_outline_color RGB(0 0 12 / 95%);
     '';
 
-    # GTK3-era named colors (legacy/GTK3-only apps -- most of what's
-    # actually visible day-to-day, Settings/Nautilus/Loupe, is GTK4 and
-    # reads gtk4.extraCss above instead). Full palette, same CUSTOM/
-    # DEFAULT convention as gtk4.extraCss above. DEFAULT values verified
-    # by extracting /org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css
-    # out of the installed libgtk-3.so via gresource -- GTK3's Adwaita
-    # theme is compiled straight into libgtk-3 itself, no separate
-    # package. Not listed: warning_color/error_color/success_color
-    # (semantic, same reasoning as gtk4.extraCss's exclusions) and the
+    # GTK3-era named colors -- most of what's actually visible day to
+    # day (Settings, Nautilus, Loupe) is GTK4 and reads gtk4.extraCss
+    # above instead. Full palette, same CUSTOM/DEFAULT convention.
+    # DEFAULT values are Adwaita-3's own dark-mode palette, compiled
+    # directly into libgtk-3 -- there's no separate GTK3 theme package.
+    # Not listed: warning_color/error_color/success_color (semantic,
+    # same reasoning as gtk4.extraCss's exclusions above) and the
     # wm_*/content_view_bg/text_view_bg families (window-manager
     # decoration internals and Yaru-specific extensions stock Adwaita-3
-    # never reads -- out of scope here).
+    # never reads).
     gtk3.extraCss = ''
       /* Main surfaces. CUSTOM: same two shell-matching tones as
          gtk4.extraCss -- #303030 chrome (theme_bg_color), #1d1d1d
          recessed content (theme_base_color, entry/list/textview
          backgrounds). theme_text_color restated at this config's usual
-         #F7F7F7 rather than changed. DEFAULT: theme_fg_color #eeeeec,
-         theme_text_color white, theme_bg_color #353535,
-         theme_base_color #2d2d2d. */
+         #F7F7F7. DEFAULT: theme_fg_color #eeeeec, theme_text_color
+         white, theme_bg_color #353535, theme_base_color #2d2d2d. */
       @define-color theme_bg_color #303030;
       @define-color theme_fg_color #F7F7F7;
       @define-color theme_base_color #1d1d1d;
       @define-color theme_text_color #F7F7F7;
 
       /* Unfocused-window variants. CUSTOM: alpha-based dimming (65%)
-         instead of libadwaita's flat muted grey, so it tracks whatever
-         the focused foreground color above is instead of being a
-         separate fixed pick; backgrounds one step darker than their
-         focused counterparts, same relative feel as the sidebar_backdrop
-         treatment in gtk4.extraCss. DEFAULT: theme_unfocused_fg_color
-         #919190 (flat, not alpha), theme_unfocused_text_color white,
+         instead of libadwaita's flat muted grey, so it tracks the
+         focused foreground color above instead of being a separate
+         fixed pick; backgrounds one step darker than their focused
+         counterparts, same relative feel as sidebar_backdrop in
+         gtk4.extraCss. DEFAULT: theme_unfocused_fg_color #919190
+         (flat, not alpha), theme_unfocused_text_color white,
          theme_unfocused_bg_color #353535, theme_unfocused_base_color
          #303030. */
       @define-color theme_unfocused_bg_color #262626;
@@ -219,8 +189,8 @@ in
       @define-color theme_unfocused_base_color #1a1a1a;
       @define-color theme_unfocused_text_color rgba(247, 247, 247, 0.65);
 
-      /* CUSTOM: darker to match theme_base_color's #1d1d1d neighborhood
-         instead of libadwaita's own lighter greys.
+      /* CUSTOM: darker, to match theme_base_color's #1d1d1d
+         neighborhood instead of libadwaita's own lighter greys.
          DEFAULT: insensitive_bg_color #323232, insensitive_fg_color
          #919190, insensitive_base_color #2d2d2d. */
       @define-color insensitive_bg_color #262626;
@@ -228,49 +198,40 @@ in
       @define-color insensitive_base_color #1a1a1a;
 
       /* GTK3 has no live accent-color setting -- that's a GTK4/
-         libadwaita-only feature (confirmed: Adwaita-3's own gtk.css
-         hardcodes its selection color, never reads
-         org/gnome/desktop/interface accent-color). CUSTOM: static pick
-         matching the current accent-color = "blue" default set below --
-         if that's ever changed, this needs a matching manual update,
-         same tradeoff already accepted for ghostty's pinned-dark theme.
-         theme_selected_fg_color happens to already equal libadwaita's
-         own default (#ffffff); restated for visibility, not a real
-         change. DEFAULT: theme_selected_bg_color #15539e. */
+         libadwaita-only feature, Adwaita-3's own gtk.css hardcodes its
+         selection color instead. CUSTOM: static pick matching the
+         accent-color = "blue" default set below -- if that ever
+         changes, this needs a matching manual update, same tradeoff
+         already accepted for ghostty's pinned-dark theme.
+         theme_selected_fg_color already equals libadwaita's own default
+         (#ffffff), restated here for visibility rather than changed.
+         DEFAULT: theme_selected_bg_color #15539e. */
       @define-color theme_selected_bg_color #3584e4;
       @define-color theme_selected_fg_color #FFFFFF;
       /* DEFAULT, left alone: same accent used for an unfocused window's
          selection -- diverges from theme_selected_bg_color above since
-         only the focused one was customized. Revisit together if this
+         only the focused one was customized. Revisit together if that
          ever looks inconsistent. */
       @define-color theme_unfocused_selected_bg_color #15539e;
       @define-color theme_unfocused_selected_fg_color #ffffff;
       /* DEFAULT: muted grey used sparingly (e.g. unfocused+insensitive
-         text) -- not customized. */
+         text). */
       @define-color unfocused_insensitive_color #5b5b5b;
 
-      /* Hairline dividers. CUSTOM: Yaru-dark's own real values
-         (verified via `gresource extract` on its gtk-3.0/gtk.gresource
-         -- not stock Adwaita-3, whose own default is a less
-         near-black #1b1b1b/#202020), reused directly since they're
-         already exactly the near-black tone this pass wants. */
+      /* Hairline dividers. CUSTOM: Yaru-dark's own values, not stock
+         Adwaita-3's less near-black #1b1b1b/#202020 -- already exactly
+         the near-black tone this pass wants. */
       @define-color borders #131313;
       @define-color unfocused_borders #181818;
     '';
   };
 
-  # Per-icon override slot -- deliberately empty right now. After several
-  # rounds of trying a hand-picked trash icon (WhiteSur, then Numix) and
-  # settings icon (WhiteSur, then Colloid) on top of MoreWaita/Papirus and
-  # landing on none of them, the config went back to plain Papirus-Dark
-  # for everything (see iconTheme.name above and index.theme below)
-  # instead of keeping any of those. This block, and the
-  # scalable/places + scalable/apps directories index.theme already
-  # declares, are the reusable mechanism for dropping a replacement back
-  # in later -- add an entry the same shape as these two commented-out
-  # examples (source anything, e.g. a specific file out of another theme
-  # package's own /nix/store output) and it'll win over Papirus-Dark
-  # outright, no other wiring needed:
+  # Per-icon override slot, deliberately empty -- Papirus-Dark's own
+  # trash/settings icons are used for now. This block, and the
+  # scalable/places + scalable/apps directories index.theme declares
+  # below, exist so a specific icon can be swapped in later without any
+  # more wiring: add an entry shaped like the commented examples and it
+  # wins over Papirus-Dark outright.
   #
   # xdg.dataFile."icons/PapirusPlus/scalable/places/user-trash.svg".source =
   #   "${pkgs.SOME_ICON_THEME}/share/icons/SOME_THEME/.../user-trash.svg";
@@ -284,7 +245,7 @@ in
   xdg.dataFile."icons/PapirusPlus/index.theme".text = ''
     [Icon Theme]
     Name=PapirusPlus
-    Comment=Plain Papirus-Dark, with an empty scalable/places + scalable/apps override slot (see the xdg.dataFile comment just above) for dropping individual replacement icons back in later without any other wiring.
+    Comment=Papirus-Dark, with an empty override slot for individual icons (see the xdg.dataFile comment above).
     Inherits=Papirus-Dark,hicolor
     Directories=scalable/places,scalable/apps
 
@@ -304,13 +265,13 @@ in
   '';
 
   # GNOME Shell theme "Custom" -- a from-scratch dark-mode color/roundness
-  # pass over stock Adwaita (not Yaru's own shell theme), split into one
+  # pass over stock Adwaita, not Yaru's own shell theme, split into one
   # file per UI area for navigability rather than one huge stylesheet --
   # see files/gnome-shell/gnome-shell.css's own header comment for the
   # full rundown (color legend, table of contents, how to hand-edit and
   # reload this after a `home-manager switch`). _generated-base.css is
-  # the one file here that ISN'T a plain source file -- see
-  # gnomeShellBaseCss above, it's extracted fresh from the installed
+  # the one file here that isn't a plain source file -- see
+  # gnomeShellBaseCss above, extracted fresh from the installed
   # gnome-shell package at build time instead of committed to this repo.
   xdg.dataFile."themes/Custom/gnome-shell/_generated-base.css".source = gnomeShellBaseCss;
   xdg.dataFile."themes/Custom/gnome-shell/gnome-shell.css".source = ./files/gnome-shell/gnome-shell.css;
@@ -325,12 +286,12 @@ in
 
   # A tiny local extension (not a nixpkgs/extensions.gnome.org package --
   # see files/gnome-shell-extensions/hide-dark-style/extension.js for why)
-  # that hides the built-in "Dark Style" quick-settings toggle, which has
-  # no use now that color-scheme is pinned to prefer-dark below. Its uuid
-  # (and hence its real install path, .../extensions/hide-dark-style@arby-nix/)
-  # is "hide-dark-style@arby-nix" per metadata.json -- the source directory
-  # itself is named without the "@" only because Nix path literals can't
-  # contain one unescaped.
+  # that hides the built-in "Dark Style" quick-settings toggle, pointless
+  # now that color-scheme is pinned to prefer-dark below. Its uuid (and
+  # hence its real install path,
+  # .../extensions/hide-dark-style@arby-nix/) is "hide-dark-style@arby-nix"
+  # per metadata.json -- the source directory itself is named without the
+  # "@" only because Nix path literals can't contain one unescaped.
   xdg.dataFile."gnome-shell/extensions/hide-dark-style@arby-nix/metadata.json".source =
     ./files/gnome-shell-extensions/hide-dark-style/metadata.json;
   xdg.dataFile."gnome-shell/extensions/hide-dark-style@arby-nix/extension.js".source =
@@ -340,40 +301,36 @@ in
     "org/gnome/desktop/interface" = {
       accent-color = "blue"; # GNOME's own default
 
-      # Locked to dark: GNOME's own User Themes extension has no concept
-      # of light/dark at all (verified by reading its extension.js --
-      # `_changeTheme()` only reacts to the theme *name* setting, never to
-      # this color-scheme key), so once a custom shell theme is active
-      # the system light/dark switch stops affecting shell chrome
-      # entirely -- there's no native way to make it do both. Rather than
-      # add a watcher to fake that reactivity (exactly the kind of
-      # bespoke live-sync this repo avoids elsewhere), going dark-only:
-      # this key is pinned so GTK4/libadwaita apps that read it live stay
-      # consistent with the shell, and the now-pointless "Dark Style"
-      # quick-settings toggle is hidden (see hide-dark-style@arby-nix
-      # below).
+      # GNOME's own User Themes extension has no concept of light/dark
+      # at all -- it only reacts to the theme *name* setting, never to
+      # this key -- so once a custom shell theme is active, the system
+      # light/dark switch stops affecting shell chrome entirely. Pinned
+      # to dark instead of building a watcher to fake that reactivity:
+      # keeps GTK4/libadwaita apps visually consistent with the shell,
+      # and makes the "Dark Style" quick-settings toggle pointless
+      # (hidden via hide-dark-style@arby-nix below).
       color-scheme = "prefer-dark";
 
       # GNOME Shell/Mutter (the desktop cursor and window-manager chrome,
-      # as opposed to individual GTK apps) reads these -- NOT gtk.iconTheme
-      # /gtk.cursorTheme above, which only cover settings.ini for GTK apps
-      # themselves. Both keys were already sitting in this dconf database
-      # with stray live values ('Yaruwaita', 'Yaru') that this repo never
-      # actually declared (same situation as button-layout below) -- made
-      # explicit here so a fresh profile doesn't silently fall back to
-      # GNOME's own Adwaita/Adwaita defaults instead.
+      # as opposed to individual GTK apps) reads these -- not
+      # gtk.iconTheme/gtk.cursorTheme above, which only cover
+      # settings.ini for GTK apps themselves. Both keys were already
+      # sitting in this dconf database with stray live values
+      # ('Yaruwaita', 'Yaru') this repo never actually declared (same
+      # situation as button-layout below) -- made explicit here so a
+      # fresh profile doesn't fall back to GNOME's own defaults instead.
       icon-theme = "PapirusPlus";
       cursor-theme = "Bibata-Modern-Ice";
       cursor-size = 24;
     };
 
     "org/gnome/desktop/wm/preferences" = {
-      # Drops the small app icon GTK's CSD titlebar draws top-left of every
-      # window -- was "icon:minimize,maximize,close" (checked live via
-      # `gsettings get`; not something this repo had ever set, so likely a
-      # stray Ubuntu/Yaru-session-derived default already in this dconf
-      # database), same minimize/maximize/close ordering otherwise, just
-      # without the leading "icon:".
+      # Drops the small app icon GTK's CSD titlebar draws top-left of
+      # every window. Default was "icon:minimize,maximize,close", a
+      # stray value already in this dconf database (not something this
+      # config had set, likely left over from an Ubuntu/Yaru session
+      # default) -- same minimize/maximize/close ordering otherwise,
+      # just without the leading "icon:".
       button-layout = ":minimize,maximize,close";
     };
 
@@ -394,9 +351,8 @@ in
       # hide-dark-style: local extension (see files/gnome-shell-extensions/
       # hide-dark-style@arby-nix/) hiding the now-useless "Dark Style"
       # toggle -- dark-only per the color-scheme lock above. Its own
-      # metadata.json declares the actual installed shell-version (50), so
-      # unlike the third-party extension this replaced, it needs no
-      # disable-extension-version-validation escape hatch.
+      # metadata.json declares the actual installed shell-version (50),
+      # so it needs no disable-extension-version-validation escape hatch.
       enabled-extensions = [
         "caffeine@patapon.info"
         "user-theme@gnome-shell-extensions.gcampax.github.com"
@@ -415,21 +371,20 @@ in
       dock-fixed = false;
       intellihide = true;
       # dash-to-dock's own Super+1..9 (and Shift/Ctrl variants) app-launch
-      # hotkeys default on and collide with the workspace-switching binds
-      # below -- it only steals a given number if a dock slot is actually
-      # occupied, which is why this silently broke just the low-numbered
-      # workspaces rather than all of them. Our own binds own this
-      # shortcut space, so dash-to-dock's copy is turned off.
+      # hotkeys collide with the workspace-switching binds below -- it
+      # only steals a number if a dock slot is actually occupied, which
+      # is why this broke just the low-numbered workspaces rather than
+      # all of them. Our own binds own this shortcut space, so
+      # dash-to-dock's copy is turned off.
       hot-keys = false;
 
-      # Match the rest of the color pass (see files/gnome-shell/*.css) --
-      # dash-to-dock's own background isn't part of the gnome-shell.css
-      # theme at all (it paints itself independently of the shell theme's
-      # popup-menu-content/etc surfaces), so it needs these set directly
-      # rather than picking the color up automatically. "FIXED" transparency
-      # mode is required for background-opacity to actually take effect as
-      # a constant value -- the default "DEFAULT" mode dynamically adjusts
-      # opacity based on window proximity instead of honoring this.
+      # Matches the rest of the color pass (see files/gnome-shell/*.css)
+      # -- dash-to-dock paints its own background independently of the
+      # shell theme's popup-menu-content surfaces, so it needs these set
+      # directly. "FIXED" transparency mode is required for
+      # background-opacity to actually take effect as a constant value
+      # -- the default "DEFAULT" mode adjusts opacity based on window
+      # proximity instead.
       custom-background-color = true;
       background-color = "#1d1d1d";
       transparency-mode = "FIXED";

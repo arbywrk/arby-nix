@@ -17,10 +17,9 @@
    "too bright" next to anything already recolored. Hover/active/
    focus/insensitive below use the same lighten/darken percentages
    the generated CSS itself used, just recomputed off #303030.
-   Corner radius is deliberately NOT touched here -- round buttons/
-   circles/pills are the generated default (999px), per explicit
-   request to keep these round (see calendar.css's day cells for the
-   one place that's the same story). */
+   Corner radius is left untouched -- round buttons/circles/pills are
+   the generated default (999px) and stay round (see calendar.css's
+   day cells for the one other place that's true). */
 .icon-button, .button {
   background-color: #303030; }
   .icon-button:hover, .button:hover {

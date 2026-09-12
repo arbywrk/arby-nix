@@ -52,9 +52,9 @@
 
   # Obsidian's own packaged .desktop file (nixpkgs `obsidian`) declares no
   # StartupWMClass, and its running Electron window reports app-id
-  # "md.Obsidian" (confirmed via `journalctl --user`: systemd names the
-  # app's cgroup scope "app-md.Obsidian-<pid>.scope") -- a case/name
-  # mismatch from the plain "obsidian.desktop" filename. The app grid
+  # "md.Obsidian" (systemd names the app's cgroup scope
+  # "app-md.Obsidian-<pid>.scope") -- a case/name mismatch from the plain
+  # "obsidian.desktop" filename. The app grid
   # matches fine (it just reads installed .desktop files directly, no
   # window involved), but dash-to-dock has to match a *running window*
   # back to an app, fails on that mismatch, and falls back to a generic

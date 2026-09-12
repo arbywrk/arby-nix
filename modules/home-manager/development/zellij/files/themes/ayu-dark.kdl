@@ -3,11 +3,10 @@
 // "Ayu Dark Gray" theme applies the same tweak, both derived from Ayu's
 // real palette (ghostty's bundled Ayu theme file, share/ghostty/themes/
 // Ayu) with two substitutions throughout: background/base slots that were
-// Ayu's blue-black (#0B0E14 / 11 14 20) are now #131313 / 19 19 19 -- read
-// straight out of Yaru-dark's own gnome-shell.css (`#panel {
-// background-color: #131313; }`), not guessed -- and Ayu's navy selection
-// background (#1B3A5B / 27 58 91) is now a plain mid gray (60 60 60); the
-// one saturated sky-blue accent (Ayu's bright blue, #59C2FF / 89 194 255,
+// Ayu's blue-black (#0B0E14 / 11 14 20) are now #131313 / 19 19 19, Yaru-
+// dark's own shell panel color, and Ayu's navy selection background
+// (#1B3A5B / 27 58 91) is now a plain mid gray (60 60 60); the one
+// saturated sky-blue accent (Ayu's bright blue, #59C2FF / 89 194 255,
 // used for the active-tab/mode-pill highlight) is now Ayu's own bright
 // warm gold (#FFB454 / 255 180 84) instead, so the "brighter than resting"
 // pop stays warm rather than blue. Nvim's own ayu-dark colorscheme (its
@@ -15,9 +14,9 @@
 // highlighting reads as far less "blue" in practice than a full-block
 // background or status-bar fill does. Role structure (which slot feeds
 // the mode-pill keys, the one_line_ui status bar, etc.) is carried over
-// unchanged from the original vague.kdl this ultimately descends from --
-// that mapping was verified against status-bar's own source
-// (default-plugins/status-bar/src/one_line_ui.rs).
+// unchanged from the original vague.kdl this ultimately descends from,
+// matching status-bar's own source (default-plugins/status-bar/src/
+// one_line_ui.rs) for which slot is which.
 themes {
     ayu-dark {
         text_unselected {

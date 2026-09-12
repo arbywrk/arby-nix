@@ -42,12 +42,11 @@ in
     settings.pane_frames = false;
     settings.theme = "ayu-dark";
 
-    # Full explicit keybinds, based on zellij's own stock defaults
-    # (verified directly against `zellij setup --dump-config`, not
-    # guessed) -- including its own multi-key-per-bind convention for
-    # directional keys (e.g. `bind "h" "left" { MoveFocus "left"; }`
-    # instead of two separate binds), used throughout below to avoid
-    # duplicating every direction as arrow-key-bind-plus-hjkl-bind.
+    # Full explicit keybinds, based on zellij's own stock defaults --
+    # including its own multi-key-per-bind convention for directional
+    # keys (e.g. `bind "h" "left" { MoveFocus "left"; }` instead of two
+    # separate binds), used throughout below to avoid duplicating every
+    # direction as arrow-key-bind-plus-hjkl-bind.
     #
     # Relocated (collided with blink.cmp/fzf-lua/nvim keymaps):
     #   Ctrl h (move mode)    -> Alt m  (Ctrl h needs to stay free to reach

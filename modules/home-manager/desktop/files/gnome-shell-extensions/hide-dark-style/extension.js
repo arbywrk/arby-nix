@@ -8,16 +8,15 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 // ("DndQuickToggle") that no longer exists in js/ui/status/doNotDisturb.js,
 // so it fell out of that extension's reordering logic entirely.
 //
-// Removes the toggle from its parent rather than just calling .hide() on
-// it -- a first attempt using .hide() left it fully visible after a real
-// logout/login, and GNOME's own ReloadExtension D-Bus method is a hard
-// no-op ("ReloadExtension is deprecated and does not work", straight from
-// js/ui/shellDBus.js), so there's no way to iterate on this short of a
-// full session restart each time -- remove_child is the safer bet since
-// it doesn't depend on nothing else in the quick settings menu ever
-// re-asserting visibility on its children.
+// Removes the toggle from its parent rather than calling .hide() on it --
+// .hide() doesn't survive a real logout/login (something else in the
+// quick settings menu re-asserts visibility on it), and GNOME's own
+// ReloadExtension D-Bus method is a hard no-op ("ReloadExtension is
+// deprecated and does not work", straight from js/ui/shellDBus.js), so
+// there's no way to iterate short of a full session restart each time.
+// remove_child is the safer bet since it doesn't depend on nothing else
+// ever re-asserting visibility on its children.
 //
-// Reference verified against GNOME Shell 50.4's own js/ui/panel.js:
 // Main.panel.statusArea.quickSettings._darkMode is the built-in
 // DarkModeStatus.Indicator, and its single quickSettingsItems entry is the
 // DarkModeToggle QuickToggle widget itself.

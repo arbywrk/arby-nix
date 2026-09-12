@@ -1,12 +1,11 @@
 /* ============================================================
    Entry point -- this is the only file GNOME Shell actually loads
    (via the User Themes extension, theme name "Custom"). Everything
-   else is @import'd from here, in order. Confirmed St (GNOME Shell's
-   CSS engine) supports @import before splitting this up -- it does
-   NOT support @define-color/CSS custom properties the way GTK does,
-   so colors below are literal hex, repeated across files rather than
-   defined once. The legend just below is the closest thing to a
-   single source of truth for what each value means.
+   else is @import'd from here, in order. St (GNOME Shell's CSS engine)
+   supports @import but not @define-color/CSS custom properties the way
+   GTK does, so colors below are literal hex, repeated across files
+   rather than defined once. The legend just below is the closest thing
+   to a single source of truth for what each value means.
 
    This is the nix-managed copy (modules/home-manager/desktop/files/
    gnome-shell/) -- edit these files, not the live ones under

@@ -13,17 +13,15 @@ let
 
   # Hashes/URLs come straight from Proton's own official version endpoint
   # (https://proton.me/download/drive/cli/version.json), not a third-party
-  # mirror. Building from source was considered first -- the CLI's actual
-  # source (github.com/ProtonDriveApps/sdk, moved from the "js/cli" path
-  # the official blog post still references to a plain "cli/" at the repo
-  # root) turned out to depend on sibling monorepo packages via `file:`
-  # deps and a patched native crypto dependency, built with Bun's own
-  # lockfile (bun.lock) -- nixpkgs has no mature buildNpmPackage-equivalent
-  # for Bun yet. Two independent community Nix packages
+  # mirror. Building from source isn't viable: the CLI's actual source
+  # (github.com/ProtonDriveApps/sdk, moved from the "js/cli" path the
+  # official blog post still references to a plain "cli/" at the repo
+  # root) depends on sibling monorepo packages via `file:` deps and a
+  # patched native crypto dependency, built with Bun's own lockfile
+  # (bun.lock) -- nixpkgs has no mature buildNpmPackage-equivalent for Bun
+  # yet. Two independent community Nix packages
   # (github.com/izaac/nix-packages, github.com/skabber/dotfiles) both
-  # independently landed on fetching this same official prebuilt binary
-  # instead for exactly that reason -- this derivation follows the same
-  # approach, written fresh for this repo.
+  # fetch this same official prebuilt binary instead, for the same reason.
   srcs = {
     x86_64-linux = fetchurl {
       url = "https://proton.me/download/drive/cli/${version}/linux-x64/proton-drive";
@@ -50,16 +48,13 @@ let
   # propagatedBuildInputs -- and libgcrypt -- buildInputs). Those are
   # normally satisfied automatically for a compiled consumer (nix wires
   # them into the consumer's own build-time rpath), but a plain
-  # `wrapProgram`-set LD_LIBRARY_PATH doesn't get that for free.
-  # Confirmed via `strace`: Bun's own dlopen of libsecret failed at
-  # runtime ("libsecret not available") specifically because
-  # libglib-2.0.so.0 couldn't be found anywhere in the wrapped
-  # LD_LIBRARY_PATH. Tried walking `libsecret.buildInputs ++
-  # libsecret.propagatedBuildInputs` programmatically first instead of
-  # hardcoding these two -- don't do that, it resolves to the "-dev"
-  # outputs (headers/pkgconfig, no actual runtime .so), not the "out"
-  # output `makeLibraryPath` needs; confirmed by inspecting the
-  # generated wrapper script directly.
+  # `wrapProgram`-set LD_LIBRARY_PATH doesn't get that for free -- Bun's
+  # own dlopen of libsecret fails at runtime ("libsecret not available")
+  # because libglib-2.0.so.0 isn't in the wrapped LD_LIBRARY_PATH.
+  # Walking `libsecret.buildInputs ++ libsecret.propagatedBuildInputs`
+  # programmatically instead of hardcoding these two resolves to the
+  # "-dev" outputs (headers/pkgconfig, no actual runtime .so), not the
+  # "out" output `makeLibraryPath` needs -- hardcoded explicitly instead.
   secretLibPath = lib.makeLibraryPath [
     libsecret
     glib

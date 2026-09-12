@@ -19,9 +19,8 @@
    and ".screen-sharing-indicator" are ALSO ".panel-button" (red/
    orange status colors, not a neutral hover), so a blanket
    ".panel-button:hover" would incorrectly grey those out too. St's
-   CSS engine has no ":not()" (checked -- unused anywhere in the
-   generated stylesheet), so instead of excluding them, their exact
-   original selectors/colors are restated below with "!important" of
+   CSS engine has no ":not()", so instead of excluding them, their
+   exact original selectors/colors are restated below with "!important" of
    their own -- higher specificity (id + 2 classes vs. 1 class here)
    means they win back regardless of import order. */
 .panel-button:hover, .panel-button:focus,
