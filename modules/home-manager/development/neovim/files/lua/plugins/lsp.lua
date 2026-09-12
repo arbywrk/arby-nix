@@ -98,6 +98,29 @@ local servers = {
             },
         },
     },
+
+    -- Zephyr devicetree overlays (.dts/.dtsi/.overlay) -- see
+    -- https://github.com/igor-prusov/dts-lsp. No extra settings needed.
+    dts_lsp = {},
+
+    yamlls = {
+        settings = {
+            yaml = {
+                schemas = {
+                    -- Zuul CI pipeline/job YAML (zuul.d/*.yaml, .zuul.yaml, ...).
+                    -- Schema is a community-maintained one (not yet in
+                    -- SchemaStore) -- swap for an internal schema URL here if
+                    -- one exists at work.
+                    ["https://raw.githubusercontent.com/pycontribs/zuul-lint/master/zuul_lint/zuul-schema.json"] = {
+                        "zuul.d/*.yaml",
+                        "zuul.d/*.yml",
+                        ".zuul.yaml",
+                        "zuul-extra.d/*.yaml",
+                    },
+                },
+            },
+        },
+    },
 }
 
 for server_name, server in pairs(servers) do

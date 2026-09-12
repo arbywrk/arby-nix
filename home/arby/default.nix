@@ -31,12 +31,14 @@
   };
 
   home.packages = [
+    # GUI apps
     pkgs.signal-desktop
     pkgs.localsend
+    pkgs.obsidian
+
+    # CLI apps
     pkgs.wl-clipboard
     pkgs.xclip
-    pkgs.zennotes-desktop
-    pkgs.obsidian
   ];
 
   programs.git = {

@@ -46,4 +46,10 @@ with pkgs;
   taplo
   sqls
   jq
+
+  # YAML
+  yaml-language-server
+
+  # Zephyr devicetree (.dts/.dtsi/.overlay)
+  dts-lsp
 ]
