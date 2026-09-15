@@ -1,6 +1,6 @@
 # Autosuggestion/syntaxHighlighting colors and files/prompt.zsh are all
-# pulled from this repo's vague palette (see neovim's colorscheme.lua /
-# zellij's vague.kdl -- same hex values everywhere, so nvim/zellij/zsh
+# pulled from the Ayu Dark Gray palette (see ghostty.nix's theme / zellij's
+# ayu-dark.kdl -- same hex values everywhere, so nvim/zellij/ghostty/zsh
 # agree). history-substring-search has no dedicated home-manager option
 # (unlike autosuggestion/syntaxHighlighting), so it's sourced by hand.
 { pkgs, ... }:
@@ -17,29 +17,29 @@
 
     autosuggestion = {
       enable = true;
-      highlight = "fg=#606079"; # vague comment gray
+      highlight = "fg=#686868"; # ayu comment/muted gray
     };
 
     syntaxHighlighting = {
       enable = true;
       styles = {
-        default = "fg=#cdcdcd";
-        comment = "fg=#606079";
-        unknown-token = "fg=#d8647e,bold";
-        reserved-word = "fg=#6e94b2";
-        arg0 = "fg=#7fa563";
-        precommand = "fg=#6e94b2,italic";
-        path = "fg=#9bb4bc,underline";
-        globbing = "fg=#bb9dbd";
-        history-expansion = "fg=#bb9dbd";
-        redirection = "fg=#90a0b5";
-        assign = "fg=#c3c3d5";
-        single-hyphen-option = "fg=#e0a363";
-        double-hyphen-option = "fg=#e0a363";
-        single-quoted-argument = "fg=#e8b589";
-        double-quoted-argument = "fg=#e8b589";
-        dollar-quoted-argument = "fg=#e8b589";
-        back-quoted-argument = "fg=#e8b589";
+        default = "fg=#bfbdb6";
+        comment = "fg=#686868";
+        unknown-token = "fg=#ea6c73,bold";
+        reserved-word = "fg=#53bdfa";
+        arg0 = "fg=#7fd962";
+        precommand = "fg=#53bdfa,italic";
+        path = "fg=#95e6cb,underline";
+        globbing = "fg=#cda1fa";
+        history-expansion = "fg=#cda1fa";
+        redirection = "fg=#90e1c6";
+        assign = "fg=#c7c7c7";
+        single-hyphen-option = "fg=#ffb454";
+        double-hyphen-option = "fg=#ffb454";
+        single-quoted-argument = "fg=#f9af4f";
+        double-quoted-argument = "fg=#f9af4f";
+        dollar-quoted-argument = "fg=#f9af4f";
+        back-quoted-argument = "fg=#f9af4f";
       };
     };
 

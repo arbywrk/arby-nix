@@ -27,9 +27,13 @@ local options = {
 	splitright = true,
 	splitbelow = true,
 
-	-- Surface stray whitespace without filling the screen with markers.
+	-- Surface stray whitespace without filling the screen with markers:
+	-- leading indentation gets a thin guide, trailing/non-breaking spaces
+	-- get a dot, real tab characters (rare, expandtab is on below) get an
+	-- arrow. Inter-word spaces stay invisible -- marking those too is the
+	-- classic eyesore this is avoiding.
 	list = true,
-	listchars = { tab = "  ", trail = " ", nbsp = "␣" },
+	listchars = { tab = "→ ", trail = "·", nbsp = "␣", leadmultispace = "┊   " },
 	tabstop = 4,
 	shiftwidth = 4,
 	softtabstop = 4,
