@@ -35,6 +35,9 @@
     pkgs.signal-desktop
     pkgs.localsend
     pkgs.obsidian
+    pkgs.libreoffice-fresh
+    pkgs.sioyek
+    pkgs.onlyoffice-desktopeditors
 
     # CLI apps
     pkgs.wl-clipboard

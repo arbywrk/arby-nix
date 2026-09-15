@@ -334,6 +334,42 @@ in
       button-layout = ":minimize,maximize,close";
     };
 
+    # App grid folder grouping the three office suites together. "System"
+    # and "Utilities" in folder-children are GNOME's own stock default
+    # folders (already populated, left untouched) -- "Office" is appended
+    # alongside them. "YaST"/"Pardus" are empty leftover entries from the
+    # same untouched default and stay as dead weight, same reasoning as
+    # button-layout above.
+    #
+    # Collabora Office isn't in nixpkgs (checked -- Collabora only ships it
+    # as a Flatpak/AppImage/deb, no nix derivation exists), so it stays a
+    # Flatpak install outside this config; its desktop-file-id below is
+    # Flatpak's own reverse-DNS naming, not something this repo controls.
+    "org/gnome/desktop/app-folders" = {
+      folder-children = [
+        "System"
+        "Utilities"
+        "YaST"
+        "Pardus"
+        "Office"
+      ];
+    };
+
+    "org/gnome/desktop/app-folders/folders/Office" = {
+      name = "Office";
+      apps = [
+        "writer.desktop"
+        "calc.desktop"
+        "impress.desktop"
+        "draw.desktop"
+        "base.desktop"
+        "math.desktop"
+        "startcenter.desktop"
+        "onlyoffice-desktopeditors.desktop"
+        "com.collaboraoffice.Office.desktop"
+      ];
+    };
+
     "org/gnome/shell" = {
       # Caffeine: toggleable "prevent idle/suspend" -- click the mug icon in
       # the top bar, or right-click it for a timed duration.

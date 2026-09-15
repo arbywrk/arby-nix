@@ -52,4 +52,8 @@ with pkgs;
 
   # Zephyr devicetree (.dts/.dtsi/.overlay)
   dts-lsp
+
+  # Typst
+  tinymist
+  typstyle
 ]

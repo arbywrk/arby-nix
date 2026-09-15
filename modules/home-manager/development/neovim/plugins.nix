@@ -29,6 +29,7 @@ let
       rust
       ron
       sql
+      typst
       zig
     ]
   );

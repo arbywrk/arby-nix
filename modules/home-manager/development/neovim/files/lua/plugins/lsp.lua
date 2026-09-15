@@ -103,6 +103,8 @@ local servers = {
     -- https://github.com/igor-prusov/dts-lsp. No extra settings needed.
     dts_lsp = {},
 
+    tinymist = {},
+
     yamlls = {
         settings = {
             yaml = {

@@ -65,3 +65,6 @@ end
 vim.schedule(function()
 	vim.opt.clipboard = "unnamedplus"
 end)
+
+-- Neovim core has no built-in filetype detection for .typ yet.
+vim.filetype.add({ extension = { typ = "typst" } })

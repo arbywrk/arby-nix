@@ -43,6 +43,7 @@ local formatters_by_ft = {
 	nix = { "nixfmt" },
 	toml = { "taplo" },
 	json = { "jq" },
+	typst = { "typstyle" },
 }
 
 require("conform").setup({
