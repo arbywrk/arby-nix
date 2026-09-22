@@ -12,11 +12,8 @@
 
       window.opacity = 0.80;
 
-      # Same palette as neovim's vague colorscheme (colorscheme.lua) and
-      # zellij's vague.kdl theme, so nvim/zellij/alacritty all agree. 0-7
-      # rebuilt from this repo's own overridden vague colors; 8-15 are
-      # vague.nvim's own (unmodified) bright variants -- this repo never
-      # overrode those.
+      # Same palette as neovim's colorscheme and zellij's theme, so
+      # nvim/zellij/alacritty all agree.
       colors = {
         primary = {
           background = "#141415";
@@ -52,16 +49,9 @@
         };
       };
 
-      # Ctrl+Backspace / Ctrl+Shift+Backspace -> send zsh's own default
-      # backward-kill-word (^W) / backward-kill-line (^U) bytes. No zsh-side
-      # config needed, those are already zsh's stock bindings -- only the
-      # physical key chord needed mapping onto them.
-      #
-      # builtins.fromJSON builds the actual control byte from readable text
-      # -- Nix has no \u escape of its own and silently drops a literal
-      # backslash typed directly before an unrecognized escape letter, which
-      # this repo's TOML generator then round-trips as a broken value.
-      # Giving it the real byte lets the generator re-escape it correctly.
+      # Ctrl+Backspace / Ctrl+Shift+Backspace -> zsh's stock backward-kill-word
+      # (^W) / backward-kill-line (^U) bytes. builtins.fromJSON produces the
+      # real control byte -- Nix has no \u escape of its own.
       keyboard.bindings = [
         {
           key = "Backspace";

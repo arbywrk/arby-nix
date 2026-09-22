@@ -14,13 +14,9 @@
       (import ./self-lua.nix { inherit pkgs; })
     ];
 
-    # Mirrors files/lua/../init.lua: leaders set before anything else, then
-    # the two non-plugin config modules. home-manager places the "advised
-    # plugin config" (which sources every plugins.*.config string) at
-    # lib.mkOrder 200 inside initLua; without an explicit lower mkOrder
-    # here, this content gets the default priority (1000) and ends up
-    # concatenated *after* that -- meaning every plugin's <leader>
-    # keymaps would bind against the default "\" leader, not this one.
+    # mkOrder 100: home-manager concatenates plugin config at mkOrder 200,
+    # so this has to land before it -- otherwise plugins' <leader> keymaps
+    # would bind against the default "\" leader instead of this one.
     initLua = lib.mkOrder 100 ''
       vim.g.mapleader = " "
       vim.g.maplocalleader = " "
@@ -36,20 +32,11 @@
     ++ (import ./debug-packages.nix { inherit pkgs; })
     ++ [ pkgs.nerd-fonts.jetbrains-mono ];
 
-  # nixpkgs' neovim package ships its own "Neovim wrapper" launcher
-  # (share/applications/nvim.desktop) that shows up in GNOME's app grid --
-  # it's meant to be run from a terminal, not launched as a GUI app.
-  # Shadowing the same desktop-entry ID under ~/.local/share/applications
-  # (which home-manager's xdg.desktopEntries writes to, and which takes
-  # priority over the nixpkgs-provided copy) with noDisplay lets the
-  # package/binary/vi-vim aliases stay exactly as they are, it just drops
-  # out of app-grid/search listings.
-  #
-  # A plain "Vim" entry also shows up even though `pkgs.vim` isn't declared
-  # anywhere in this repo (grepped to confirm) -- it's pulled in
-  # transitively by something else's build/runtime closure. Same shadow
-  # treatment rather than chasing down and possibly breaking whatever
-  # actually depends on it.
+  # nixpkgs' neovim/vim packages ship .desktop launchers meant to be run
+  # from a terminal, but they still show up in GNOME's app grid. Shadow
+  # both IDs under ~/.local/share/applications (which wins over the
+  # nix-profile copy) with noDisplay to drop them from app-grid/search
+  # without touching the actual packages/aliases.
   xdg.desktopEntries = {
     nvim = {
       name = "Neovim wrapper";

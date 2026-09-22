@@ -2,10 +2,9 @@
 {
   username,
   system ? "x86_64-linux",
-  # Defaults to the profile's own default.nix (unchanged behavior for
-  # existing callers) -- pass an explicit module (e.g. ../home/arby/gnome.nix)
-  # to expose a standalone homeConfigurations target for a DE-specific
-  # profile that's normally only reachable through a NixOS host.
+  # Defaults to the profile's own default.nix -- pass an explicit module
+  # to expose a standalone homeConfigurations target for a profile that's
+  # normally only reachable through a NixOS host (e.g. home/arby/gnome.nix).
   modules ? [ ../home/${username} ],
 }:
 let

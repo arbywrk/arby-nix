@@ -1,9 +1,7 @@
-# Stock-look GNOME: no shell theme, no icon/cursor swap, no libadwaita
-# color overrides -- just the functional bits that make vanilla GNOME
-# usable day to day (keybindings, a couple of small extensions, apps that
-# replace what services.gnome.core-apps.enable = false stripped out at
-# the NixOS level). See gnome/custom.nix, which imports this file and
-# layers the cosmetic pass on top, and ./README.md for the split rationale.
+# Stock-look GNOME: functional bits only (keybindings, extensions, apps
+# replacing what services.gnome.core-apps.enable = false stripped out).
+# See ./custom.nix (imports this, layers cosmetics on top) and
+# ./README.md for the split rationale.
 {
   pkgs,
   inputs,
@@ -17,11 +15,9 @@
   home.packages = [
     pkgs.gnomeExtensions.caffeine
 
-    # services.gnome.core-apps.enable = false (modules/nixos/desktop/gnome.nix)
-    # drops GNOME's whole default app bundle -- these are the ones actually
-    # wanted back, installed declaratively here rather than left to
-    # Bazaar/Flatpak (see below) since they're core GNOME apps this repo
-    # already knows how to package and keep current via nixpkgs.
+    # Apps to bring back after core-apps.enable = false
+    # (modules/nixos/desktop/gnome.nix), packaged via nixpkgs rather than
+    # left to Bazaar/Flatpak since nixpkgs already tracks them fine.
     pkgs.loupe # image viewer
     pkgs.papers # document viewer (PDF/ePub/... -- GNOME's Evince rebrand)
     pkgs.gnome-calendar
@@ -29,19 +25,14 @@
     pkgs.resources # GNOME's Rust system monitor (gnome-system-monitor's replacement)
     pkgs.seahorse # GNOME's own front-end onto the Secret Service (gnome-keyring)
 
-    # Flathub-first app store, for anything not worth a nixpkgs entry in
-    # this repo (per-user, not managed here) -- needs services.flatpak.enable
-    # (modules/nixos/desktop/gnome.nix) to actually install/run flatpaks.
+    # Flathub-first app store for anything not worth a nixpkgs entry here
+    # -- needs services.flatpak.enable (modules/nixos/desktop/gnome.nix).
     pkgs.bazaar
   ];
 
-  # Stock Adwaita ships icons for GNOME's own apps only -- third-party apps
-  # (Signal, Obsidian, Brave, ...) fall back to a generic icon under it.
-  # MoreWaita is Adwaita plus a large set of extra app icons drawn in the
-  # same style, so it stays visually "default GNOME" while actually
-  # covering what's installed here. gnome/custom.nix overrides this
-  # (lib.mkForce, same pattern as enabled-extensions above) to its own
-  # Papirus pick instead.
+  # Stock Adwaita only ships icons for GNOME's own apps -- MoreWaita adds
+  # coverage for third-party apps while staying visually "default GNOME".
+  # custom.nix overrides this (lib.mkForce) to Papirus instead.
   gtk = {
     enable = true;
     iconTheme = {
@@ -58,14 +49,11 @@
     packages = [ "com.fastmail.Fastmail" ];
   };
 
-  # User-installed Flatpaks export their .desktop files to
-  # ~/.local/share/flatpak/exports/share, but systemd --user's own
-  # environment (what GNOME Shell actually inherits, as opposed to a
-  # login shell sourcing /etc/profile.d) never picks that path up on its
-  # own -- so without this, no user Flatpak's launcher shows up in the
-  # app grid, regardless of how it was installed. /var/lib/flatpak/... is
-  # the equivalent for system-wide installs, added for completeness even
-  # though nothing here installs at that level.
+  # User Flatpaks export .desktop files to
+  # ~/.local/share/flatpak/exports/share, but that's not on GNOME Shell's
+  # XDG_DATA_DIRS by default -- without this, no Flatpak launcher shows
+  # up in the app grid. /var/lib/flatpak/... is the system-install
+  # equivalent, added for completeness though unused here.
   xdg.systemDirs.data = [
     "${config.home.homeDirectory}/.local/share/flatpak/exports/share"
     "/var/lib/flatpak/exports/share"
@@ -74,27 +62,16 @@
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       # GNOME Shell/Mutter (the desktop cursor and window-manager chrome,
-      # as opposed to individual GTK apps) reads this separately from
-      # gtk.iconTheme above, which only covers settings.ini for GTK apps
-      # themselves -- both need setting for the icon theme to actually be
-      # consistent everywhere. gnome/custom.nix overrides this (lib.mkForce)
-      # to "PapirusPlus".
+      # Shell/Mutter reads its own icon-theme key separately from
+      # gtk.iconTheme above (GTK apps only) -- both need setting.
+      # custom.nix overrides this (lib.mkForce) to "PapirusPlus".
       icon-theme = "MoreWaita";
     };
 
-    # App grid folder grouping the three office suites together (see
-    # home/arby/default.nix for where libreoffice-fresh/onlyoffice come
-    # from). Organizational, not cosmetic, so it's here rather than in
-    # gnome/custom.nix -- useful in stock GNOME too. "System" and
-    # "Utilities" in folder-children are GNOME's own stock default
-    # folders (already populated, left untouched); "YaST"/"Pardus" are
-    # empty leftover entries from that same untouched default and stay as
-    # dead weight, same reasoning as button-layout in custom.nix.
-    #
-    # Collabora Office isn't in nixpkgs (checked -- Collabora only ships it
-    # as a Flatpak/AppImage/deb, no nix derivation exists), so it stays a
-    # Flatpak install outside this config; its desktop-file-id below is
-    # Flatpak's own reverse-DNS naming, not something this repo controls.
+    # App-grid folder grouping the office suites. "YaST"/"Pardus" are
+    # empty stock-default leftovers, left as-is. Collabora Office isn't
+    # in nixpkgs (Flatpak/AppImage/deb only), hence its Flatpak-style
+    # desktop-file-id below.
     "org/gnome/desktop/app-folders" = {
       folder-children = [
         "System"
@@ -121,11 +98,8 @@
     };
 
     "org/gnome/shell" = {
-      # Caffeine: toggleable "prevent idle/suspend" -- click the mug icon in
-      # the top bar, or right-click it for a timed duration. The only
-      # extension stock GNOME is missing that's worth keeping regardless of
-      # theme; gnome/custom.nix overrides this whole list (lib.mkForce) to
-      # add its own cosmetic-support extensions on top.
+      # custom.nix overrides this whole list (lib.mkForce) to add its own
+      # cosmetic-support extensions on top.
       enabled-extensions = [ "caffeine@patapon.info" ];
     };
 

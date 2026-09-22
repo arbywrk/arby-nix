@@ -1,18 +1,12 @@
-# Autosuggestion/syntaxHighlighting colors and files/prompt.zsh are all
-# pulled from the Ayu Dark Gray palette (see ghostty.nix's theme / zellij's
-# ayu-dark.kdl -- same hex values everywhere, so nvim/zellij/ghostty/zsh
-# agree). history-substring-search has no dedicated home-manager option
-# (unlike autosuggestion/syntaxHighlighting), so it's sourced by hand.
+# Autosuggestion/syntaxHighlighting colors and files/prompt.zsh use the
+# same Ayu Dark Gray palette as ghostty.nix and zellij's theme.
 { pkgs, ... }:
 {
   programs.zsh = {
     enable = true;
 
-    # "viins" (not "vicmd"): start each prompt in insert mode -- typing
-    # works like normal, Esc drops into vi command mode for editing. The
-    # other option, "vicmd", would start every prompt in command mode
-    # instead, which is the wrong default for a shell you're constantly
-    # typing into.
+    # Start each prompt in insert mode (typing works like normal, Esc
+    # drops to vi command mode) rather than "vicmd" (command mode first).
     defaultKeymap = "viins";
 
     autosuggestion = {
@@ -43,11 +37,9 @@
       };
     };
 
-    # Lands at initContent's default mkOrder (1000) -- after autosuggestion
-    # (700) but before syntaxHighlighting (1200), same slot home-manager
-    # itself uses for widget-creating plugins so highlighting wraps them
-    # correctly (its own comment: "load zsh-syntax-highlighting after all
-    # custom widgets have been created").
+    # Default mkOrder (1000) lands this between autosuggestion (700) and
+    # syntaxHighlighting (1200) -- the slot home-manager reserves for
+    # widget-creating plugins, so highlighting wraps them correctly.
     initContent = ''
       source ${pkgs.zsh-history-substring-search}/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
       bindkey "$terminfo[kcuu1]" history-substring-search-up

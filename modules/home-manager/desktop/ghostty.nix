@@ -3,43 +3,26 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- ghostty can
-      # natively follow GNOME's light/dark switch via that syntax, but
-      # zellij's own theme is always static ayu-dark (its color model has
-      # no transparency, so its tab-bar/status-bar can't blend into a
-      # light background), which produces a stark seam whenever ghostty
-      # goes light with zellij running. Pinned dark to match zellij
-      # exactly, at the cost of never following the system light/dark
-      # toggle.
+      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- zellij's own
+      # theme is always static dark, so following GNOME's light/dark
+      # switch here would produce a seam whenever ghostty goes light with
+      # zellij running.
       theme = "Ayu Dark Gray";
       font-family = "JetBrainsMono Nerd Font Mono"; # matches alacritty.nix
       font-size = 11;
 
-      # Defaults are precision (trackpad) x1, discrete (notched mouse
-      # wheel) x3 -- both dialed down here since the defaults scrolled too
-      # fast. Pure personal-feel tuning, adjust freely.
-      mouse-scroll-multiplier = "precision:0.6,discrete:1.5";
+      mouse-scroll-multiplier = "precision:0.6,discrete:1.5"; # dialed down from defaults
 
-      # Ctrl+Shift+Q quits the whole app by default (`quit`, not just
-      # closing the current window/tab) -- "unbind" removes ghostty's own
-      # binding so the raw keypress passes through to whatever's running
-      # in the terminal instead, which is exactly what's wanted here:
-      # zellij binds the same chord to its own Quit action (see
-      # development/zellij/default.nix's `shared_except "locked" { bind
-      # "Ctrl Shift q" { Quit; } }`), and this lets it actually reach
-      # zellij instead of ghostty eating it first.
+      # Ctrl+Shift+Q quits the whole app by default -- unbind so the
+      # keypress passes through to zellij's own Quit action on the same
+      # chord instead (development/zellij/default.nix).
       keybind = [ "ctrl+shift+q=unbind" ];
     };
 
-    # Ayu Dark's own palette (ghostty's bundled "Ayu" theme file), except
-    # background/cursor-text use Yaru-dark's actual shell panel color
-    # (#131313) instead of Ayu's stock blue-black (#0b0e14), and
-    # selection-background uses a plain mid gray (#3c3c3c) instead of
-    # Ayu's sky-blue (#409fff) -- same substitutions zellij's
-    # ayu-dark.kdl makes, so both blend with Yaru's near-black rather
-    # than carrying Ayu's blue undertone. ANSI palette colors 4 and 12
-    # stay literally blue -- those are semantic (shell tools color actual
-    # "blue" output with them), not background decoration.
+    # Ayu Dark's bundled palette, with background/cursor-text/selection
+    # swapped for near-black/gray instead of Ayu's stock blue-tinted
+    # values -- same substitutions as zellij's ayu-dark.kdl, so both blend
+    # consistently. ANSI blue (4/12) is left alone; that's semantic.
     themes."Ayu Dark Gray" = {
       palette = [
         "0=#11151c"

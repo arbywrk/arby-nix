@@ -1,10 +1,7 @@
-# Debug adapters and the embedded toolchain. codelldb and cpptools come
-# from VS Code extension packages that don't expose their binaries on
-# $out/bin by default (they're nested under share/vscode/extensions/...),
-# so each gets a thin wrapper package that symlinks the real binary to a
-# bare, PATH-resolvable name -- matching what debug.lua's kind modules
-# expect (plain command names, not baked-in store paths that would go
-# stale on every rebuild).
+# Debug adapters and the embedded toolchain. codelldb/cpptools come from
+# VS Code extension packages whose binaries are nested under
+# share/vscode/extensions/... instead of $out/bin, so each gets a thin
+# wrapper exposing a plain PATH-resolvable name, as debug.lua expects.
 { pkgs }:
 let
   codelldb-bin = pkgs.runCommand "codelldb-bin" { } ''

@@ -78,10 +78,10 @@ Adwaita plus a large set of extra app icons drawn in the same style, so
 while actually covering what's installed. `custom.nix` overrides this to
 Papirus, its own distinct icon aesthetic.
 
-## New apps (this pass)
+## Apps added beyond core-apps
 
-All added to `default.nix` since they're functional, not cosmetic —
-they'll show up in either flavor:
+All in `default.nix` since they're functional, not cosmetic — they show
+up in either flavor:
 
 - **Loupe** — image viewer (replaces the one `core-apps.enable = false` removed).
 - **Papers** — GNOME's document viewer, the renamed/rebranded Evince.
@@ -101,14 +101,11 @@ default/custom split.
 
 ## GNOME version
 
-`flake.lock`'s `nixpkgs` input is pinned to nixos-unstable as of
-2026-09-22. As of that commit, nixpkgs packages **GNOME 50.x**
-(`gnome-shell` 50.4) across the board — **GNOME 51 is not in nixpkgs
-yet**, so "GNOME 51" here isn't achievable by bumping the flake input
-alone; it'll arrive automatically in a future `nix flake update nixpkgs`
-once nixpkgs itself packages it. The one exception: GNOME Circle apps
-version independently of the shell, so **Resources** above is already at
-`51.0`.
+As of the `nixpkgs` input pinned 2026-09-22, nixpkgs packages **GNOME
+50.x** (`gnome-shell` 50.4) — GNOME 51 isn't in nixpkgs yet, so it'll
+arrive on its own with a future `nix flake update nixpkgs`. Exception:
+GNOME Circle apps version independently of the shell, so **Resources**
+above is already at `51.0`.
 
 ## Trying this out / switching back
 

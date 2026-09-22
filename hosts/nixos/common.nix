@@ -1,19 +1,15 @@
 { pkgs, ... }:
 
 {
-  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.initrd.luks.devices."luks-3776db7c-a9d9-4afe-80cb-b10d0bf33035".device =
     "/dev/disk/by-uuid/3776db7c-a9d9-4afe-80cb-b10d0bf33035";
 
-  # NetworkManager already runs its own wpa_supplicant for Wi-Fi, so
-  # networking.wireless (the standalone wpa_supplicant service) must stay
-  # off to avoid both fighting over the same interface.
+  # networking.wireless (standalone wpa_supplicant) must stay off --
+  # NetworkManager runs its own and they'd fight over the interface.
   networking = {
     networkmanager.enable = true;
     firewall = {
@@ -39,9 +35,8 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    # When a managed path already exists on disk (e.g. a tool wrote its own
-    # default config before home-manager took it over), rename it to
-    # <name>.backup instead of hard-failing the whole activation.
+    # Rename a pre-existing unmanaged file to <name>.backup instead of
+    # hard-failing activation when home-manager first takes it over.
     backupFileExtension = "backup";
   };
 

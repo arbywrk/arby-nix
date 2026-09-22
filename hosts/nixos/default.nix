@@ -10,8 +10,7 @@
   networking.hostName = "nixos";
 
   home-manager.extraSpecialArgs = { inherit inputs; };
-  # Trying stock-look GNOME again -- swap for ../../home/arby/gnome-custom.nix
-  # to go back to the themed profile (Yaru-esque Adwaita pass, Papirus
-  # icons, custom shell CSS). See modules/home-manager/desktop/gnome/README.md.
+  # Stock-look GNOME profile -- swap for ../../home/arby/gnome-custom.nix
+  # for the themed one. See modules/home-manager/desktop/gnome/README.md.
   home-manager.users."arby" = import ../../home/arby/gnome.nix;
 }

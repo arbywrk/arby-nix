@@ -16,25 +16,17 @@
   home.username = "arby";
   home.homeDirectory = "/home/arby";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "26.05"; # Please read the comment before changing.
+  # Compat marker for Home Manager's on-disk state format -- don't bump
+  # without reading the release notes, regardless of the actual HM version.
+  home.stateVersion = "26.05";
 
   xdg = {
     enable = true;
     mime.enable = true;
 
-    # Lowercase directory names instead of xdg-user-dirs' own capitalized
-    # defaults (Desktop, Documents, ...) -- purely a naming preference,
-    # same well-known set of directories otherwise. This *declares*
-    # user-dirs.dirs; the directories themselves were renamed on disk by
-    # hand to match (this option only creates them if missing, it doesn't
-    # move existing content into a newly-renamed target).
+    # Lowercase dir names instead of xdg-user-dirs' capitalized defaults.
+    # Only declares user-dirs.dirs -- the directories were renamed on disk
+    # by hand to match.
     userDirs = {
       enable = true;
       createDirectories = true;
@@ -58,26 +50,17 @@
     pkgs.libreoffice-fresh
     pkgs.sioyek
     pkgs.onlyoffice-desktopeditors
-    pkgs.bitwarden-desktop # replaces Proton Pass (see comment below)
+    pkgs.bitwarden-desktop # replaces Proton Pass, which was browser-extension-only
 
     # CLI apps
     pkgs.wl-clipboard
     pkgs.xclip
   ];
 
-  # Proton Pass was never declared here -- it was only ever a browser
-  # extension (installed through Brave's own extension store, which this
-  # config doesn't manage), not a nixpkgs package, so there was nothing
-  # to remove from this file. bitwarden-desktop above is its replacement;
-  # removing the Proton Pass extension itself, and importing/exporting
-  # vault data between the two, is a manual step in the browser.
-
   # No desktop sync client: GNOME Online Accounts (Settings > Online
-  # Accounts, added interactively, not declared here) already gives
-  # on-demand access to Nextcloud files through Files/Nautilus over
-  # WebDAV -- nothing synced to disk, which is all that was wanted. The
-  # actual sync client (services.nextcloud-client) did full bidirectional
-  # local sync instead, which is more than needed, so it's gone.
+  # Accounts, added interactively) gives on-demand Nextcloud access over
+  # WebDAV, which is all that's wanted -- services.nextcloud-client did
+  # full local sync instead, more than needed.
   programs.git = {
     enable = true;
     settings.user = {
@@ -86,18 +69,11 @@
     };
   };
 
-  # Obsidian's own packaged .desktop file (nixpkgs `obsidian`) declares no
-  # StartupWMClass, and its running Electron window reports app-id
-  # "md.Obsidian" (systemd names the app's cgroup scope
-  # "app-md.Obsidian-<pid>.scope") -- a case/name mismatch from the plain
-  # "obsidian.desktop" filename. The app grid
-  # matches fine (it just reads installed .desktop files directly, no
-  # window involved), but dash-to-dock has to match a *running window*
-  # back to an app, fails on that mismatch, and falls back to a generic
-  # icon. This entry lands at ~/.local/share/applications/obsidian.desktop,
-  # which XDG's search order checks before the nix-profile-provided one of
-  # the same name, so it wins outright -- same Exec/Icon/etc, just with
-  # the missing StartupWMClass hint added.
+  # nixpkgs' obsidian.desktop declares no StartupWMClass, but its window
+  # reports app-id "md.Obsidian" -- add the hint so window-matching (task
+  # switchers, dock-style extensions) can find it by class. Same
+  # Exec/Icon/etc as the original; this just overrides it via XDG's search
+  # order (~/.local/share/applications wins over the nix-profile copy).
   xdg.desktopEntries.obsidian = {
     name = "Obsidian";
     comment = "Knowledge base";
@@ -111,13 +87,10 @@
     };
   };
 
-  programs.mise.enable = true;
-
   programs = {
+    mise.enable = true;
     brave-origin.enable = true;
     firefox.enable = true;
+    home-manager.enable = true; # let it install and manage itself
   };
-
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
 }

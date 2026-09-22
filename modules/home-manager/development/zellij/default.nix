@@ -1,9 +1,7 @@
 { pkgs, lib, ... }:
 let
-  # Opens a shell that reconnects to the last ssh target run in this
-  # zellij session -- see files/zellij-resume-ssh.sh and
-  # files/record-ssh.zsh for how. Bound to "Shift s" below (pane mode:
-  # new pane; tab mode: new tab).
+  # Reconnects to the last ssh target run in this zellij session; bound
+  # to "Shift s" below. See files/record-ssh.zsh for how it's recorded.
   resumeSsh = pkgs.writeShellScriptBin "zellij-resume-ssh" (
     builtins.readFile ./files/zellij-resume-ssh.sh
   );
@@ -19,112 +17,51 @@ in
   programs.zellij = {
     enable = true;
 
-    # Zellij falls back to $SHELL for new panes when this is unset, which
-    # is fragile (stale login sessions, contexts where $SHELL isn't
-    # propagated) -- pin it explicitly instead. mkDefault so other homes
-    # importing this module can pick a different shell with a plain
-    # assignment, no lib.mkForce needed.
+    # $SHELL fallback is fragile (stale login sessions, unset in some
+    # contexts) -- pin explicitly. mkDefault lets other homes override it.
     settings.default_shell = lib.mkDefault "zsh";
 
     # Every new session/pane starts locked -- zellij intercepts nothing
-    # (besides Ctrl g to unlock) until you deliberately ask it to, so it
-    # never fights zsh's or nvim's own keybinds by default. See the
-    # `locked`/`shared_except "locked"` blocks below for what that means
-    # in practice.
+    # (besides Ctrl g to unlock) until asked to, so it never fights zsh's
+    # or nvim's own keybinds by default. See the `locked`/`shared_except
+    # "locked"` blocks below for what that means in practice.
     settings.default_mode = "locked";
 
-    # NOT "compact": compact-bar only ever renders the tab line -- its
-    # keybind hints live behind a separate toggle-activated tooltip
-    # overlay, not continuously visible. The default status-bar is the
-    # same total height (1 line each for tab-bar/status-bar) and shows
-    # the current mode's keybind hints inline at all times, which is
-    # what's actually wanted while these binds aren't memorized yet.
+    # Default status-bar, not compact-bar -- shows the current mode's
+    # keybind hints inline at all times instead of behind a toggle.
     settings.pane_frames = false;
     settings.theme = "ayu-dark";
 
-    # Full explicit keybinds, based on zellij's own stock defaults --
-    # including its own multi-key-per-bind convention for directional
-    # keys (e.g. `bind "h" "left" { MoveFocus "left"; }` instead of two
-    # separate binds), used throughout below to avoid duplicating every
-    # direction as arrow-key-bind-plus-hjkl-bind.
+    # Full explicit keybinds, based on zellij's stock defaults. Notes on
+    # what's non-obvious below; everything else follows zellij's own
+    # mode/action names directly.
     #
-    # Relocated (collided with blink.cmp/fzf-lua/nvim keymaps):
-    #   Ctrl h (move mode)    -> Alt m  (Ctrl h needs to stay free to reach
-    #                                    nvim while locked -- see below)
-    #   Ctrl n (resize mode)  -> Alt r  (blink.cmp: next completion item)
-    #   Ctrl p (pane mode)    -> Ctrl a (blink.cmp: prev completion item)
-    #   Ctrl o (session mode) -> Alt u  (vim builtin: jumplist back)
-    # Dropped entirely (tmux-compat mode, not a tmux user, its trigger
-    # collided with blink.cmp/fzf-lua doc/preview scrolling):
-    #   Ctrl b (tmux mode)
+    # Relocated (collided with nvim/blink.cmp/fzf-lua keymaps):
+    #   Ctrl h (move)    -> Alt m   (Ctrl h must stay free to reach nvim)
+    #   Ctrl n (resize)  -> Alt r   (blink.cmp: next completion item)
+    #   Ctrl p (pane)    -> Ctrl a  (blink.cmp: prev completion item)
+    #   Ctrl o (session) -> Alt u   (vim builtin: jumplist back)
+    # Dropped: Ctrl b (tmux-compat mode, unused, collided with scrolling).
     #
-    # Pane movement lives entirely under `pane` mode (Ctrl a to enter):
-    # h/j/k/l move focus repeatedly with no auto-relock per press (unlike
-    # most other binds in this config), then Enter/Esc/Ctrl a again
-    # confirms and drops back to locked -- move around as much as needed,
-    # confirm once. Same shape as tab navigation (Ctrl t enters `tab`
-    # mode, h/j/k/l/1-9 navigate, back to locked once you land on one) --
-    # deliberately not a single quick Ctrl+h/j/k/l keypress like it was
-    # before. No direct global MoveFocus bind exists anymore. Ctrl
-    # Shift h/j/k/l are unchanged -- still the direct one-shot shortcut
-    # for MovePane (reorganize panes) without entering `move` mode, still
-    # relocking after one move.
+    # Pane/tab movement (`pane`/`tab` mode, entered via Ctrl a/Ctrl t):
+    # h/j/k/l move focus repeatedly without relocking, then Enter/Esc/the
+    # mode key again confirms back to locked. No nvim-side integration
+    # for this exists -- an auto-lock-on-focus approach and a
+    # keystroke-forwarding plugin were both tried and dropped; zellij's
+    # "locked" is one global state with no per-pane awareness, so it
+    # can't reliably tell "nvim has focus" from "just unlocked elsewhere".
     #
-    # No nvim-side integration for pane movement -- tried an
-    # auto-lock-on-focus approach (nvim switching zellij into "locked"
-    # while it had focus, so these binds would pass through to nvim's own
-    # window-movement keymaps unintercepted) and a keystroke-forwarding
-    # plugin (vim-zellij-navigator) before that; both removed. Zellij's
-    # "locked" mode has no concept of "which pane is focused" -- it's one
-    # global state -- so having it serve as both "the default resting
-    # state for every pane" and "specifically don't intercept these keys
-    # while nvim has focus" fought itself: unlocking anywhere (e.g. to
-    # move panes from a shell) then landing back on an nvim pane while
-    # still unlocked would intercept Ctrl h/j/k/l before nvim ever saw
-    # them, same problem as before. Cost of not having any integration:
-    # zsh's own Ctrl+H (backspace)/Ctrl+K (kill-line)/Ctrl+L
-    # (clear-screen) are unavailable while unlocked in a non-vim pane --
-    # same tradeoff any global bind on these keys would have anyway.
+    # "locked" (default_mode above) is the resting state throughout: every
+    # action-complete `SwitchToMode` below targets "locked", not "normal"
+    # -- Ctrl g (the one bind that targets "normal") is what unlocks.
+    # Quit is Ctrl Shift q, not stock Ctrl q, so muscle-memory Ctrl q from
+    # another program can't kill the session by accident.
     #
-    # "locked" is the resting state (default_mode above), and stays
-    # resting: every `SwitchToMode "normal"` below that means "action
-    # done, go idle" targets "locked" instead of "normal" -- so finishing
-    # any single zellij action (new pane, go to tab N, resize, ...) drops
-    # straight back to locked, and Ctrl g has to be pressed again before
-    # the next one. The one deliberate exception is the unlock action
-    # itself (`locked { bind "Ctrl g" { SwitchToMode "normal"; } }`) --
-    # that one has to stay targeting "normal", it's the only way to
-    # unlock at all. Nothing else was added to the `locked` context this
-    # round (only Ctrl g) -- revisit later if more is wanted there.
-    # Untouched (no conflict found): scroll (Ctrl s), tab (Ctrl t).
-    # Quit is deliberately hardened, not left at stock Ctrl q: Ctrl
-    # Shift q instead, so muscle-memory Ctrl q from another program
-    # can't kill the whole zellij session by accident.
-    #
-    # Moving tabs/panes around (all stock zellij actions, not custom):
-    #   Alt i / Alt o           move the current tab left / right
-    #   Ctrl a then b           break the focused pane out into its own
-    #                           new tab (tab mode's `[`/`]` do the same
-    #                           but land the new tab to the left/right
-    #                           of the current one specifically)
-    # There's deliberately no bind for the reverse (folding an existing
-    # tab back into another tab as one of its panes) -- zellij has no
-    # such action, stock or otherwise; BreakPane only ever goes
-    # pane -> tab, one-way.
-    #
-    # "Shift s" in pane mode / tab mode: new pane / new tab that
-    # reconnects to the most recent ssh target run in *this* zellij
-    # session (falls back to a plain shell if nothing's been ssh'd to
-    # yet) -- see files/record-ssh.zsh (the ssh() wrapper that records
-    # the target) and files/zellij-resume-ssh.sh (the reconnect script,
-    # exposed on PATH as `zellij-resume-ssh`). This is session-wide, not
-    # per-pane -- zellij keybinds can't see what a specific pane is
-    # currently running, only a plugin could, so "same place as the
-    # pane I'm looking at" is approximated as "last ssh anywhere in this
-    # session" instead. mosh (development/mosh) is the other half of
-    # "keep remote connections alive" -- `mosh <host>` in place of `ssh`
-    # survives wifi drops/sleep that would otherwise kill a plain ssh
-    # pane outright.
+    # "Shift s" (pane/tab mode): new pane/tab reconnecting to the most
+    # recent ssh target run anywhere in *this* zellij session -- see
+    # files/record-ssh.zsh (records it) and files/zellij-resume-ssh.sh
+    # (reconnects). mosh (development/mosh) covers the same "keep remote
+    # sessions alive" need for connections started directly, not via this.
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {
@@ -294,10 +231,8 @@ in
           }
           shared_except "locked" "scroll" "search" {
               bind "Ctrl s" { SwitchToMode "scroll"; }
-              // Excludes scroll/search specifically because both already
-              // bind Ctrl f to PageScrollDown (shared_among "scroll"
-              // "search" below) -- keeping this out of those two modes is
-              // what avoids the collision, not any implicit precedence.
+              // scroll/search excluded: both already bind Ctrl f to
+              // PageScrollDown (shared_among "scroll" "search" below).
               bind "Ctrl f" { ToggleFloatingPanes; SwitchToMode "locked"; }
           }
           shared_except "locked" "tab" {

@@ -27,12 +27,9 @@
         arby = mkHome { username = "arby"; };
         wsl = mkHome { username = "wsl"; };
 
-        # Same content the "nixos" system applies for this user's home
-        # profile, exposed standalone so `home-manager switch --flake
-        # .#gnome` can iterate on it without a full nixos-rebuild.
-        # "gnome" is stock-look GNOME (keybindings/caffeine/apps only,
-        # no theming); "gnome-custom" layers the cosmetic pass on top of
-        # it. See modules/home-manager/desktop/gnome/README.md.
+        # Standalone targets for `home-manager switch --flake .#gnome[-custom]`,
+        # to iterate on the GNOME profile without a full nixos-rebuild.
+        # See modules/home-manager/desktop/gnome/README.md.
         gnome = mkHome {
           username = "arby";
           modules = [ ./home/arby/gnome.nix ];
