@@ -3,8 +3,6 @@
 # the `overlays` argument to `import inputs.nixpkgs { ... }` in
 # lib/mkhome.nix) so `pkgs.<name>` resolves the same way everywhere.
 final: prev: {
-  proton-drive-cli = final.callPackage ../pkgs/proton-drive-cli { };
-
   # Settings' Appearance page hardcodes its "Style" (light/dark) and
   # "Accent Color" sections -- nothing gates their visibility, no
   # gsettings/lockdown key hides just these rows, and there's no runtime

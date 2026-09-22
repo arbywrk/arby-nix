@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   # GNOME Shell's own default dark stylesheet, pulled straight out of its
@@ -15,24 +15,30 @@ let
 in
 
 {
+  # Everything functional (keybindings, caffeine, app-grid folder, apps
+  # that replace what core-apps.enable = false strips) lives in
+  # ./default.nix -- this file only ever adds look-and-feel on top of it.
+  # See ./README.md for the full split rationale.
+  imports = [ ./default.nix ];
+
   home.packages = [
-    pkgs.gnomeExtensions.caffeine
     pkgs.gnomeExtensions.user-themes
-    pkgs.gnomeExtensions.dash-to-dock
     pkgs.papirus-icon-theme
-    pkgs.loupe # GNOME's default image viewer
   ];
 
   # Widget theme is plain Adwaita, hand-tweaked below instead of pulling
   # in a third-party GTK theme. Icons are Papirus-Dark, wrapped under the
   # name "PapirusPlus" so a couple of directories stay reserved for
   # swapping individual icons later (see the empty xdg.dataFile block
-  # below) without touching iconTheme.name again.
+  # below) without touching iconTheme.name again. lib.mkForce: default.nix
+  # (imported above) already sets iconTheme to MoreWaita -- same
+  # non-mergeable-leaf situation as enabled-extensions further down, this
+  # overrides it rather than conflicting.
   gtk = {
     enable = true;
     iconTheme = {
-      name = "PapirusPlus";
-      package = null; # no package of its own, see xdg.dataFile below
+      name = lib.mkForce "PapirusPlus";
+      package = lib.mkForce null; # no package of its own, see xdg.dataFile below
     };
     cursorTheme = {
       name = "Bibata-Modern-Ice"; # light cursor, reads well on the dark theme below
@@ -314,12 +320,15 @@ in
       # GNOME Shell/Mutter (the desktop cursor and window-manager chrome,
       # as opposed to individual GTK apps) reads these -- not
       # gtk.iconTheme/gtk.cursorTheme above, which only cover
-      # settings.ini for GTK apps themselves. Both keys were already
-      # sitting in this dconf database with stray live values
-      # ('Yaruwaita', 'Yaru') this repo never actually declared (same
-      # situation as button-layout below) -- made explicit here so a
-      # fresh profile doesn't fall back to GNOME's own defaults instead.
-      icon-theme = "PapirusPlus";
+      # settings.ini for GTK apps themselves. cursor-theme/cursor-size
+      # were already sitting in this dconf database with stray live
+      # values ('Yaru') this repo never actually declared (same situation
+      # as button-layout below) -- made explicit here so a fresh profile
+      # doesn't fall back to GNOME's own defaults instead. icon-theme
+      # uses lib.mkForce -- default.nix (imported above) sets it to
+      # "MoreWaita", same non-mergeable-leaf situation as elsewhere in
+      # this file.
+      icon-theme = lib.mkForce "PapirusPlus";
       cursor-theme = "Bibata-Modern-Ice";
       cursor-size = 24;
     };
@@ -334,136 +343,31 @@ in
       button-layout = ":minimize,maximize,close";
     };
 
-    # App grid folder grouping the three office suites together. "System"
-    # and "Utilities" in folder-children are GNOME's own stock default
-    # folders (already populated, left untouched) -- "Office" is appended
-    # alongside them. "YaST"/"Pardus" are empty leftover entries from the
-    # same untouched default and stay as dead weight, same reasoning as
-    # button-layout above.
+    # user-theme: lets GNOME Shell's own chrome (top bar, overview) pick up
+    # a custom shell theme by name -- vanilla GNOME Shell otherwise ignores
+    # shell themes entirely without this extension. Active theme name is
+    # "Custom" (see the dconf key below), backed by the files under
+    # xdg.dataFile "themes/Custom/gnome-shell/*" further up.
     #
-    # Collabora Office isn't in nixpkgs (checked -- Collabora only ships it
-    # as a Flatpak/AppImage/deb, no nix derivation exists), so it stays a
-    # Flatpak install outside this config; its desktop-file-id below is
-    # Flatpak's own reverse-DNS naming, not something this repo controls.
-    "org/gnome/desktop/app-folders" = {
-      folder-children = [
-        "System"
-        "Utilities"
-        "YaST"
-        "Pardus"
-        "Office"
-      ];
-    };
-
-    "org/gnome/desktop/app-folders/folders/Office" = {
-      name = "Office";
-      apps = [
-        "writer.desktop"
-        "calc.desktop"
-        "impress.desktop"
-        "draw.desktop"
-        "base.desktop"
-        "math.desktop"
-        "startcenter.desktop"
-        "onlyoffice-desktopeditors.desktop"
-        "com.collaboraoffice.Office.desktop"
-      ];
-    };
-
-    "org/gnome/shell" = {
-      # Caffeine: toggleable "prevent idle/suspend" -- click the mug icon in
-      # the top bar, or right-click it for a timed duration.
-      #
-      # user-theme: lets GNOME Shell's own chrome (top bar, overview) pick
-      # up a custom shell theme by name -- vanilla GNOME Shell otherwise
-      # ignores shell themes entirely without this extension. Active theme
-      # name is "Custom" (see the dconf key below), backed by the files
-      # under xdg.dataFile "themes/Custom/gnome-shell/*" further up.
-      #
-      # dash-to-dock: Ubuntu-style dock instead of GNOME's built-in
-      # (non-auto-hiding) dash. Configured below to sit on the bottom edge
-      # and auto-hide so it doesn't eat screen real estate.
-      #
-      # hide-dark-style: local extension (see files/gnome-shell-extensions/
-      # hide-dark-style@arby-nix/) hiding the now-useless "Dark Style"
-      # toggle -- dark-only per the color-scheme lock above. Its own
-      # metadata.json declares the actual installed shell-version (50),
-      # so it needs no disable-extension-version-validation escape hatch.
-      enabled-extensions = [
-        "caffeine@patapon.info"
-        "user-theme@gnome-shell-extensions.gcampax.github.com"
-        "dash-to-dock@micxgx.gmail.com"
-        "hide-dark-style@arby-nix"
-      ];
-    };
+    # hide-dark-style: local extension (see files/gnome-shell-extensions/
+    # hide-dark-style@arby-nix/) hiding the now-useless "Dark Style" toggle
+    # -- dark-only per the color-scheme lock above. Its own metadata.json
+    # declares the actual installed shell-version (50), so it needs no
+    # disable-extension-version-validation escape hatch.
+    #
+    # lib.mkForce: default.nix (imported above) already sets this same key
+    # to just [ "caffeine@patapon.info" ] -- dconf leaf values don't merge
+    # (they're single gvariants, not list-typed options), so this
+    # overrides rather than conflicts with it. dash-to-dock used to live
+    # here too; removed entirely per request, not replaced.
+    "org/gnome/shell".enabled-extensions = lib.mkForce [
+      "caffeine@patapon.info"
+      "user-theme@gnome-shell-extensions.gcampax.github.com"
+      "hide-dark-style@arby-nix"
+    ];
 
     "org/gnome/shell/extensions/user-theme" = {
       name = "Custom";
-    };
-
-    "org/gnome/shell/extensions/dash-to-dock" = {
-      dock-position = "BOTTOM";
-      autohide = true;
-      dock-fixed = false;
-      intellihide = true;
-      # dash-to-dock's own Super+1..9 (and Shift/Ctrl variants) app-launch
-      # hotkeys collide with the workspace-switching binds below -- it
-      # only steals a number if a dock slot is actually occupied, which
-      # is why this broke just the low-numbered workspaces rather than
-      # all of them. Our own binds own this shortcut space, so
-      # dash-to-dock's copy is turned off.
-      hot-keys = false;
-
-      # Matches the rest of the color pass (see files/gnome-shell/*.css)
-      # -- dash-to-dock paints its own background independently of the
-      # shell theme's popup-menu-content surfaces, so it needs these set
-      # directly. "FIXED" transparency mode is required for
-      # background-opacity to actually take effect as a constant value
-      # -- the default "DEFAULT" mode adjusts opacity based on window
-      # proximity instead.
-      custom-background-color = true;
-      background-color = "#1d1d1d";
-      transparency-mode = "FIXED";
-      background-opacity = 0.8;
-    };
-
-    "org/gnome/shell/extensions/caffeine" = {
-      toggle-shortcut = [ "<Super>c" ];
-    };
-
-    "org/gnome/desktop/wm/keybindings" = {
-      switch-to-workspace-1 = [ "<Super>1" ];
-      switch-to-workspace-2 = [ "<Super>2" ];
-      switch-to-workspace-3 = [ "<Super>3" ];
-      switch-to-workspace-4 = [ "<Super>4" ];
-      switch-to-workspace-5 = [ "<Super>5" ];
-      switch-to-workspace-6 = [ "<Super>6" ];
-      switch-to-workspace-7 = [ "<Super>7" ];
-      switch-to-workspace-8 = [ "<Super>8" ];
-      switch-to-workspace-9 = [ "<Super>9" ];
-
-      move-to-workspace-1 = [ "<Shift><Super>1" ];
-      move-to-workspace-2 = [ "<Shift><Super>2" ];
-      move-to-workspace-3 = [ "<Shift><Super>3" ];
-      move-to-workspace-4 = [ "<Shift><Super>4" ];
-      move-to-workspace-5 = [ "<Shift><Super>5" ];
-      move-to-workspace-6 = [ "<Shift><Super>6" ];
-      move-to-workspace-7 = [ "<Shift><Super>7" ];
-      move-to-workspace-8 = [ "<Shift><Super>8" ];
-      move-to-workspace-9 = [ "<Shift><Super>9" ];
-    };
-
-    # Free Super+1 ... Super+9 from GNOME Shell's application launcher
-    "org/gnome/shell/keybindings" = {
-      switch-to-application-1 = [ ];
-      switch-to-application-2 = [ ];
-      switch-to-application-3 = [ ];
-      switch-to-application-4 = [ ];
-      switch-to-application-5 = [ ];
-      switch-to-application-6 = [ ];
-      switch-to-application-7 = [ ];
-      switch-to-application-8 = [ ];
-      switch-to-application-9 = [ ];
     };
   };
 }

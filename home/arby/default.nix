@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   imports = [
@@ -28,6 +28,26 @@
   xdg = {
     enable = true;
     mime.enable = true;
+
+    # Lowercase directory names instead of xdg-user-dirs' own capitalized
+    # defaults (Desktop, Documents, ...) -- purely a naming preference,
+    # same well-known set of directories otherwise. This *declares*
+    # user-dirs.dirs; the directories themselves were renamed on disk by
+    # hand to match (this option only creates them if missing, it doesn't
+    # move existing content into a newly-renamed target).
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+      desktop = "${config.home.homeDirectory}/desktop";
+      documents = "${config.home.homeDirectory}/documents";
+      download = "${config.home.homeDirectory}/downloads";
+      music = "${config.home.homeDirectory}/music";
+      pictures = "${config.home.homeDirectory}/pictures";
+      projects = "${config.home.homeDirectory}/projects";
+      publicShare = "${config.home.homeDirectory}/public";
+      templates = "${config.home.homeDirectory}/templates";
+      videos = "${config.home.homeDirectory}/videos";
+    };
   };
 
   home.packages = [
@@ -38,18 +58,26 @@
     pkgs.libreoffice-fresh
     pkgs.sioyek
     pkgs.onlyoffice-desktopeditors
+    pkgs.bitwarden-desktop # replaces Proton Pass (see comment below)
 
     # CLI apps
     pkgs.wl-clipboard
     pkgs.xclip
-    pkgs.proton-drive-cli
   ];
 
-  services.nextcloud-client = {
-    enable = true;
-    startInBackground = true;
-  };
+  # Proton Pass was never declared here -- it was only ever a browser
+  # extension (installed through Brave's own extension store, which this
+  # config doesn't manage), not a nixpkgs package, so there was nothing
+  # to remove from this file. bitwarden-desktop above is its replacement;
+  # removing the Proton Pass extension itself, and importing/exporting
+  # vault data between the two, is a manual step in the browser.
 
+  # No desktop sync client: GNOME Online Accounts (Settings > Online
+  # Accounts, added interactively, not declared here) already gives
+  # on-demand access to Nextcloud files through Files/Nautilus over
+  # WebDAV -- nothing synced to disk, which is all that was wanted. The
+  # actual sync client (services.nextcloud-client) did full bidirectional
+  # local sync instead, which is more than needed, so it's gone.
   programs.git = {
     enable = true;
     settings.user = {
