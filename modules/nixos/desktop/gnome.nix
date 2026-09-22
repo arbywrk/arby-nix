@@ -23,20 +23,16 @@
 
   # gnome-tour and gnome-control-center (Settings) are core-shell, not
   # core-apps, so core-apps.enable = false above doesn't touch them.
-  # gnome-tour: first-run onboarding app, not wanted. gnome-control-center:
-  # excluded here only so it can be re-added below explicitly.
-  environment.gnome.excludePackages = [
-    pkgs.gnome-tour
-    pkgs.gnome-control-center
+  # gnome-tour: first-run onboarding app, not needed.
+  # gnome-control-center: excluded here only so it can be re-added below explicitly.
+  environment.gnome.excludePackages = with pkgs; [
+    gnome-tour
+    gnome-control-center
   ];
 
-  # No terminal here -- ghostty and alacritty (both home-manager-managed,
-  # see home/arby/default.nix) are the only two terminals wanted in this
-  # session. gnome-console isn't re-added (core-apps.enable = false above
-  # already excludes it) and GNOME Terminal isn't installed anywhere
-  # either.
-  environment.systemPackages = [
-    pkgs.nautilus
-    pkgs.gnome-control-center
+  environment.systemPackages = with pkgs; [
+    nautilus
+    nautilus-python
+    gnome-control-center
   ];
 }

@@ -45,6 +45,11 @@
     pkgs.proton-drive-cli
   ];
 
+  services.nextcloud-client = {
+    enable = true;
+    startInBackground = true;
+  };
+
   programs.git = {
     enable = true;
     settings.user = {
