@@ -65,7 +65,7 @@
     enable = true;
     settings.user = {
       name = "Rares-Andrei Bogdan";
-      email = "bogdan.andrei.rares@gmail.com";
+      email = "contact@arbywrk.com";
     };
   };
 
