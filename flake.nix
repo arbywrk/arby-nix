@@ -24,21 +24,11 @@
       };
 
       homeConfigurations = {
+        # Also doubles as the fast-iteration target for the GNOME desktop
+        # profile: `home-manager switch --flake .#arby` applies just the
+        # home-manager half, without a full nixos-rebuild.
         arby = mkHome { username = "arby"; };
         wsl = mkHome { username = "wsl"; };
-
-        # Standalone targets for `home-manager switch --flake .#gnome[-custom]`,
-        # to iterate on the GNOME profile without a full nixos-rebuild.
-        # See modules/home-manager/desktop/gnome/README.md.
-        gnome = mkHome {
-          username = "arby";
-          modules = [ ./home/arby/gnome.nix ];
-        };
-
-        gnome-custom = mkHome {
-          username = "arby";
-          modules = [ ./home/arby/gnome-custom.nix ];
-        };
       };
     };
 }

@@ -1,3 +1,5 @@
+-- Status line. Component/options reference:
+-- https://github.com/nvim-lualine/lualine.nvim#default-configuration
 require("lualine").setup({
     options = {
         theme = "auto",

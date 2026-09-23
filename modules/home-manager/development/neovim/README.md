@@ -171,9 +171,6 @@ Same as the rest of this flake (see the top-level `README.md`):
 ```
 git add -A                                   # new files must be staged
 nix flake check --no-build
-nix build .#nixosConfigurations.<host>.config.system.build.toplevel
-sudo nixos-rebuild switch --flake .#<host>
+nix build .#nixosConfigurations.nixos.config.system.build.toplevel
+sudo nixos-rebuild switch --flake .#nixos
 ```
-
-`<host>` is whichever of `nixos-laptop-gnome` / `nixos-laptop-kde` you're
-currently running.

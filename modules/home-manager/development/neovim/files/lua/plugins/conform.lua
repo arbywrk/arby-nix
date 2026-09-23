@@ -1,3 +1,6 @@
+-- Format-on-save + manual format, dispatching to real formatter binaries
+-- (all from nixpkgs, see neovim/packages.nix) per filetype. Setup options:
+-- https://github.com/stevearc/conform.nvim#setup
 local keymap = require("util.keymap")
 
 keymap.map("", "<leader>f", function()

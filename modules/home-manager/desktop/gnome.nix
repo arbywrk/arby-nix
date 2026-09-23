@@ -1,7 +1,7 @@
-# Stock-look GNOME: functional bits only (keybindings, extensions, apps
-# replacing what services.gnome.core-apps.enable = false stripped out).
-# See ./custom.nix (imports this, layers cosmetics on top) and
-# ./README.md for the split rationale.
+# GNOME desktop: keybindings, a couple of small extensions, apps that
+# replace what services.gnome.core-apps.enable = false stripped out at
+# the NixOS level (modules/nixos/desktop/gnome.nix). Stock look and feel
+# -- no shell theme, no icon/cursor swap beyond MoreWaita below.
 {
   pkgs,
   inputs,
@@ -32,7 +32,6 @@
 
   # Stock Adwaita only ships icons for GNOME's own apps -- MoreWaita adds
   # coverage for third-party apps while staying visually "default GNOME".
-  # custom.nix overrides this (lib.mkForce) to Papirus instead.
   gtk = {
     enable = true;
     iconTheme = {
@@ -41,9 +40,10 @@
     };
   };
 
-  # Official Flatpaks, from Flathub (nix-flatpak's default remote). enable
-  # is explicit -- its own default reads `osConfig`, which doesn't exist
-  # for the standalone `homeConfigurations.gnome` flake target.
+  # Official Flatpaks, from Flathub (nix-flatpak's default remote:
+  # https://github.com/gmodena/nix-flatpak). enable is explicit -- its own
+  # default reads `osConfig`, which doesn't exist for the standalone
+  # `homeConfigurations.arby` flake target.
   services.flatpak = {
     enable = true;
     packages = [
@@ -63,11 +63,12 @@
   ];
 
   dconf.settings = {
+    # dconf key reference: https://gitlab.gnome.org/GNOME/gnome-control-center
+    # (Settings) is the friendliest way to browse these -- change a setting
+    # there, then `dconf dump /` to see the key it just wrote.
     "org/gnome/desktop/interface" = {
-      # GNOME Shell/Mutter (the desktop cursor and window-manager chrome,
       # Shell/Mutter reads its own icon-theme key separately from
       # gtk.iconTheme above (GTK apps only) -- both need setting.
-      # custom.nix overrides this (lib.mkForce) to "PapirusPlus".
       icon-theme = "MoreWaita";
     };
 
@@ -101,8 +102,6 @@
     };
 
     "org/gnome/shell" = {
-      # custom.nix overrides this whole list (lib.mkForce) to add its own
-      # cosmetic-support extensions on top.
       enabled-extensions = [ "caffeine@patapon.info" ];
     };
 

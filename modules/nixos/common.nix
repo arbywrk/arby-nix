@@ -26,6 +26,8 @@
 
   services.printing.enable = true;
 
+  # PipeWire replaces PulseAudio; rtkit gives it realtime scheduling.
+  # Options: https://search.nixos.org/options?query=services.pipewire
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {

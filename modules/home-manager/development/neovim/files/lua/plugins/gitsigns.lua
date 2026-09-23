@@ -1,3 +1,5 @@
+-- gutter git-diff signs, hunk staging/reset, inline blame. Setup options:
+-- https://github.com/lewis6991/gitsigns.nvim#customization
 local function confirm(message, action)
     return function(...)
         local args = { ... }

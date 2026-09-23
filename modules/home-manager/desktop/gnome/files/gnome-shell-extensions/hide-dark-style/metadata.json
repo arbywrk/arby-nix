@@ -1,6 +1,0 @@
-{
-  "name": "Hide Dark Style Toggle",
-  "uuid": "hide-dark-style@arby-nix",
-  "description": "Hides the built-in Dark Style quick-settings toggle. Local to this config, not published -- color-scheme is pinned to prefer-dark (see gnome.nix), so the toggle has no use.",
-  "shell-version": [ "50" ]
-}

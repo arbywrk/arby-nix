@@ -1,3 +1,6 @@
+-- Fuzzy finder (files, grep, buffers, LSP results, ...) -- the picker UI
+-- most of this config's <leader>s/gd/gr binds open. Setup options:
+-- https://github.com/ibhagwan/fzf-lua#customization
 local fzf = require("fzf-lua")
 
 fzf.setup({

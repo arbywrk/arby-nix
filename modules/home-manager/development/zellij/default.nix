@@ -18,7 +18,8 @@ in
     enable = true;
 
     # $SHELL fallback is fragile (stale login sessions, unset in some
-    # contexts) -- pin explicitly. mkDefault lets other homes override it.
+    # contexts) -- pin explicitly. mkDefault lets other homes override it
+    # with a plain assignment (see README's "Nix module system basics").
     settings.default_shell = lib.mkDefault "zsh";
 
     # Every new session/pane starts locked -- zellij intercepts nothing

@@ -1,3 +1,8 @@
+-- Uses Neovim's own built-in LSP client config (`vim.lsp.config`/`vim.lsp.enable`,
+-- :help lsp-config) -- not nvim-lspconfig's older `require('lspconfig').x.setup{}`
+-- pattern you'll see in most tutorials. Per-server settings tables here are the
+-- same shape either way; see :help lsp-quickstart and each server's own docs
+-- (e.g. clangd: https://clangd.llvm.org/config) for what's available.
 local clangd = require("config.lsp.clangd")
 local keymap = require("util.keymap")
 local attach_group = vim.api.nvim_create_augroup("user-lsp-attach", { clear = true })

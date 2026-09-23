@@ -1,3 +1,6 @@
+-- Shows a popup of available keymaps after a leader/prefix key, built from
+-- the `desc` on each vim.keymap.set() call throughout this config plus the
+-- group labels declared in `spec` below. Docs: :help which-key.nvim
 require("which-key").setup({
     icons = {
         -- set icon mappings to true if you have a Nerd Font

@@ -5,12 +5,13 @@
     ../../modules/home-manager/common.nix
     ../../modules/home-manager/desktop/alacritty.nix
     ../../modules/home-manager/desktop/ghostty.nix
-    ../../modules/home-manager/development/gh
-    ../../modules/home-manager/development/mosh
+    ../../modules/home-manager/desktop/gnome.nix
+    ../../modules/home-manager/development/gh.nix
+    ../../modules/home-manager/development/mosh.nix
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
     ../../modules/home-manager/development/zsh
-    ../../modules/home-manager/development/uv
+    ../../modules/home-manager/development/uv.nix
   ];
 
   home.username = "arby";
@@ -74,6 +75,7 @@
   # switchers, dock-style extensions) can find it by class. Same
   # Exec/Icon/etc as the original; this just overrides it via XDG's search
   # order (~/.local/share/applications wins over the nix-profile copy).
+  # Option docs: https://home-manager-options.extranix.com/?query=xdg.desktopEntries
   xdg.desktopEntries.obsidian = {
     name = "Obsidian";
     comment = "Knowledge base";
