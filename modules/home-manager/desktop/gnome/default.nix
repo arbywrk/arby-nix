@@ -41,12 +41,15 @@
     };
   };
 
-  # Fastmail's official Flatpak, from Flathub (nix-flatpak's default remote).
-  # enable is explicit -- its own default reads `osConfig`, which doesn't
-  # exist for the standalone `homeConfigurations.gnome` flake target.
+  # Official Flatpaks, from Flathub (nix-flatpak's default remote). enable
+  # is explicit -- its own default reads `osConfig`, which doesn't exist
+  # for the standalone `homeConfigurations.gnome` flake target.
   services.flatpak = {
     enable = true;
-    packages = [ "com.fastmail.Fastmail" ];
+    packages = [
+      "com.fastmail.Fastmail"
+      "io.ente.auth" # Ente Auth (2FA/TOTP)
+    ];
   };
 
   # User Flatpaks export .desktop files to
