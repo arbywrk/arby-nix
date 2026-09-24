@@ -24,9 +24,6 @@
       };
 
       homeConfigurations = {
-        # Also doubles as the fast-iteration target for the GNOME desktop
-        # profile: `home-manager switch --flake .#arby` applies just the
-        # home-manager half, without a full nixos-rebuild.
         arby = mkHome { username = "arby"; };
         wsl = mkHome { username = "wsl"; };
       };

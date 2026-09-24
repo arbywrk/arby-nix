@@ -12,6 +12,7 @@
     ../../modules/home-manager/development/zellij
     ../../modules/home-manager/development/zsh
     ../../modules/home-manager/development/uv.nix
+    ../../modules/home-manager/development/vscodium.nix
   ];
 
   home.username = "arby";
@@ -51,7 +52,7 @@
     pkgs.libreoffice-fresh
     pkgs.sioyek
     pkgs.onlyoffice-desktopeditors
-    pkgs.bitwarden-desktop # replaces Proton Pass, which was browser-extension-only
+    pkgs.bitwarden-desktop
 
     # CLI apps
     pkgs.wl-clipboard
@@ -67,25 +68,6 @@
     settings.user = {
       name = "Rares-Andrei Bogdan";
       email = "contact@arbywrk.com";
-    };
-  };
-
-  # nixpkgs' obsidian.desktop declares no StartupWMClass, but its window
-  # reports app-id "md.Obsidian" -- add the hint so window-matching (task
-  # switchers, dock-style extensions) can find it by class. Same
-  # Exec/Icon/etc as the original; this just overrides it via XDG's search
-  # order (~/.local/share/applications wins over the nix-profile copy).
-  # Option docs: https://home-manager-options.extranix.com/?query=xdg.desktopEntries
-  xdg.desktopEntries.obsidian = {
-    name = "Obsidian";
-    comment = "Knowledge base";
-    exec = "obsidian %u";
-    icon = "obsidian";
-    categories = [ "Office" ];
-    mimeType = [ "x-scheme-handler/obsidian" ];
-    settings = {
-      Version = "1.5";
-      StartupWMClass = "md.Obsidian";
     };
   };
 
