@@ -25,6 +25,12 @@
     pkgs.resources # GNOME's Rust system monitor (gnome-system-monitor's replacement)
     pkgs.seahorse # GNOME's own front-end onto the Secret Service (gnome-keyring)
 
+    # Native, not Flatpak: sandboxed GTK apps can't see the host's
+    # MoreWaita icon theme (it's a Nix store path, not /usr/share/icons),
+    # so several of gnome-music's own symbolic icons (shuffle, repeat,
+    # ...) rendered as broken-image placeholders under its Flatpak build.
+    pkgs.gnome-music
+
     # Flathub-first app store for anything not worth a nixpkgs entry here
     # -- needs services.flatpak.enable (modules/nixos/desktop/gnome.nix).
     pkgs.bazaar
@@ -70,6 +76,13 @@
       # Shell/Mutter reads its own icon-theme key separately from
       # gtk.iconTheme above (GTK apps only) -- both need setting.
       icon-theme = "MoreWaita";
+    };
+
+    # The "beep" on invalid actions (scrolling past the end of a list,
+    # backspacing an empty field, hitting the last workspace, ...) -- distinct
+    # from notification sounds, which stay on their own theme-driven default.
+    "org/gnome/desktop/wm/preferences" = {
+      audible-bell = false;
     };
 
     # App-grid folder grouping the office suites. "YaST"/"Pardus" are

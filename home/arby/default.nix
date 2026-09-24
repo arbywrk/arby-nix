@@ -89,6 +89,41 @@
     };
   };
 
+  # nixpkgs' localsend package ships one desktop file, id "LocalSend"
+  # (StartupWMClass=localsend_app), but the real running window reports the
+  # Wayland app-id "org.localsend.localsend_app" (confirmed via `strings` on
+  # the binary -- it's LocalSend's actual Flathub app ID). GNOME Shell's
+  # window-to-launcher matching prefers an exact desktop-file-ID match over
+  # StartupWMClass, so neither of nixpkgs' identifiers match what the window
+  # reports and the dash falls back to a generic icon (the app grid doesn't
+  # care -- it just reads whichever .desktop file, no window involved). Fix:
+  # add an entry whose ID *is* the real app-id (same trick Flatpak apps get
+  # for free, e.g. com.fastmail.Fastmail below) and hide nixpkgs' mismatched
+  # one so there's no duplicate app-grid entry.
+  xdg.desktopEntries."LocalSend" = {
+    name = "LocalSend";
+    noDisplay = true;
+  };
+  xdg.desktopEntries."org.localsend.localsend_app" = {
+    name = "LocalSend";
+    genericName = "File Transfer";
+    comment = "Open source cross-platform alternative to AirDrop";
+    exec = "localsend_app %U";
+    icon = "localsend";
+    categories = [
+      "GTK"
+      "FileTransfer"
+      "Network"
+      "Utility"
+    ];
+    settings = {
+      Version = "1.5";
+      Keywords = "Sharing;LAN;Files";
+      StartupNotify = "true";
+      StartupWMClass = "org.localsend.localsend_app";
+    };
+  };
+
   programs = {
     mise.enable = true;
     brave-origin.enable = true;
