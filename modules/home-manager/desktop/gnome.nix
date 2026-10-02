@@ -1,7 +1,3 @@
-# GNOME desktop: keybindings, a couple of small extensions, apps that
-# replace what services.gnome.core-apps.enable = false stripped out at
-# the NixOS level (modules/nixos/desktop/gnome.nix). Stock look and feel
-# -- no shell theme, no icon/cursor swap beyond MoreWaita below.
 {
   pkgs,
   inputs,
@@ -14,30 +10,17 @@
 
   home.packages = [
     pkgs.gnomeExtensions.caffeine
+    pkgs.gnomeExtensions.glocalsend
 
-    # Apps to bring back after core-apps.enable = false
-    # (modules/nixos/desktop/gnome.nix), packaged via nixpkgs rather than
-    # left to Bazaar/Flatpak since nixpkgs already tracks them fine.
-    pkgs.loupe # image viewer
-    pkgs.papers # document viewer (PDF/ePub/... -- GNOME's Evince rebrand)
+    pkgs.loupe
+    pkgs.papers
     pkgs.gnome-calendar
-    pkgs.endeavour # GNOME's own task/to-do manager
-    pkgs.resources # GNOME's Rust system monitor (gnome-system-monitor's replacement)
-    pkgs.seahorse # GNOME's own front-end onto the Secret Service (gnome-keyring)
-
-    # Native, not Flatpak: sandboxed GTK apps can't see the host's
-    # MoreWaita icon theme (it's a Nix store path, not /usr/share/icons),
-    # so several of gnome-music's own symbolic icons (shuffle, repeat,
-    # ...) rendered as broken-image placeholders under its Flatpak build.
+    pkgs.resources
+    pkgs.seahorse
     pkgs.gnome-music
-
-    # Flathub-first app store for anything not worth a nixpkgs entry here
-    # -- needs services.flatpak.enable (modules/nixos/desktop/gnome.nix).
     pkgs.bazaar
   ];
 
-  # Stock Adwaita only ships icons for GNOME's own apps -- MoreWaita adds
-  # coverage for third-party apps while staying visually "default GNOME".
   gtk = {
     enable = true;
     iconTheme = {
@@ -46,15 +29,11 @@
     };
   };
 
-  # Official Flatpaks, from Flathub (nix-flatpak's default remote:
-  # https://github.com/gmodena/nix-flatpak). enable is explicit -- its own
-  # default reads `osConfig`, which doesn't exist for the standalone
-  # `homeConfigurations.arby` flake target.
   services.flatpak = {
     enable = true;
     packages = [
       "com.fastmail.Fastmail"
-      "io.ente.auth" # Ente Auth (2FA/TOTP)
+      "io.ente.auth"
     ];
   };
 
@@ -69,18 +48,10 @@
   ];
 
   dconf.settings = {
-    # dconf key reference: https://gitlab.gnome.org/GNOME/gnome-control-center
-    # (Settings) is the friendliest way to browse these -- change a setting
-    # there, then `dconf dump /` to see the key it just wrote.
     "org/gnome/desktop/interface" = {
-      # Shell/Mutter reads its own icon-theme key separately from
-      # gtk.iconTheme above (GTK apps only) -- both need setting.
       icon-theme = "MoreWaita";
     };
 
-    # The "beep" on invalid actions (scrolling past the end of a list,
-    # backspacing an empty field, hitting the last workspace, ...) -- distinct
-    # from notification sounds, which stay on their own theme-driven default.
     "org/gnome/desktop/wm/preferences" = {
       audible-bell = false;
     };
@@ -115,7 +86,10 @@
     };
 
     "org/gnome/shell" = {
-      enabled-extensions = [ "caffeine@patapon.info" ];
+      enabled-extensions = [
+        "caffeine@patapon.info"
+        "glocalsend@donnybeelo.github.com"
+      ];
     };
 
     "org/gnome/shell/extensions/caffeine" = {

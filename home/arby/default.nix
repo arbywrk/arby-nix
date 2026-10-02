@@ -49,10 +49,11 @@
     pkgs.signal-desktop
     pkgs.localsend
     pkgs.obsidian
-    pkgs.libreoffice-fresh
+    pkgs.libreoffice
     pkgs.sioyek
     pkgs.onlyoffice-desktopeditors
     pkgs.bitwarden-desktop
+    pkgs.planify
 
     # CLI apps
     pkgs.wl-clipboard
