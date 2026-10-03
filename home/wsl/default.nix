@@ -7,6 +7,7 @@
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
     ../../modules/home-manager/development/zsh
+    ../../modules/home-manager/development/starship.nix
   ];
 
   home.username = "bogdanrares";

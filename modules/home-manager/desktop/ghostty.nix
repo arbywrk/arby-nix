@@ -8,8 +8,13 @@
       # switch here would produce a seam whenever ghostty goes light with
       # zellij running.
       theme = "Ayu Dark Gray";
-      font-family = "JetBrainsMono Nerd Font Mono"; # matches alacritty.nix
+      # Not the "Mono" variant: that squeezes icons into one cell, making
+      # them tiny next to text.
+      font-family = "JetBrainsMono Nerd Font"; # matches alacritty.nix
       font-size = 11;
+
+      # Stops shell integration re-adding the dir the zsh snippet below strips.
+      shell-integration-features = "no-path";
 
       mouse-scroll-multiplier = "precision:0.6,discrete:1.5"; # dialed down from defaults
 
@@ -50,4 +55,11 @@
       selection-foreground = "bfbdb6";
     };
   };
+
+  # Ghostty adds its own /nix/store bin dir to every shell's PATH (not
+  # controlled by "no-path"), which makes starship's nix_shell heuristic
+  # always fire. ghostty itself stays on PATH via the home-manager profile.
+  programs.zsh.initContent = ''
+    [[ -n $GHOSTTY_BIN_DIR ]] && path=(''${path:#$GHOSTTY_BIN_DIR})
+  '';
 }

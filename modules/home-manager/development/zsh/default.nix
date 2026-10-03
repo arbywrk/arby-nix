@@ -1,5 +1,5 @@
-# Autosuggestion/syntaxHighlighting colors and files/prompt.zsh use the
-# same Ayu Dark Gray palette as ghostty.nix and zellij's theme.
+# Autosuggestion/syntaxHighlighting colors use the same Ayu Dark Gray
+# palette as ghostty.nix, zellij's theme and ../starship.nix.
 { pkgs, ... }:
 {
   programs.zsh = {
@@ -44,8 +44,6 @@
       source ${pkgs.zsh-history-substring-search}/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
       bindkey "$terminfo[kcuu1]" history-substring-search-up
       bindkey "$terminfo[kcud1]" history-substring-search-down
-
-      ${builtins.readFile ./files/prompt.zsh}
     '';
   };
 }

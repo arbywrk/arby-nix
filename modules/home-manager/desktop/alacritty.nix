@@ -3,10 +3,11 @@
   programs.alacritty = {
     enable = true;
     settings = {
+      # Not the "Mono" variant -- see ghostty.nix.
       font = {
-        normal.family = "JetBrainsMono Nerd Font Mono";
-        bold.family = "JetBrainsMono Nerd Font Mono";
-        italic.family = "JetBrainsMono Nerd Font Mono";
+        normal.family = "JetBrainsMono Nerd Font";
+        bold.family = "JetBrainsMono Nerd Font";
+        italic.family = "JetBrainsMono Nerd Font";
         size = 11;
       };
 

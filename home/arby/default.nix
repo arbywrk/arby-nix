@@ -11,6 +11,7 @@
     ../../modules/home-manager/development/neovim
     ../../modules/home-manager/development/zellij
     ../../modules/home-manager/development/zsh
+    ../../modules/home-manager/development/starship.nix
     ../../modules/home-manager/development/uv.nix
     ../../modules/home-manager/development/vscodium.nix
   ];
