@@ -19,6 +19,7 @@
     pkgs.seahorse
     pkgs.gnome-music
     pkgs.bazaar
+    pkgs.gnome-clocks
   ];
 
   gtk = {
