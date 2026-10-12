@@ -26,6 +26,8 @@
     };
   };
 
+  virtualisation.docker.enable = true;
+
   time.timeZone = "Europe/Bucharest";
 
   users.users."arby" = {
@@ -37,6 +39,8 @@
       "wheel"
       "dialout"
       "uucp"
+      # Root-equivalent: anyone in it can mount / into a container.
+      "docker"
     ];
   };
 
