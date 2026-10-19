@@ -3,18 +3,18 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      # Static, not "light:Ayu Light,dark:Ayu Dark Gray" -- zellij's own
-      # theme is always static dark, so following GNOME's light/dark
-      # switch here would produce a seam whenever ghostty goes light with
-      # zellij running.
-      theme = "Ayu Dark Gray";
-      # Not the "Mono" variant: that squeezes icons into one cell, making
-      # them tiny next to text.
-      font-family = "JetBrainsMono Nerd Font"; # matches alacritty.nix
+      theme = "light:Ayu Light,dark:Ayu Dark Gray";
+      font-family = "JetBrainsMono Nerd Font";
       font-size = 11;
 
       # Stops shell integration re-adding the dir the zsh snippet below strips.
       shell-integration-features = "no-path";
+
+      # Titlebar styleing
+      gtk-titlebar-style = "tabs";
+      gtk-wide-tabs = false;
+      gtk-toolbar-style = "flat";
+      window-theme = "ghostty";
 
       mouse-scroll-multiplier = "precision:0.6,discrete:1.5"; # dialed down from defaults
 
