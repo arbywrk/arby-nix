@@ -30,6 +30,10 @@
 
   time.timeZone = "Europe/Bucharest";
 
+  # NixOS defaults EDITOR to nano in /etc/set-environment, which clobbers
+  # home-manager's neovim defaultEditor in the GNOME session.
+  environment.variables.EDITOR = "nvim";
+
   users.users."arby" = {
     isNormalUser = true;
     description = "Rares-Andrei Bogdan";
