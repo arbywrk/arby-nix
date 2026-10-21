@@ -2,7 +2,13 @@
 # puts the raw files/lua modules (options, keymaps, config/**) on the
 # runtimepath, packages.nix/debug-packages.nix bring in LSP servers,
 # formatters, linters, and debug adapters.
-{ pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 {
   programs.neovim = {
     enable = true;
@@ -21,6 +27,13 @@
       vim.g.mapleader = " "
       vim.g.maplocalleader = " "
       vim.g.have_nerd_font = true
+
+      -- nixd evaluates these for completion/hover in any .nix file, so they
+      -- point at this flake's pinned inputs rather than a repo checkout.
+      vim.g.nixd_nixpkgs_expr = [[import ${inputs.nixpkgs} { }]]
+      vim.g.nixd_nixos_options_expr = [[(import ${inputs.nixpkgs}/nixos/lib/eval-config.nix { system = "${pkgs.stdenv.hostPlatform.system}"; modules = [ ]; }).options]]
+      vim.g.nixd_home_manager_options_expr = [[(import ${inputs.home-manager}/modules { pkgs = import ${inputs.nixpkgs} { }; configuration.home = { stateVersion = "${config.home.stateVersion}"; username = "nixd"; homeDirectory = "/nixd"; }; check = false; }).options]]
+      vim.g.nixd_flake_parts_options_expr = [[(((import ${inputs.flake-parts}/flake.nix).outputs { nixpkgs-lib.lib = import ${inputs.nixpkgs}/lib; }).lib.evalFlakeModule { inputs.self.outPath = "/nixd"; } { }).options]]
 
       require("options")
       require("keymaps")

@@ -10,6 +10,12 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+
+    # Only used to pin nixd's flake-parts option completion (see neovim module).
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
   };
 
   outputs =

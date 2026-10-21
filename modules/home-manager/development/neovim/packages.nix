@@ -35,7 +35,7 @@ with pkgs;
   shellcheck
 
   # Nix
-  nil
+  nixd
   nixfmt
 
   # TOML / SQL / misc

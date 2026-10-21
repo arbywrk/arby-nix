@@ -78,7 +78,6 @@ local servers = {
 
     zls = {},
     bashls = {},
-    nil_ls = {},
     taplo = {},
     sqls = {},
 
@@ -109,6 +108,21 @@ local servers = {
     dts_lsp = {},
 
     tinymist = {},
+
+    -- Expressions come from default.nix, pinned to this flake's inputs.
+    nixd = {
+        settings = {
+            nixd = {
+                nixpkgs = { expr = vim.g.nixd_nixpkgs_expr },
+                formatting = { command = { "nixfmt" } },
+                options = {
+                    nixos = { expr = vim.g.nixd_nixos_options_expr },
+                    home_manager = { expr = vim.g.nixd_home_manager_options_expr },
+                    flake_parts = { expr = vim.g.nixd_flake_parts_options_expr },
+                },
+            },
+        },
+    },
 
     yamlls = {
         settings = {
