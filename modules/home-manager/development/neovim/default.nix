@@ -66,6 +66,8 @@
   };
 
   programs.ripgrep.enable = true;
+  # fzf-lua's files picker prefers fd when it's on PATH.
+  programs.fd.enable = true;
 
   # fzf-lua shells out to the real fzf binary for its picker UI -- it's a
   # frontend, not a pure-Lua reimplementation -- and nothing else in this
