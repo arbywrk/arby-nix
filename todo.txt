@@ -1,0 +1,7 @@
+- Fully deterministic reinstalls with disko + nixos-anywhere
+  Declare partitions, LUKS (root + swap), btrfs subvolumes (/, /home, /nix)
+  and swap in Nix with disko (https://github.com/nix-community/disko) so the
+  disk layout is reproducible and hosts/okami/hardware.nix no longer hardcodes
+  installer-generated UUIDs. Use nixos-anywhere
+  (https://github.com/nix-community/nixos-anywhere) to install from the flake.
+  Requires repartitioning, so do it at the next reinstall.
