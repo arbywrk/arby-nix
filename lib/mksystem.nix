@@ -7,6 +7,5 @@ inputs.nixpkgs.lib.nixosSystem {
     ../hosts/${hostname}
     ../modules/nixos/common.nix
     inputs.home-manager.nixosModules.default
-    { nixpkgs.overlays = [ (import ../overlays) ]; }
   ];
 }
