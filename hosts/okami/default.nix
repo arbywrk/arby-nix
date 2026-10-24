@@ -12,9 +12,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.luks.devices."luks-3776db7c-a9d9-4afe-80cb-b10d0bf33035".device =
-    "/dev/disk/by-uuid/3776db7c-a9d9-4afe-80cb-b10d0bf33035";
-
   # networking.wireless (standalone wpa_supplicant) must stay off --
   # NetworkManager runs its own and they'd fight over the interface.
   networking = {
