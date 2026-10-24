@@ -27,7 +27,12 @@
   programs.bat.enable = true;
   home.shellAliases.cat = "bat";
 
-  programs.direnv.enable = true;
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+
+    config.global.hide_env_diff = true;
+  };
 
   # lsd's own zsh integration already provides ls/ll/la/lt/lla/llt.
   programs.lsd.enable = true;
