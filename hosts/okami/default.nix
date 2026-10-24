@@ -7,7 +7,7 @@
     ../../modules/nixos/desktop/gnome.nix
   ];
 
-  networking.hostName = "nixos";
+  networking.hostName = "okami";
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

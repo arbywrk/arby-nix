@@ -26,7 +26,7 @@
     in
     {
       nixosConfigurations = {
-        nixos = mkSystem "nixos";
+        okami = mkSystem "okami";
       };
 
       homeConfigurations = {
