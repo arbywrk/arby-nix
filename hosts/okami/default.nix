@@ -1,8 +1,7 @@
-# The one real machine this flake manages: a laptop booted into GNOME.
 { inputs, pkgs, ... }:
 {
   imports = [
-    ./hardware-configuration.nix
+    ./hardware.nix
     ../../modules/nixos/desktop/gdm.nix
     ../../modules/nixos/desktop/gnome.nix
   ];
@@ -30,8 +29,6 @@
 
   time.timeZone = "Europe/Bucharest";
 
-  # NixOS defaults EDITOR to nano in /etc/set-environment, which clobbers
-  # home-manager's neovim defaultEditor in the GNOME session.
   environment.variables.EDITOR = "nvim";
 
   users.users."arby" = {
@@ -43,7 +40,6 @@
       "wheel"
       "dialout"
       "uucp"
-      # Root-equivalent: anyone in it can mount / into a container.
       "docker"
     ];
   };
@@ -51,9 +47,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    # Rename a pre-existing unmanaged file to <name>.backup instead of
-    # hard-failing activation when home-manager first takes it over.
-    backupFileExtension = "backup";
+    backupFileExtension = "bkp";
     extraSpecialArgs = { inherit inputs; };
     users."arby" = import ../../home/arby/default.nix;
   };
