@@ -1,7 +1,7 @@
 # Maps lua/plugins/*.lua onto nixpkgs.vimPlugins, replacing lazy.nvim.
 # Loading is eager (no lazy-loading layer, accepted for simplicity);
 # plugins needing setup() get their lua/plugins/*.lua wired in as `config`.
-{ pkgs }:
+{ pkgs, colors }:
 let
   toLuaFile = file: builtins.readFile file;
   toLua = str: str;
@@ -120,7 +120,7 @@ in
   }
   {
     plugin = p.nvim-notify;
-    config = toLua "require('notify').setup({ stages = 'fade_in_slide_out', fps = 60, timeout = 500, render = 'minimal', top_down = false, background_colour = '#141415' })";
+    config = toLua "require('notify').setup({ stages = 'fade_in_slide_out', fps = 60, timeout = 500, render = 'minimal', top_down = false, background_colour = '${colors.base00}' })";
   }
   {
     plugin = p.noice-nvim;

@@ -1,12 +1,14 @@
-# Autosuggestion/syntaxHighlighting colors use the same Ayu Dark Gray
-# palette as ghostty.nix, zellij's theme and ../starship.nix.
-{ pkgs, ... }:
+# Highlight colors come from stylix's palette, following base16's roles
+# (base0E keywords, base0D functions, base0B strings, ...).
+{ pkgs, config, ... }:
+let
+  c = config.lib.stylix.colors.withHashtag;
+in
 {
   programs.zsh = {
     enable = true;
 
-    # Start each prompt in insert mode (typing works like normal, Esc
-    # drops to vi command mode) rather than "vicmd" (command mode first).
+    # Start prompts in insert mode; Esc drops to vi command mode.
     defaultKeymap = "viins";
 
     # Not shared live: with share on, every multiplexer pane imports the
@@ -21,35 +23,34 @@
 
     autosuggestion = {
       enable = true;
-      highlight = "fg=#686868"; # ayu comment/muted gray
+      highlight = "fg=${c.base03}";
     };
 
     syntaxHighlighting = {
       enable = true;
       styles = {
-        default = "fg=#bfbdb6";
-        comment = "fg=#686868";
-        unknown-token = "fg=#ea6c73,bold";
-        reserved-word = "fg=#53bdfa";
-        arg0 = "fg=#7fd962";
-        precommand = "fg=#53bdfa,italic";
-        path = "fg=#95e6cb,underline";
-        globbing = "fg=#cda1fa";
-        history-expansion = "fg=#cda1fa";
-        redirection = "fg=#90e1c6";
-        assign = "fg=#c7c7c7";
-        single-hyphen-option = "fg=#ffb454";
-        double-hyphen-option = "fg=#ffb454";
-        single-quoted-argument = "fg=#f9af4f";
-        double-quoted-argument = "fg=#f9af4f";
-        dollar-quoted-argument = "fg=#f9af4f";
-        back-quoted-argument = "fg=#f9af4f";
+        default = "fg=${c.base05}";
+        comment = "fg=${c.base03}";
+        unknown-token = "fg=${c.base08},bold";
+        reserved-word = "fg=${c.base0E}";
+        arg0 = "fg=${c.base0D}";
+        precommand = "fg=${c.base0D},italic";
+        path = "fg=${c.base0C},underline";
+        globbing = "fg=${c.base09}";
+        history-expansion = "fg=${c.base09}";
+        redirection = "fg=${c.base0C}";
+        assign = "fg=${c.base05}";
+        single-hyphen-option = "fg=${c.base0A}";
+        double-hyphen-option = "fg=${c.base0A}";
+        single-quoted-argument = "fg=${c.base0B}";
+        double-quoted-argument = "fg=${c.base0B}";
+        dollar-quoted-argument = "fg=${c.base0B}";
+        back-quoted-argument = "fg=${c.base0B}";
       };
     };
 
-    # Default mkOrder (1000) lands this between autosuggestion (700) and
-    # syntaxHighlighting (1200) -- the slot home-manager reserves for
-    # widget-creating plugins, so highlighting wraps them correctly.
+    # Default order lands between autosuggestion and syntaxHighlighting,
+    # the slot for widget-creating plugins, so highlighting wraps them.
     initContent = ''
       source ${pkgs.zsh-history-substring-search}/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
       # Arrows send ^[[A normally and $terminfo[kcuu1] (^[OA) in

@@ -9,60 +9,38 @@ in
 {
   home.packages = [ resumeSsh ];
 
-  # The ssh() wrapper that records each ssh invocation for
-  # zellij-resume-ssh to pick back up -- lives here (not
-  # development/zsh) since it's meaningless outside a zellij session.
+  # Records ssh targets for zellij-resume-ssh; only useful inside zellij.
   programs.zsh.initContent = builtins.readFile ./files/record-ssh.zsh;
+
+  stylix.targets.zellij.enable = true;
 
   programs.zellij = {
     enable = true;
 
-    # $SHELL fallback is fragile (stale login sessions, unset in some
-    # contexts) -- pin explicitly. mkDefault lets other homes override it
-    # with a plain assignment (see README's "Nix module system basics").
+    # $SHELL is unreliable in some contexts, so pin it. mkDefault lets
+    # another home override it with a plain assignment.
     settings.default_shell = lib.mkDefault "zsh";
 
-    # Every new session/pane starts locked -- zellij intercepts nothing
-    # (besides Ctrl g to unlock) until asked to, so it never fights zsh's
-    # or nvim's own keybinds by default. See the `locked`/`shared_except
-    # "locked"` blocks below for what that means in practice.
+    # Start locked so zellij never steals zsh/nvim keybinds; Ctrl g unlocks.
     settings.default_mode = "locked";
 
-    # Default status-bar, not compact-bar -- shows the current mode's
-    # keybind hints inline at all times instead of behind a toggle.
+    # No borders around panes.
     settings.pane_frames = false;
-    settings.theme = "ayu-dark";
 
-    # Full explicit keybinds, based on zellij's stock defaults. Notes on
-    # what's non-obvious below; everything else follows zellij's own
-    # mode/action names directly.
+    # Full explicit keybinds, based on zellij's stock defaults.
     #
-    # Relocated (collided with nvim/blink.cmp/fzf-lua keymaps):
-    #   Ctrl h (move)    -> Alt m   (Ctrl h must stay free to reach nvim)
-    #   Ctrl n (resize)  -> Alt r   (blink.cmp: next completion item)
-    #   Ctrl p (pane)    -> Ctrl a  (blink.cmp: prev completion item)
-    #   Ctrl o (session) -> Alt u   (vim builtin: jumplist back)
-    # Dropped: Ctrl b (tmux-compat mode, unused, collided with scrolling).
+    # Relocated because they collide with nvim:
+    #   Ctrl h (move)    -> Alt m
+    #   Ctrl n (resize)  -> Alt r
+    #   Ctrl p (pane)    -> Ctrl a
+    #   Ctrl o (session) -> Alt u
+    # Dropped: Ctrl b (tmux mode, unused).
     #
-    # Pane/tab movement (`pane`/`tab` mode, entered via Ctrl a/Ctrl t):
-    # h/j/k/l move focus repeatedly without relocking, then Enter/Esc/the
-    # mode key again confirms back to locked. No nvim-side integration
-    # for this exists -- an auto-lock-on-focus approach and a
-    # keystroke-forwarding plugin were both tried and dropped; zellij's
-    # "locked" is one global state with no per-pane awareness, so it
-    # can't reliably tell "nvim has focus" from "just unlocked elsewhere".
+    # Every finished action returns to "locked", not "normal". Quit is
+    # Ctrl Shift q so a stray Ctrl q can't kill the session.
     #
-    # "locked" (default_mode above) is the resting state throughout: every
-    # action-complete `SwitchToMode` below targets "locked", not "normal"
-    # -- Ctrl g (the one bind that targets "normal") is what unlocks.
-    # Quit is Ctrl Shift q, not stock Ctrl q, so muscle-memory Ctrl q from
-    # another program can't kill the session by accident.
-    #
-    # "Shift s" (pane/tab mode): new pane/tab reconnecting to the most
-    # recent ssh target run anywhere in *this* zellij session -- see
-    # files/record-ssh.zsh (records it) and files/zellij-resume-ssh.sh
-    # (reconnects). mosh (development/mosh) covers the same "keep remote
-    # sessions alive" need for connections started directly, not via this.
+    # "Shift s" in pane/tab mode opens a pane reconnecting to the last ssh
+    # target used in this session.
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {
@@ -278,6 +256,4 @@ in
       }
     '';
   };
-
-  xdg.configFile."zellij/themes/ayu-dark.kdl".source = ./files/themes/ayu-dark.kdl;
 }

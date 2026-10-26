@@ -1,5 +1,8 @@
 { lib, ... }:
 {
+  # Color names below (blue, purple, ...) resolve to stylix's palette.
+  stylix.targets.starship.enable = true;
+
   programs.starship = {
     enable = true;
     settings = {
@@ -26,16 +29,6 @@
         "$character"
       ];
       right_format = "$cmd_duration$jobs$status";
-
-      palette = "ayu";
-      palettes.ayu = {
-        blue = "#59c2ff";
-        purple = "#cda1fa";
-        orange = "#ffb454";
-        green = "#7fd962";
-        red = "#ea6c73";
-        gray = "#686868";
-      };
 
       # vimcmd_symbol shows when zsh's vi mode drops to command mode.
       character = {

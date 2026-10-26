@@ -11,6 +11,12 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    stylix = {
+      url = "github:nix-community/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
+
     # Only used to pin nixd's flake-parts option completion (see neovim module).
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
