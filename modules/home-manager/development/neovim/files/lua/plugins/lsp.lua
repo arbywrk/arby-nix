@@ -10,142 +10,175 @@ local highlight_group = vim.api.nvim_create_augroup("user-lsp-highlight", { clea
 local detach_group = vim.api.nvim_create_augroup("user-lsp-detach", { clear = false })
 
 vim.api.nvim_create_autocmd("LspAttach", {
-    group = attach_group,
-    callback = function(event)
-        local map = function(keys, func, desc, mode)
-            keymap.buffer_map(event.buf, mode or "n", keys, func, "LSP: " .. desc)
-        end
+  group = attach_group,
+  callback = function(event)
+    local map = function(keys, func, desc, mode)
+      keymap.buffer_map(event.buf, mode or "n", keys, func, "LSP: " .. desc)
+    end
 
-        map("gd", require("fzf-lua").lsp_definitions, "[G]oto [D]efinition")
-        map("gr", require("fzf-lua").lsp_references, "[G]oto [R]eferences")
-        map("gI", require("fzf-lua").lsp_implementations, "[G]oto [I]mplementation")
-        map("<leader>D", require("fzf-lua").lsp_typedefs, "Type [D]efinition")
-        map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-        map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
-        map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+    map("gd", require("fzf-lua").lsp_definitions, "[G]oto [D]efinition")
+    map("gr", require("fzf-lua").lsp_references, "[G]oto [R]eferences")
+    map("gI", require("fzf-lua").lsp_implementations, "[G]oto [I]mplementation")
+    map("<leader>D", require("fzf-lua").lsp_typedefs, "Type [D]efinition")
+    map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+    map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
+    map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
-        local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if not client then
-            return
-        end
+    local client = vim.lsp.get_client_by_id(event.data.client_id)
+    if not client then
+      return
+    end
 
-        if client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-            vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = event.buf })
+    if client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+      vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = event.buf })
 
-            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-                buffer = event.buf,
-                group = highlight_group,
-                callback = vim.lsp.buf.document_highlight,
-            })
+      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+        buffer = event.buf,
+        group = highlight_group,
+        callback = vim.lsp.buf.document_highlight,
+      })
 
-            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-                buffer = event.buf,
-                group = highlight_group,
-                callback = vim.lsp.buf.clear_references,
-            })
+      vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+        buffer = event.buf,
+        group = highlight_group,
+        callback = vim.lsp.buf.clear_references,
+      })
 
-            vim.api.nvim_clear_autocmds({ group = detach_group, buffer = event.buf })
+      vim.api.nvim_clear_autocmds({ group = detach_group, buffer = event.buf })
 
-            vim.api.nvim_create_autocmd("LspDetach", {
-                group = detach_group,
-                buffer = event.buf,
-                callback = function(event2)
-                    vim.lsp.buf.clear_references()
-                    vim.api.nvim_clear_autocmds({
-                        group = highlight_group,
-                        buffer = event2.buf,
-                    })
-                end,
-            })
-        end
+      vim.api.nvim_create_autocmd("LspDetach", {
+        group = detach_group,
+        buffer = event.buf,
+        callback = function(event2)
+          vim.lsp.buf.clear_references()
+          vim.api.nvim_clear_autocmds({
+            group = highlight_group,
+            buffer = event2.buf,
+          })
+        end,
+      })
+    end
 
-        if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map("<leader>ui", function()
-                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
-            end, "Toggle [I]nlay Hints")
-        end
+    if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+      map("<leader>ui", function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
+      end, "Toggle [I]nlay Hints")
+    end
 
-        clangd.on_attach(client, event.buf)
-    end,
+    clangd.on_attach(client, event.buf)
+  end,
 })
 
 local capabilities = require("blink.cmp").get_lsp_capabilities()
 
--- Every server here comes from nixpkgs (see packages.nix), not
--- Mason -- installed declaratively, no runtime download.
+-- Most servers come from nixpkgs (see packages.nix), not Mason. Ones tied to
+-- a project toolchain (zls) are expected on PATH from the project itself.
 local servers = {
-    clangd = clangd.server_config(),
+  clangd = clangd.server_config(),
 
-    zls = {},
-    bashls = {},
-    taplo = {},
-    sqls = {},
+  zls = {},
+  bashls = {},
+  taplo = {},
+  sqls = {},
 
-    basedpyright = {
-        settings = {
-            basedpyright = {
-                analysis = {
-                    typeCheckingMode = "standard",
-                    autoSearchPaths = true,
-                    useLibraryCodeForTypes = true,
-                },
-            },
+  basedpyright = {
+    settings = {
+      basedpyright = {
+        analysis = {
+          typeCheckingMode = "standard",
+          autoSearchPaths = true,
+          useLibraryCodeForTypes = true,
         },
+      },
     },
+  },
 
-    lua_ls = {
-        settings = {
-            Lua = {
-                completion = {
-                    callSnippet = "Replace",
-                },
-            },
+  lua_ls = {
+    settings = {
+      Lua = {
+        completion = {
+          callSnippet = "Replace",
         },
+      },
     },
+  },
 
-    -- Zephyr devicetree overlays (.dts/.dtsi/.overlay) -- see
-    -- https://github.com/igor-prusov/dts-lsp. No extra settings needed.
-    dts_lsp = {},
+  -- Zephyr devicetree overlays (.dts/.dtsi/.overlay) -- see
+  -- https://github.com/igor-prusov/dts-lsp. No extra settings needed.
+  dts_lsp = {},
 
-    tinymist = {},
+  tinymist = {},
 
-    -- Expressions come from default.nix, pinned to this flake's inputs.
-    nixd = {
-        settings = {
-            nixd = {
-                nixpkgs = { expr = vim.g.nixd_nixpkgs_expr },
-                formatting = { command = { "nixfmt" } },
-                options = {
-                    nixos = { expr = vim.g.nixd_nixos_options_expr },
-                    home_manager = { expr = vim.g.nixd_home_manager_options_expr },
-                    flake_parts = { expr = vim.g.nixd_flake_parts_options_expr },
-                },
-            },
+  -- Expressions come from default.nix, pinned to this flake's inputs.
+  nixd = {
+    settings = {
+      nixd = {
+        nixpkgs = { expr = vim.g.nixd_nixpkgs_expr },
+        formatting = { command = { "nixfmt" } },
+        options = {
+          nixos = { expr = vim.g.nixd_nixos_options_expr },
+          home_manager = { expr = vim.g.nixd_home_manager_options_expr },
+          flake_parts = { expr = vim.g.nixd_flake_parts_options_expr },
         },
+      },
     },
+  },
 
-    yamlls = {
-        settings = {
-            yaml = {
-                schemas = {
-                    -- Zuul CI pipeline/job YAML (zuul.d/*.yaml, .zuul.yaml, ...).
-                    -- Schema is a community-maintained one (not yet in
-                    -- SchemaStore) -- swap for an internal schema URL here if
-                    -- one exists at work.
-                    ["https://raw.githubusercontent.com/pycontribs/zuul-lint/master/zuul_lint/zuul-schema.json"] = {
-                        "zuul.d/*.yaml",
-                        "zuul.d/*.yml",
-                        ".zuul.yaml",
-                        "zuul-extra.d/*.yaml",
-                    },
-                },
-            },
+  yamlls = {
+    settings = {
+      yaml = {
+        schemas = {
+          -- Zuul CI pipeline/job YAML (zuul.d/*.yaml, .zuul.yaml, ...).
+          -- Schema is a community-maintained one (not yet in
+          -- SchemaStore) -- swap for an internal schema URL here if
+          -- one exists at work.
+          ["https://raw.githubusercontent.com/pycontribs/zuul-lint/master/zuul_lint/zuul-schema.json"] = {
+            "zuul.d/*.yaml",
+            "zuul.d/*.yml",
+            ".zuul.yaml",
+            "zuul-extra.d/*.yaml",
+          },
         },
+      },
     },
+  },
 }
 
+-- Servers that come from the project toolchain rather than packages.nix.
+local install_hints = {
+  zls = "zls matching the project's zig version",
+}
+
+local function warn_missing(server_name, cmd, filetypes)
+  if not filetypes then
+    return
+  end
+  vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("user-lsp-missing-" .. server_name, { clear = true }),
+    pattern = filetypes,
+    once = true, -- one popup per session, not per buffer
+    callback = function()
+      vim.notify(
+        ("`%s` not on PATH -- install %s, or open nvim inside the project's devShell"):format(
+          cmd[1],
+          install_hints[server_name] or cmd[1]
+        ),
+        vim.log.levels.WARN,
+        { title = "LSP: " .. server_name }
+      )
+    end,
+  })
+end
+
+-- Checked against the PATH nvim started with, so open it inside the
+-- project's direnv to pick up project-provided servers.
 for server_name, server in pairs(servers) do
-    server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-    vim.lsp.config(server_name, server)
+  server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+  vim.lsp.config(server_name, server)
+  local config = vim.lsp.config[server_name]
+  if type(config.cmd) ~= "table" or vim.fn.executable(config.cmd[1]) == 1 then
     vim.lsp.enable(server_name)
+  else
+    warn_missing(server_name, config.cmd, config.filetypes)
+  end
 end

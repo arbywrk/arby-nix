@@ -73,21 +73,21 @@ vim.keymap.set("n", "[t", "<cmd>tabprevious<CR>", { desc = "Previous tab" })
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
-    desc = "Highlight when yanking (copying) text",
-    group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-    callback = function()
-        vim.hl.on_yank()
-    end,
+  desc = "Highlight when yanking (copying) text",
+  group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+  callback = function()
+    vim.hl.on_yank()
+  end,
 })
 
 -- Switch between light and dark mode
 vim.keymap.set("n", "<leader>ut", function()
-    if vim.o.background == "dark" then
-        vim.o.background = "light"
-    else
-        vim.o.background = "dark"
-    end
-    print("Switched to " .. vim.o.background .. " mode")
+  if vim.o.background == "dark" then
+    vim.o.background = "light"
+  else
+    vim.o.background = "dark"
+  end
+  print("Switched to " .. vim.o.background .. " mode")
 end, { desc = "Toggle Light/Dark Mode" })
 
 -- Use :w!! to write sudo file

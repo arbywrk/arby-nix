@@ -14,7 +14,6 @@
     ../../modules/home-manager/development/starship.nix
     ../../modules/home-manager/development/uv.nix
     ../../modules/home-manager/development/vscodium.nix
-    ../../modules/home-manager/development/embedded-tools
   ];
 
   home.username = "arby";

@@ -10,11 +10,11 @@ local M = {}
 local targets = {}
 
 function M.register_target(target)
-    table.insert(targets, target)
+  table.insert(targets, target)
 end
 
 function M.targets()
-    return targets
+  return targets
 end
 
 return M

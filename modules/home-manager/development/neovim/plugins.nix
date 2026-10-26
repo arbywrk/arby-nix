@@ -103,6 +103,12 @@ in
     plugin = p.mini-nvim;
     config = toLuaFile ./files/lua/plugins/mini.lua;
   }
+  # Must precede neotest: its rustaceanvim adapter loads rustaceanvim's
+  # config on require, freezing it before vim.g.rustaceanvim is set.
+  {
+    plugin = p.rustaceanvim;
+    config = toLuaFile ./files/lua/plugins/rustacean.lua;
+  }
   {
     plugin = p.neotest;
     config = toLuaFile ./files/lua/plugins/neotest.lua;
@@ -119,10 +125,6 @@ in
   {
     plugin = p.noice-nvim;
     config = toLuaFile ./files/lua/plugins/noice.lua;
-  }
-  {
-    plugin = p.rustaceanvim;
-    config = toLuaFile ./files/lua/plugins/rustacean.lua;
   }
   {
     plugin = treesitterWithGrammars;

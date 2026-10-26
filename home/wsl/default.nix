@@ -8,7 +8,6 @@
     ../../modules/home-manager/development/zellij
     ../../modules/home-manager/development/zsh
     ../../modules/home-manager/development/starship.nix
-    ../../modules/home-manager/development/embedded-tools
   ];
 
   home.username = "bogdanrares";

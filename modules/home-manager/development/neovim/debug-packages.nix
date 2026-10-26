@@ -1,7 +1,5 @@
-# Debug adapters and the embedded toolchain. codelldb/cpptools come from
-# VS Code extension packages whose binaries are nested under
-# share/vscode/extensions/... instead of $out/bin, so each gets a thin
-# wrapper exposing a plain PATH-resolvable name, as debug.lua expects.
+# codelldb/cpptools nest their binaries under share/vscode/extensions/...,
+# so each gets a wrapper exposing a PATH-resolvable name for debug.lua.
 { pkgs }:
 let
   codelldb-bin = pkgs.runCommand "codelldb-bin" { } ''
@@ -29,12 +27,6 @@ with pkgs;
   debugpy-python
 
   gdb # native
-
-  # arm-none-eabi-gdb, arm-none-eabi-gcc, etc. lib.lowPrio: both this and
-  # gdb ship include/gdb/jit-reader.h, which conflicts in the profile;
-  # neither copy matters to us (just a C header for GDB JIT-reader
-  # plugins), so let gdb's win arbitrarily.
-  (lib.lowPrio gcc-arm-embedded)
 
   openocd
 ]
