@@ -1,21 +1,41 @@
 -- Status line. Component/options reference:
 -- https://github.com/nvim-lualine/lualine.nvim#default-configuration
+
+-- Transparent bar with solid mode/location blocks colored by mode,
+-- using stylix's palette so it matches the terminal and zellij.
+local c = vim.g.base16_palette
+
+local function mode_colors(accent)
+  return {
+    a = { fg = c.base00, bg = accent, gui = "bold" },
+    b = { fg = accent, bg = "NONE" },
+    c = { fg = c.base04, bg = "NONE" },
+  }
+end
+
+local theme = {
+  normal = mode_colors(c.base0D),
+  insert = mode_colors(c.base0B),
+  visual = mode_colors(c.base0E),
+  replace = mode_colors(c.base08),
+  command = mode_colors(c.base0A),
+  terminal = mode_colors(c.base0C),
+  inactive = {
+    a = { fg = c.base03, bg = "NONE" },
+    b = { fg = c.base03, bg = "NONE" },
+    c = { fg = c.base03, bg = "NONE" },
+  },
+}
+
 require("lualine").setup({
   options = {
-    theme = "auto",
+    theme = theme,
     globalstatus = true,
 
     icons_enabled = true,
 
-    section_separators = {
-      left = "",
-      right = "",
-    },
-
-    component_separators = {
-      left = "│",
-      right = "│",
-    },
+    section_separators = "",
+    component_separators = "",
 
     disabled_filetypes = {
       statusline = {},

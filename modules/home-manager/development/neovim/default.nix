@@ -33,6 +33,15 @@
       vim.g.maplocalleader = " "
       vim.g.have_nerd_font = true
 
+      -- stylix's base16 palette, for Lua configs that style themselves.
+      vim.g.base16_palette = vim.json.decode([[${
+        builtins.toJSON (
+          lib.filterAttrs (
+            name: _: builtins.match "base0[0-9A-F]" name != null
+          ) config.lib.stylix.colors.withHashtag
+        )
+      }]])
+
       -- nixd evaluates these for completion/hover in .nix files. Options come
       -- from this flake's checkout (not a store copy), so modules imported
       -- here (e.g. stylix) complete and edits show up without a rebuild.

@@ -12,6 +12,8 @@
       gtk-wide-tabs = false;
       gtk-toolbar-style = "flat";
       window-theme = "ghostty";
+      window-padding-x = 0;
+      window-padding-y = 0;
 
       mouse-scroll-multiplier = "precision:0.6,discrete:1.5"; # dialed down from defaults
 

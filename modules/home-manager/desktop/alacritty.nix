@@ -9,6 +9,8 @@
     enable = true;
     settings = {
       window.opacity = 0.80;
+      # Explicit backgrounds (zellij/lualine bars) go translucent too.
+      colors.transparent_background_colors = true;
 
       # Ctrl+Backspace / Ctrl+Shift+Backspace -> zsh's stock backward-kill-word
       # (^W) / backward-kill-line (^U) bytes. builtins.fromJSON produces the

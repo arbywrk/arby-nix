@@ -7,6 +7,8 @@ require("ayu").setup({
     NormalFloat = { bg = "NONE" },
     SignColumn = { bg = "NONE" },
     EndOfBuffer = { bg = "NONE" },
+    StatusLine = { bg = "NONE" },
+    StatusLineNC = { bg = "NONE" },
     -- ayu's LineNr is nearly invisible on a near-black background.
     LineNr = { fg = "#636A72" },
   },

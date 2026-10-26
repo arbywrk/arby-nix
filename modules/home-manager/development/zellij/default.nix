@@ -1,5 +1,12 @@
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
+  c = config.lib.stylix.colors.withHashtag;
+
   # Reconnects to the last ssh target run in this zellij session; bound
   # to "Shift s" below. See files/record-ssh.zsh for how it's recorded.
   resumeSsh = pkgs.writeShellScriptBin "zellij-resume-ssh" (
@@ -16,6 +23,22 @@ in
 
   programs.zellij = {
     enable = true;
+
+    themes.stylix.themes.default = {
+      # Bar background matches the terminal's, so the bar blends in.
+      text_unselected.background = lib.mkForce c.base00;
+      # compact-bar paints every other inactive tab with this; stylix's
+      # value is near-white, so match the regular inactive tab instead.
+      ribbon_unselected.emphasis_1 = lib.mkForce c.base02;
+    };
+
+    # One top bar (session, mode, tabs) and no bottom hint bar.
+    layouts.compact-top = ./files/layouts/compact-top.kdl;
+    settings.default_layout = "compact-top";
+    # Plain rectangular tabs instead of arrow-shaped separators.
+    settings.simplified_ui = true;
+    settings.show_startup_tips = false;
+    settings.show_release_notes = false;
 
     # $SHELL is unreliable in some contexts, so pin it. mkDefault lets
     # another home override it with a plain assignment.
