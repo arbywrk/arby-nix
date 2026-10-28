@@ -50,20 +50,6 @@ in
     # No borders around panes.
     settings.pane_frames = false;
 
-    # Full explicit keybinds, based on zellij's stock defaults.
-    #
-    # Relocated because they collide with nvim:
-    #   Ctrl h (move)    -> Alt m
-    #   Ctrl n (resize)  -> Alt r
-    #   Ctrl p (pane)    -> Ctrl a
-    #   Ctrl o (session) -> Alt u
-    # Dropped: Ctrl b (tmux mode, unused).
-    #
-    # Every finished action returns to "locked", not "normal". Quit is
-    # Ctrl Shift q so a stray Ctrl q can't kill the session.
-    #
-    # "Shift s" in pane/tab mode opens a pane reconnecting to the last ssh
-    # target used in this session.
     extraConfig = ''
       keybinds clear-defaults=true {
           locked {
@@ -122,9 +108,6 @@ in
               bind "j" "down" { Resize "Increase down"; }
               bind "k" "up" { Resize "Increase up"; }
               bind "l" "right" { Resize "Increase right"; }
-              bind "+" { Resize "Increase"; }
-              bind "-" { Resize "Decrease"; }
-              bind "=" { Resize "Increase"; }
               bind "H" { Resize "Decrease left"; }
               bind "J" { Resize "Decrease down"; }
               bind "K" { Resize "Decrease up"; }
@@ -233,18 +216,16 @@ in
           }
           shared_except "locked" "scroll" "search" {
               bind "Ctrl s" { SwitchToMode "scroll"; }
-              // scroll/search excluded: both already bind Ctrl f to
-              // PageScrollDown (shared_among "scroll" "search" below).
               bind "Ctrl f" { ToggleFloatingPanes; SwitchToMode "locked"; }
           }
           shared_except "locked" "tab" {
               bind "Ctrl t" { SwitchToMode "tab"; }
           }
           shared_except "locked" "pane" {
-              bind "Ctrl a" { SwitchToMode "pane"; }
+              bind "Ctrl p" { SwitchToMode "pane"; }
           }
           shared_except "locked" "resize" {
-              bind "Alt r" { SwitchToMode "resize"; }
+              bind "Ctrl r" { SwitchToMode "resize"; }
           }
           shared_except "normal" "locked" "entersearch" {
               bind "enter" { SwitchToMode "locked"; }
