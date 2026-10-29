@@ -21,10 +21,14 @@ with pkgs;
   nixd
   nixfmt
 
-  # TOML / SQL / misc
+  # TOML / misc
   taplo
-  sqls
   jq
+
+  # SQL (SQLite + PostgreSQL)
+  sqls
+  postgres-language-server
+  sqlfluff
 
   # YAML
   yaml-language-server

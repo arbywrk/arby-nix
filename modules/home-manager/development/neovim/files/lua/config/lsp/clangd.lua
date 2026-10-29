@@ -99,7 +99,7 @@ function M.on_attach(client, bufnr)
     return
   end
 
-  -- Format-on-save for C/C++ goes through conform's LSP-fallback path
+  -- Format-on-save for C/C++ goes through conform's "_" LSP path
   -- (plugins/conform.lua) instead of a bespoke autocmd here, so it's
   -- subject to the same toggle as every other filetype.
 

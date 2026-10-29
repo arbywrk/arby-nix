@@ -79,7 +79,11 @@ local servers = {
   zls = {},
   bashls = {},
   taplo = {},
+  -- Completion against a live DB; reads .sqls/config.yml for connections.
   sqls = {},
+  -- Postgres syntax/lint diagnostics; only attaches in projects with a
+  -- postgres-language-server.jsonc.
+  postgres_lsp = {},
 
   basedpyright = {
     settings = {

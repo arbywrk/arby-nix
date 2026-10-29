@@ -1,54 +1,17 @@
 -- Format-on-save + manual format, dispatching to real formatter binaries
--- per filetype (mostly from neovim/packages.nix; zigfmt needs the project's
--- zig on PATH). Setup options:
+-- per filetype (mostly from neovim/packages.nix; rustfmt and zigfmt need
+-- the project's toolchain on PATH). Setup options:
 -- https://github.com/stevearc/conform.nvim#setup
 local keymap = require("util.keymap")
 
 keymap.map("", "<leader>f", function()
-  require("conform").format({ async = true, lsp_format = "fallback" })
+  require("conform").format({ async = true })
 end, "[F]ormat buffer")
 
--- Single tri-state cycle instead of independent toggles: formatters
--- (including clang-format, via clangd's LSP-fallback formatting -- see
--- config/lsp/clangd.lua) and trailing-whitespace trimming are different
--- enough in severity that "everything at once" needed a middle ground.
--- Buffer-local, falling back to a global default (vim.g.format_state) so a
--- filetype/project autocmd could set a repo-wide default if ever needed.
-local STATE = { ENABLED = 0, FORMATTERS_DISABLED = 1, ALL_DISABLED = 2 }
-local STATE_MESSAGE = {
-  [STATE.ENABLED] = "Formatting: all enabled",
-  [STATE.FORMATTERS_DISABLED] = "Formatting: formatters disabled, trim still on",
-  [STATE.ALL_DISABLED] = "Formatting: all disabled",
-}
-
-local function current_state(bufnr)
-  local b = vim.b[bufnr].format_state
-  if b ~= nil then
-    return b
-  end
-  return vim.g.format_state or STATE.ENABLED
-end
-
 keymap.map("n", "<leader>uf", function()
-  local next_state = (current_state(0) + 1) % 3
-  vim.b.format_state = next_state
-  print(STATE_MESSAGE[next_state])
-end, "Toggle [U]I: cycle [F]ormat-on-save (all -> formatters off -> all off)")
-
--- Formatters, kept per-filetype so format_on_save below can also read
--- them when building an explicit list. C/C++ has no entry here -- it's
--- handled by clangd via lsp_format below.
-local formatters_by_ft = {
-  lua = { "stylua" },
-  python = { "ruff_format" },
-  zig = { "zigfmt" },
-  sh = { "shfmt" },
-  bash = { "shfmt" },
-  nix = { "nixfmt" },
-  toml = { "taplo" },
-  json = { "jq" },
-  typst = { "typstyle" },
-}
+  vim.b.disable_autoformat = not vim.b.disable_autoformat
+  print("Format-on-save: " .. (vim.b.disable_autoformat and "off" or "on"))
+end, "Toggle [U]I: [F]ormat-on-save")
 
 -- Fall back to 2-space indents only when the project has no style config of
 -- its own -- CLI flags would override it otherwise.
@@ -61,6 +24,9 @@ local function unless_configured(config_files, fallback_args)
   end
 end
 
+-- sqlfluff takes ~0.6s (Python startup).
+local slow_fts = { sql = true }
+
 require("conform").setup({
   notify_on_error = false,
   formatters = {
@@ -69,6 +35,12 @@ require("conform").setup({
         { "stylua.toml", ".stylua.toml", ".editorconfig" },
         { "--indent-type", "Spaces", "--indent-width", "2" }
       ),
+    },
+    -- Layout only (not `fix`'s lint rewrites), and also outside projects
+    -- with a .sqlfluff -- the user-wide one in ~/.config/sqlfluff applies.
+    sqlfluff = {
+      args = { "format", "-" },
+      require_cwd = false,
     },
     -- Replaces conform's default args, which use the buffer's shiftwidth.
     shfmt = {
@@ -80,35 +52,36 @@ require("conform").setup({
       end,
     },
   },
-  formatters_by_ft = vim.tbl_extend("force", formatters_by_ft, { ["*"] = { "trim_whitespace" } }),
+  formatters_by_ft = {
+    lua = { "stylua" },
+    rust = { "rustfmt" },
+    python = { "ruff_format" },
+    zig = { "zigfmt" },
+    sh = { "shfmt" },
+    bash = { "shfmt" },
+    nix = { "nixfmt" },
+    toml = { "taplo" },
+    json = { "jq" },
+    typst = { "typstyle" },
+    sql = { "sqlfluff" },
+    -- Any other filetype (e.g. C/C++ via clangd): the LSP's formatter if
+    -- one is attached, otherwise just trim trailing whitespace.
+    ["_"] = { "trim_whitespace", lsp_format = "prefer" },
+  },
+  -- A listed formatter that isn't installed falls back to the LSP's.
+  default_format_opts = { lsp_format = "fallback" },
   format_on_save = function(bufnr)
-    local ft = vim.bo[bufnr].filetype
-    local state = current_state(bufnr)
-    local autoformat_enabled = state == STATE.ENABLED
-    local trim_ws_enabled = state ~= STATE.ALL_DISABLED
-
-    if not autoformat_enabled and not trim_ws_enabled then
+    if vim.b[bufnr].disable_autoformat or slow_fts[vim.bo[bufnr].filetype] then
       return
     end
-
-    local formatters = {}
-    if trim_ws_enabled then
-      table.insert(formatters, "trim_whitespace")
+    return { timeout_ms = 500 }
+  end,
+  -- Slow formatters run after the write instead, then save again, so
+  -- saving never blocks on them.
+  format_after_save = function(bufnr)
+    if vim.b[bufnr].disable_autoformat or not slow_fts[vim.bo[bufnr].filetype] then
+      return
     end
-    if autoformat_enabled and formatters_by_ft[ft] then
-      -- An explicit list warns on every save for missing binaries (e.g.
-      -- zigfmt outside a zig project), so drop unavailable ones here.
-      for _, name in ipairs(formatters_by_ft[ft]) do
-        if require("conform").get_formatter_info(name, bufnr).available then
-          table.insert(formatters, name)
-        end
-      end
-    end
-
-    return {
-      formatters = formatters,
-      timeout_ms = 500,
-      lsp_format = autoformat_enabled and "fallback" or "never",
-    }
+    return {}
   end,
 })

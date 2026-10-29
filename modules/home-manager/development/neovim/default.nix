@@ -61,6 +61,8 @@
     ++ (import ./debug-packages.nix { inherit pkgs; })
     ++ [ pkgs.nerd-fonts.jetbrains-mono ];
 
+  xdg.configFile."sqlfluff/.sqlfluff".source = ./files/sqlfluff.cfg;
+
   # nixpkgs' neovim/vim packages ship .desktop launchers meant to be run
   # from a terminal, but they still show up in GNOME's app grid. Shadow
   # both IDs under ~/.local/share/applications (which wins over the
