@@ -22,6 +22,30 @@
     };
   };
 
+  # SSH server; opens port 22. Key-only: no passwords, no root.
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+
+  # mDNS: announces this machine as okami.local and resolves other .local
+  # names. Opens UDP 5353.
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    settings.publish = {
+      disable-publishing = false;
+      publish-addresses = true;
+    };
+  };
+
+  # mosh-server for incoming `mosh`; opens UDP 60000-61000.
+  programs.mosh.enable = true;
+
   virtualisation.docker.enable = true;
 
   time.timeZone = "Europe/Bucharest";
@@ -39,6 +63,8 @@
       "uucp"
       "docker"
     ];
+    # Public keys (~/.ssh/id_*.pub) of machines allowed to log in.
+    openssh.authorizedKeys.keys = [ ];
   };
 
   home-manager = {
