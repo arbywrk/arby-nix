@@ -4,6 +4,7 @@
     ./hardware.nix
     ../../modules/nixos/desktop/gdm.nix
     ../../modules/nixos/desktop/gnome.nix
+    ../../modules/nixos/university
   ];
 
   networking.hostName = "okami";
