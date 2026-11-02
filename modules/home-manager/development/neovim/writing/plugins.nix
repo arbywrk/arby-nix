@@ -13,6 +13,5 @@ in
   (luaPlugin p.blink-cmp (file "blink-cmp"))
   (luaPlugin p.nvim-lspconfig (file "lsp"))
   (luaPlugin p.lualine-nvim (file "lualine"))
-  # nixpkgs patches in the tinymist and websocat paths.
-  (luaPlugin p.typst-preview-nvim "require('typst-preview').setup({})")
+  (luaPlugin p.typst-preview-nvim (file "typst-preview"))
 ]
