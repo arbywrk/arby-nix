@@ -1,6 +1,4 @@
--- Prose on top of core.options: soft-wrap at word boundaries, spell-check.
-vim.opt.wrap = true
-vim.opt.linebreak = true
+-- Prose on top of core.options: spell-check.
 vim.opt.spell = true
 vim.opt.spelllang = { "en" }
 

@@ -11,6 +11,7 @@
   home.packages = [
     pkgs.gnomeExtensions.caffeine
     pkgs.gnomeExtensions.glocalsend
+    pkgs.gnomeExtensions.tiling-shell
 
     pkgs.loupe
     pkgs.papers
@@ -90,6 +91,7 @@
       enabled-extensions = [
         "caffeine@patapon.info"
         "glocalsend@donnybeelo.github.com"
+        "tilingshell@ferrarodomenico.com"
       ];
     };
 
@@ -98,6 +100,11 @@
     };
 
     "org/gnome/desktop/wm/keybindings" = {
+      close = [
+        "<Alt>F4"
+        "<Super>q"
+      ];
+
       switch-to-workspace-1 = [ "<Super>1" ];
       switch-to-workspace-2 = [ "<Super>2" ];
       switch-to-workspace-3 = [ "<Super>3" ];
