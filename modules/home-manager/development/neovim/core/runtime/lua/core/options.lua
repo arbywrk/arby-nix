@@ -65,3 +65,7 @@ end
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
 end)
+
+-- Full error text under the cursor's line only: end-of-line text would run
+-- off-screen on long unwrapped lines.
+vim.diagnostic.config({ virtual_lines = { current_line = true } })
