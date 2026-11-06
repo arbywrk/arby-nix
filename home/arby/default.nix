@@ -69,8 +69,8 @@
   programs.git = {
     enable = true;
     settings.user = {
-      name = "Rares-Andrei Bogdan";
-      email = "contact@arbywrk.com";
+      name = "Rareș-Andrei Bogdan";
+      email = "me@arbywrk.com";
     };
   };
 
