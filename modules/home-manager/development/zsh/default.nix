@@ -63,6 +63,13 @@ in
       done
       bindkey -M vicmd k history-substring-search-up
       bindkey -M vicmd j history-substring-search-down
+
+      # viins's vi-backward-* widgets refuse to delete past where insert
+      # mode began (e.g. a recalled history line); use the emacs ones.
+      bindkey -M viins '^?' backward-delete-char
+      bindkey -M viins '^H' backward-delete-char
+      bindkey -M viins '^W' backward-kill-word
+      bindkey -M viins '^U' backward-kill-line
     '';
   };
 }

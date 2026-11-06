@@ -17,8 +17,14 @@
 
       mouse-scroll-multiplier = "precision:0.6,discrete:1.5"; # dialed down from defaults
 
-      # Let Ctrl+Shift+Q reach zellij's own Quit bind instead of quitting ghostty.
-      keybind = [ "ctrl+shift+q=unbind" ];
+      keybind = [
+        # Let Ctrl+Shift+Q reach zellij's own Quit bind instead of quitting ghostty.
+        "ctrl+shift+q=unbind"
+        # Ctrl+Backspace / Ctrl+Shift+Backspace -> zsh's backward-kill-word
+        # (^W) / backward-kill-line (^U), same as alacritty/wezterm.
+        "ctrl+backspace=text:\\x17"
+        "ctrl+shift+backspace=text:\\x15"
+      ];
     };
   };
 

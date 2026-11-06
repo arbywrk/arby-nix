@@ -11,6 +11,7 @@
   home.packages = [
     pkgs.gnomeExtensions.caffeine
     pkgs.gnomeExtensions.glocalsend
+    pkgs.gnomeExtensions.rounded-window-corners-reborn
     pkgs.gnomeExtensions.tiling-shell
 
     pkgs.loupe
@@ -88,9 +89,12 @@
     };
 
     "org/gnome/shell" = {
+      # Shown even as the single local user with one session type.
+      always-show-log-out = true;
       enabled-extensions = [
         "caffeine@patapon.info"
         "glocalsend@donnybeelo.github.com"
+        "rounded-window-corners@fxgn"
         "tilingshell@ferrarodomenico.com"
       ];
     };
