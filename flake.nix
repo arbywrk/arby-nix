@@ -11,6 +11,17 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
+    # Not in nixpkgs; this community flake is the usual source.
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
+    # TEMPORARY: last nixpkgs with brave-origin (removed 2026-11-03). Gets no
+    # security updates -- drop once fully moved to Zen.
+    nixpkgs-brave.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
+
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";

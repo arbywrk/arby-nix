@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
 {
   imports = [
@@ -7,6 +12,7 @@
     ../../modules/home-manager/desktop/ghostty.nix
     ../../modules/home-manager/desktop/gnome.nix
     ../../modules/home-manager/desktop/wezterm.nix
+    ../../modules/home-manager/desktop/zen-browser.nix
     ../../modules/home-manager/development/gh.nix
     ../../modules/home-manager/development/mosh.nix
     ../../modules/home-manager/development/neovim
@@ -111,7 +117,15 @@
 
   programs = {
     mise.enable = true;
-    brave-origin.enable = true;
+    # TEMPORARY pin while moving to Zen (see nixpkgs-brave in flake.nix).
+    brave-origin = {
+      enable = true;
+      package =
+        (import inputs.nixpkgs-brave {
+          inherit (pkgs.stdenv.hostPlatform) system;
+          config.allowUnfree = true;
+        }).brave-origin;
+    };
     firefox.enable = true;
     home-manager.enable = true; # let it install and manage itself
   };
