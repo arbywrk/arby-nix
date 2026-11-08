@@ -20,6 +20,8 @@
       keybind = [
         # Let Ctrl+Shift+Q reach zellij's own Quit bind instead of quitting ghostty.
         "ctrl+shift+q=unbind"
+        # Default is toggle_fullscreen; let Ctrl+Enter reach the shell/apps.
+        "ctrl+enter=unbind"
         # Ctrl+Backspace / Ctrl+Shift+Backspace -> zsh's backward-kill-word
         # (^W) / backward-kill-line (^U), same as alacritty/wezterm.
         "ctrl+backspace=text:\\x17"
