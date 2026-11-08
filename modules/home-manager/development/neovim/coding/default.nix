@@ -69,7 +69,9 @@ in
   };
 
   home.packages =
-    (import ./packages.nix { inherit pkgs; }) ++ (import ./debug-packages.nix { inherit pkgs; });
+    core.packages
+    ++ (import ./packages.nix { inherit pkgs; })
+    ++ (import ./debug-packages.nix { inherit pkgs; });
 
   xdg.configFile."sqlfluff/.sqlfluff".source = ./sqlfluff.cfg;
 }

@@ -1,5 +1,5 @@
-# The writing profile: `nvim-writing` (alias `nw`), core plus Typst
-# (tinymist, live preview, LuaSnip, fletcher). Its own NVIM_APPNAME keeps
+# The writing profile: `nvim-writing` (alias `nw`), core (incl. Markdown)
+# plus Typst (tinymist, live preview, LuaSnip, fletcher). Its own NVIM_APPNAME keeps
 # config/data/shada/undo apart from the coding nvim's.
 {
   config,
@@ -50,7 +50,7 @@ let
       "--suffix"
       "PATH"
       ":"
-      (lib.makeBinPath [ pkgs.tinymist ])
+      (lib.makeBinPath ([ pkgs.tinymist ] ++ core.packages))
     ];
   };
 in

@@ -28,12 +28,26 @@ in
     (luaPlugin p.nvim-notify "require('notify').setup({ stages = 'fade_in_slide_out', fps = 60, timeout = 500, render = 'minimal', top_down = false, background_colour = '${colors.base00}' })")
     (luaPlugin p.noice-nvim (builtins.readFile ./plugins/noice.lua))
     (luaPlugin p.which-key-nvim (builtins.readFile ./plugins/which-key.lua))
+    # Renders headings, lists, code blocks and tables in the buffer.
+    (luaPlugin p.render-markdown-nvim "require('render-markdown').setup({})")
   ];
 
+  # Binaries core's Lua expects on PATH (marksman: core.lsp's shared server).
+  # Each profile puts them there its own way.
+  packages = [ pkgs.marksman ];
+
   # Parsers are per profile: `grammars` is a withPlugins selector (ps: [ ... ]).
+  # Markdown is always added: render-markdown and noice's LSP hovers use it.
   treesitter =
     grammars:
-    luaPlugin (p.nvim-treesitter.withPlugins grammars) (builtins.readFile ./plugins/treesitter.lua);
+    luaPlugin (p.nvim-treesitter.withPlugins (
+      ps:
+      grammars ps
+      ++ [
+        ps.markdown
+        ps.markdown_inline
+      ]
+    )) (builtins.readFile ./plugins/treesitter.lua);
 
   # Must run before any plugin config: <leader> maps bind at definition time.
   initLua = ''

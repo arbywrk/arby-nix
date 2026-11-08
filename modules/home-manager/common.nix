@@ -57,6 +57,9 @@
     config.global.hide_env_diff = true;
   };
 
-  # lsd's own zsh integration already provides ls/ll/la/lt/lla/llt.
-  programs.lsd.enable = true;
+  # lsd's own zsh integration already provides ls/ll/la/lt/lla/llt aliases.
+  programs.lsd = {
+    enable = true;
+    settings.sorting.colum = "version";
+  };
 }

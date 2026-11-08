@@ -68,6 +68,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 local M = {}
 
+-- Enabled in every profile, on top of the servers it passes to M.enable().
+-- Binaries come from core.packages in core/default.nix.
+local shared_servers = {
+  marksman = {}, -- Markdown: heading/link completion, go-to-definition, references
+}
+
 local function warn_missing(server_name, cmd, filetypes, install_hint)
   if not filetypes then
     return
@@ -96,6 +102,7 @@ end
 function M.enable(servers, install_hints)
   local capabilities = require("blink.cmp").get_lsp_capabilities()
   install_hints = install_hints or {}
+  servers = vim.tbl_extend("error", shared_servers, servers)
 
   for server_name, server in pairs(servers) do
     server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
