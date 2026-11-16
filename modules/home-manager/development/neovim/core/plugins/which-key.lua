@@ -48,5 +48,6 @@ require("which-key").setup({
     { "<leader>b", group = "[B]uffer" },
     { "<leader>u", group = "[U]I / Toggle" },
     { "<leader>g", group = "[G]it" },
+    { "<leader>i", group = "[I]nspect (LSP)" },
   },
 })

@@ -55,7 +55,18 @@
   home.packages = [
     # GUI apps
     pkgs.signal-desktop
-    pkgs.localsend
+    # localsend 1.18.0 in nixpkgs: the main binary's RUNPATH lacks zlib, so it
+    # dies with "libz.so.1: cannot open shared object file". Wrap it (cheap)
+    # instead of overrideAttrs (would rebuild Flutter). Drop once fixed upstream.
+    (pkgs.symlinkJoin {
+      name = "localsend-${pkgs.localsend.version}";
+      paths = [ pkgs.localsend ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/localsend_app \
+          --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath [ pkgs.zlib ]}
+      '';
+    })
     pkgs.obsidian
     pkgs.libreoffice
     pkgs.sioyek

@@ -24,6 +24,8 @@ in
     (luaPlugin p.neovim-ayu (builtins.readFile ./plugins/colorscheme.lua))
     (luaPlugin p.fidget-nvim "require('fidget').setup({})")
     (luaPlugin p.fzf-lua (builtins.readFile ./plugins/fzf-lua.lua))
+    # LSP definitions in floating windows; mapped under <leader>i in core.lsp.
+    (luaPlugin p.goto-preview "require('goto-preview').setup({})")
     (luaPlugin p.mini-nvim (builtins.readFile ./plugins/mini.lua))
     (luaPlugin p.nvim-notify "require('notify').setup({ stages = 'fade_in_slide_out', fps = 60, timeout = 500, render = 'minimal', top_down = false, background_colour = '${colors.base00}' })")
     (luaPlugin p.noice-nvim (builtins.readFile ./plugins/noice.lua))

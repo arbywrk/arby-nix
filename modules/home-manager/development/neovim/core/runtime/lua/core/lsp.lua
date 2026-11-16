@@ -18,10 +18,21 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("gd", require("fzf-lua").lsp_definitions, "[G]oto [D]efinition")
     map("gr", require("fzf-lua").lsp_references, "[G]oto [R]eferences")
     map("gI", require("fzf-lua").lsp_implementations, "[G]oto [I]mplementation")
-    map("<leader>D", require("fzf-lua").lsp_typedefs, "Type [D]efinition")
     map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
     map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
     map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+
+    -- [I]nspect: lowercase pops up a float and leaves the cursor in place,
+    -- uppercase jumps. Peek floats are real windows: edit, gd, or :q them.
+    local peek = require("goto-preview")
+    map("<leader>ih", vim.lsp.buf.hover, "[H]over docs")
+    map("<leader>is", vim.lsp.buf.signature_help, "[S]ignature help")
+    map("<leader>ie", vim.diagnostic.open_float, "[E]rror / diagnostic under cursor")
+    map("<leader>id", peek.goto_preview_definition, "Peek [D]efinition")
+    map("<leader>it", peek.goto_preview_type_definition, "Peek [T]ype definition")
+    map("<leader>iT", require("fzf-lua").lsp_typedefs, "Jump to [T]ype definition")
+    map("<leader>ii", peek.goto_preview_implementation, "Peek [I]mplementation")
+    map("<leader>iq", peek.close_all_win, "[Q]uit all peek windows")
 
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     if not client then
