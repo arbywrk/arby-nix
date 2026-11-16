@@ -90,6 +90,10 @@ vim.keymap.set("n", "<leader>ut", function()
   print("Switched to " .. vim.o.background .. " mode")
 end, { desc = "Toggle Light/Dark Mode" })
 
+vim.keymap.set("n", "<leader>n", function()
+  require("core.notifications").open()
+end, { desc = "[N]otification history" })
+
 -- Use :w!! to write sudo file
 vim.keymap.set("c", "w!!", "w !sudo tee > /dev/null %", { desc = "Write file with sudo" })
 

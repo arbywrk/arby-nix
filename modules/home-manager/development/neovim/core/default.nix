@@ -27,7 +27,7 @@ in
     # LSP definitions in floating windows; mapped under <leader>i in core.lsp.
     (luaPlugin p.goto-preview "require('goto-preview').setup({})")
     (luaPlugin p.mini-nvim (builtins.readFile ./plugins/mini.lua))
-    (luaPlugin p.nvim-notify "require('notify').setup({ stages = 'fade_in_slide_out', fps = 60, timeout = 500, render = 'minimal', top_down = false, background_colour = '${colors.base00}' })")
+    (luaPlugin p.nvim-notify "require('notify').setup({ stages = 'fade', fps = 60, timeout = 500, render = require('core.notifications').render, minimum_width = 10, top_down = false, background_colour = '${colors.base00}' })")
     (luaPlugin p.noice-nvim (builtins.readFile ./plugins/noice.lua))
     (luaPlugin p.which-key-nvim (builtins.readFile ./plugins/which-key.lua))
     # Renders headings, lists, code blocks and tables in the buffer.

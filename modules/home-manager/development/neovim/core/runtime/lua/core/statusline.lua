@@ -35,6 +35,12 @@ function M.setup(opts)
   opts = opts or {}
 
   local lualine_x = {
+    {
+      require("core.notifications").statusline,
+      on_click = function()
+        require("core.notifications").open()
+      end,
+    },
     { "searchcount", maxcount = 999 },
     { "selectioncount" },
     {
