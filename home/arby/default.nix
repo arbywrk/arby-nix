@@ -9,6 +9,7 @@
   imports = [
     ../../modules/home-manager/common.nix
     ../../modules/home-manager/desktop/alacritty.nix
+    ../../modules/home-manager/desktop/cosmic.nix
     ../../modules/home-manager/desktop/ghostty.nix
     ../../modules/home-manager/desktop/gnome.nix
     ../../modules/home-manager/desktop/wezterm.nix
