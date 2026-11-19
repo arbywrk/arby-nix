@@ -13,6 +13,7 @@
     ../../modules/home-manager/desktop/gnome.nix
     ../../modules/home-manager/desktop/wezterm.nix
     ../../modules/home-manager/desktop/zen-browser.nix
+    ../../modules/home-manager/desktop/librewolf.nix
     ../../modules/home-manager/development/gh.nix
     ../../modules/home-manager/development/mosh.nix
     ../../modules/home-manager/development/neovim
