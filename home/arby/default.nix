@@ -36,6 +36,17 @@
     enable = true;
     mime.enable = true;
 
+    # force: apps and GNOME rewrite these files, which would block the next switch.
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+        "x-scheme-handler/bitwarden" = "bitwarden.desktop";
+      };
+    };
+    configFile."mimeapps.list".force = true;
+    dataFile."applications/mimeapps.list".force = true;
+
     # Lowercase dir names instead of xdg-user-dirs' capitalized defaults.
     # Only declares user-dirs.dirs -- the directories were renamed on disk
     # by hand to match.
