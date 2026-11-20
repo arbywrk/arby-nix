@@ -64,6 +64,7 @@
       "dialout"
       "uucp"
       "docker"
+      "i2c" # external monitor brightness (DDC/CI)
     ];
     # Public keys (~/.ssh/id_*.pub) of machines allowed to log in.
     openssh.authorizedKeys.keys = [ ];
