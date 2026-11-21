@@ -12,6 +12,7 @@
     ../../modules/home-manager/desktop/cosmic.nix
     ../../modules/home-manager/desktop/ghostty.nix
     ../../modules/home-manager/desktop/gnome.nix
+    ../../modules/home-manager/desktop/plasma.nix
     ../../modules/home-manager/desktop/wezterm.nix
     ../../modules/home-manager/desktop/zen-browser.nix
     ../../modules/home-manager/desktop/librewolf.nix
@@ -36,7 +37,7 @@
     enable = true;
     mime.enable = true;
 
-    # force: apps and GNOME rewrite these files, which would block the next switch.
+    # force: desktops rewrite these, which would otherwise block switching.
     mimeApps = {
       enable = true;
       defaultApplications = {

@@ -5,6 +5,7 @@
     ../../modules/nixos/desktop/gdm.nix
     ../../modules/nixos/desktop/gnome.nix
     ../../modules/nixos/desktop/cosmic.nix
+    ../../modules/nixos/desktop/plasma.nix
     ../../modules/nixos/university
   ];
 
@@ -64,7 +65,7 @@
       "dialout"
       "uucp"
       "docker"
-      "i2c" # external monitor brightness (DDC/CI)
+      "i2c" # monitor brightness
     ];
     # Public keys (~/.ssh/id_*.pub) of machines allowed to log in.
     openssh.authorizedKeys.keys = [ ];

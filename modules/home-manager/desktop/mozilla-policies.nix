@@ -7,15 +7,13 @@ let
   };
 in
 {
-  # Installed from addons.mozilla.org on launch, kept up to date by the browser.
   ExtensionSettings = builtins.mapAttrs (_: slug: {
     install_url = "https://addons.mozilla.org/firefox/downloads/latest/${slug}/latest.xpi";
     installation_mode = "force_installed";
-    # Pinned to the toolbar instead of hidden in the extensions menu.
     default_area = "navbar";
   }) extensions;
 
-  # Bitwarden handles passwords instead.
+  # Bitwarden handles passwords.
   PasswordManagerEnabled = false;
   OfferToSaveLogins = false;
 }

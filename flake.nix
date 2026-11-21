@@ -22,6 +22,12 @@
     # security updates -- drop once fully moved to Zen.
     nixpkgs-brave.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
 
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
