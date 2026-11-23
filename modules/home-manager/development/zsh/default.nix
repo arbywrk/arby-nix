@@ -1,5 +1,4 @@
 # Highlight colors come from stylix's palette, following base16's roles
-# (base0E keywords, base0D functions, base0B strings, ...).
 { pkgs, config, ... }:
 let
   c = config.lib.stylix.colors.withHashtag;
@@ -47,6 +46,11 @@ in
         dollar-quoted-argument = "fg=${c.base0B}";
         back-quoted-argument = "fg=${c.base0B}";
       };
+    };
+
+    localVariables = {
+      # Make switching between Normal and Insert mode faster
+      KEYTIMEOUT = 1;
     };
 
     # Default order lands between autosuggestion and syntaxHighlighting,
