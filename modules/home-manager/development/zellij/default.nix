@@ -12,6 +12,39 @@ let
   resumeSsh = pkgs.writeShellScriptBin "zellij-resume-ssh" (
     builtins.readFile ./files/zellij-resume-ssh.sh
   );
+
+  # zjstatus instead of compact-bar: compact-bar can't hide its swap
+  # layout label ("BASE"). Locked is our base mode, so it's shown dimmed.
+  topBar = ''
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zjstatus" {
+                format_left  "{mode}{tabs}"
+                format_right "#[fg=${c.base03}]{session} "
+                format_space ""
+
+                mode_locked  "#[fg=${c.base03}] {name} "
+                mode_normal  "#[fg=${c.base01},bg=${c.base09},bold] {name} "
+
+                tab_normal    "#[fg=${c.base05},bg=${c.base02}] {name} "
+                tab_active    "#[fg=${c.base01},bg=${c.base0E},bold] {name} "
+                tab_separator " "
+            }
+        }
+        children
+    }
+  '';
+
+  # Tabs opened from a layout file don't inherit the session's template,
+  # so this one repeats the top bar.
+  resumeSshLayout = pkgs.writeText "resume-ssh.kdl" ''
+    layout {
+    ${topBar}
+        tab {
+            pane command="zellij-resume-ssh"
+        }
+    }
+  '';
 in
 {
   home.packages = [ resumeSsh ];
@@ -24,16 +57,14 @@ in
   programs.zellij = {
     enable = true;
 
-    themes.stylix.themes.default = {
-      # Bar background matches the terminal's, so the bar blends in.
-      text_unselected.background = lib.mkForce c.base00;
-      # compact-bar paints every other inactive tab with this; stylix's
-      # value is near-white, so match the regular inactive tab instead.
-      ribbon_unselected.emphasis_1 = lib.mkForce c.base02;
-    };
+    plugins = [ pkgs.zellijPlugins.zjstatus ];
 
-    # One top bar (session, mode, tabs) and no bottom hint bar.
-    layouts.compact-top = ./files/layouts/compact-top.kdl;
+    # One top bar (mode, tabs, session) and no bottom hint bar.
+    layouts.compact-top = ''
+      layout {
+      ${topBar}
+      }
+    '';
     settings.default_layout = "compact-top";
     # Plain rectangular tabs instead of arrow-shaped separators.
     settings.simplified_ui = true;
@@ -93,7 +124,7 @@ in
               bind "n" { NewTab; SwitchToMode "locked"; }
               bind "Shift s" {
                   NewTab {
-                      layout "${./files/layouts/resume-ssh.kdl}"
+                      layout "${resumeSshLayout}"
                   }
                   SwitchToMode "locked"
               }
