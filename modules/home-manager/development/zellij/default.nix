@@ -19,8 +19,8 @@ let
     default_tab_template {
         pane size=1 borderless=true {
             plugin location="zjstatus" {
-                format_left  "{mode}{tabs}"
-                format_right "#[fg=${c.base03}]{session} "
+                format_left  "{tabs}"
+                format_right "{mode}#[fg=${c.base03}]({session}) "
                 format_space ""
 
                 mode_locked  "#[fg=${c.base03}] {name} "
@@ -28,7 +28,6 @@ let
 
                 tab_normal    "#[fg=${c.base05},bg=${c.base02}] {name} "
                 tab_active    "#[fg=${c.base01},bg=${c.base0E},bold] {name} "
-                tab_separator " "
             }
         }
         children
@@ -59,7 +58,7 @@ in
 
     plugins = [ pkgs.zellijPlugins.zjstatus ];
 
-    # One top bar (mode, tabs, session) and no bottom hint bar.
+    # One top bar (tabs left; mode and session right) and no bottom hint bar.
     layouts.compact-top = ''
       layout {
       ${topBar}
