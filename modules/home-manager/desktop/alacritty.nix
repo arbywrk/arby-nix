@@ -8,7 +8,10 @@
   programs.alacritty = {
     enable = true;
     settings = {
-      window.opacity = 0.80;
+      window = {
+        opacity = 0.95;
+        decorations = "None";
+      };
       # Explicit backgrounds (zellij/lualine bars) go translucent too.
       colors.transparent_background_colors = true;
 
