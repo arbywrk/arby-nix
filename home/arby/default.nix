@@ -69,6 +69,7 @@
   home.packages = [
     # GUI apps
     pkgs.signal-desktop
+    pkgs.discord
     # localsend 1.18.0 in nixpkgs: the main binary's RUNPATH lacks zlib, so it
     # dies with "libz.so.1: cannot open shared object file". Wrap it (cheap)
     # instead of overrideAttrs (would rebuild Flutter). Drop once fixed upstream.
