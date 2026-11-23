@@ -8,6 +8,9 @@
 
   programs.nix-ld.enable = true;
   programs.zsh.enable = true;
+  # Home Manager already runs compinit in ~/.zshrc; running it here too
+  # doubled shell startup time.
+  programs.zsh.enableGlobalCompInit = false;
 
   # No per-category ro_RO overrides -- that's what made the calendar,
   # date/number formatting, etc. show up in Romanian despite LANG itself

@@ -142,7 +142,6 @@
   };
 
   programs = {
-    mise.enable = true;
     # TEMPORARY pin while moving to Zen (see nixpkgs-brave in flake.nix).
     brave-origin = {
       enable = true;

@@ -46,6 +46,9 @@
   ]
   ++ lib.optional config.submoduleSupport.enable pkgs.home-manager;
 
+  # Where self-updating installers put binaries.
+  home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
+
   programs.bat.enable = true;
   stylix.targets.bat.enable = true;
   home.shellAliases.cat = "bat";
