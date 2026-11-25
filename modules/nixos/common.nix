@@ -42,7 +42,10 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = with pkgs; [
-    vim
-  ];
+  environment = {
+    localBinInPath = true;
+    systemPackages = with pkgs; [
+      vim
+    ];
+  };
 }
