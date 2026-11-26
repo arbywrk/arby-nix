@@ -11,6 +11,7 @@
       window = {
         opacity = 0.95;
         decorations = "None";
+        dynamic_padding = true;
       };
       # Explicit backgrounds (zellij/lualine bars) go translucent too.
       colors.transparent_background_colors = true;
