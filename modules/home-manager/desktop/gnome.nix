@@ -11,7 +11,6 @@
   home.packages = [
     pkgs.gnomeExtensions.caffeine
     pkgs.gnomeExtensions.glocalsend
-    pkgs.gnomeExtensions.rounded-window-corners-reborn
     pkgs.gnomeExtensions.tiling-shell
 
     pkgs.loupe
