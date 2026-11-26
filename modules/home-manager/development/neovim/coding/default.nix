@@ -59,7 +59,7 @@ in
       -- from this flake's checkout (not a store copy), so modules imported
       -- here (e.g. stylix) complete and edits show up without a rebuild.
       vim.g.nixd_nixpkgs_expr = [[import ${inputs.nixpkgs} { }]]
-      vim.g.nixd_flake = [[(builtins.getFlake "${config.home.homeDirectory}/.config/arby-nix")]]
+      vim.g.nixd_flake = [[(builtins.getFlake "${config.programs.nh.flake}")]]
       vim.g.nixd_nixos_options_expr = vim.g.nixd_flake .. [[.nixosConfigurations.okami.options]]
       vim.g.nixd_home_manager_options_expr = vim.g.nixd_flake .. [[.homeConfigurations.wsl.options]]
       vim.g.nixd_flake_parts_options_expr = [[(((import ${inputs.flake-parts}/flake.nix).outputs { nixpkgs-lib.lib = import ${inputs.nixpkgs}/lib; }).lib.evalFlakeModule { inputs.self.outPath = "/nixd"; } { }).options]]

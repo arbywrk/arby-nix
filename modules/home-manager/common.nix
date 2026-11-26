@@ -41,6 +41,16 @@
   # Where self-updating installers put binaries.
   home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];
 
+  programs.nh = {
+    enable = true;
+    flake = "${config.home.homeDirectory}/.config/nix-config";
+    clean = {
+      enable = true;
+      dates = "weekly";
+      extraArgs = "--keep-since 2d --keep 2";
+    };
+  };
+
   programs.bat.enable = true;
   stylix.targets.bat.enable = true;
   home.shellAliases.cat = "bat";
