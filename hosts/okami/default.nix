@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 {
   imports = [
     ./hardware.nix
@@ -7,6 +7,7 @@
     ../../modules/nixos/desktop/cosmic.nix
     ../../modules/nixos/desktop/plasma.nix
     ../../modules/nixos/university
+    ../../modules/nixos/desktop/ladybird.nix
   ];
 
   networking.hostName = "okami";
@@ -69,14 +70,6 @@
     ];
     # Public keys (~/.ssh/id_*.pub) of machines allowed to log in.
     openssh.authorizedKeys.keys = [ ];
-  };
-
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    backupFileExtension = "bkp";
-    extraSpecialArgs = { inherit inputs; };
-    users."arby" = import ../../home/arby/default.nix;
   };
 
   system.stateVersion = "26.05";

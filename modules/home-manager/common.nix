@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   config,
   inputs,
   ...
@@ -38,13 +37,6 @@
     # apps that don't size them themselves.
     defaultFonts.monospace = [ "JetBrainsMono Nerd Font Mono" ];
   };
-
-  # Under NixOS integration programs.home-manager doesn't install the CLI,
-  # so add it back for quick `home-manager switch` iteration.
-  home.packages = [
-    pkgs.nerd-fonts.jetbrains-mono
-  ]
-  ++ lib.optional config.submoduleSupport.enable pkgs.home-manager;
 
   # Where self-updating installers put binaries.
   home.sessionPath = [ "${config.home.homeDirectory}/.local/bin" ];

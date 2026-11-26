@@ -6,6 +6,5 @@ inputs.nixpkgs.lib.nixosSystem {
   modules = [
     ../hosts/${hostname}
     ../modules/nixos/common.nix
-    inputs.home-manager.nixosModules.default
   ];
 }

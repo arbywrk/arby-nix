@@ -1,0 +1,6 @@
+{
+  ...
+}:
+{
+  programs.ladybird.enable = true;
+}

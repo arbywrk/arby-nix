@@ -91,7 +91,6 @@
 
     # CLI apps
     pkgs.wl-clipboard
-    pkgs.xclip
   ];
 
   # No desktop sync client: GNOME Online Accounts (Settings > Online

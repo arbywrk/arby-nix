@@ -17,10 +17,7 @@
   # being en_US.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  services.xserver.enable = true;
-  # xterm is pulled in by services.xserver itself; alacritty (home-manager)
-  # replaces it as the terminal emulator.
-  services.xserver.excludePackages = [ pkgs.xterm ];
+  fonts.fontDir.enable = true;
 
   services.xserver.xkb = {
     layout = "us";
