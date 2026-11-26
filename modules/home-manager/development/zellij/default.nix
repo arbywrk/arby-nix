@@ -22,9 +22,8 @@ let
                 format_left  "{tabs}"
                 format_right "{mode}#[fg=${c.base03}]({session}) "
                 format_space ""
-
                 mode_locked  "#[fg=${c.base03}] {name} "
-                mode_normal  "#[fg=${c.base01},bg=${c.base09},bold] {name} "
+                mode_normal  "#[fg=${c.base09},bold] {name} "
 
                 tab_normal    "#[fg=${c.base05},bg=${c.base02}] {name} "
                 tab_active    "#[fg=${c.base01},bg=${c.base0E},bold] {name} "
@@ -142,14 +141,14 @@ in
               bind "J" { Resize "Decrease down"; }
               bind "K" { Resize "Decrease up"; }
               bind "L" { Resize "Decrease right"; }
-              bind "Alt r" { SwitchToMode "locked"; }
+              bind "Ctrl r" { SwitchToMode "locked"; }
           }
           move {
               bind "h" "left" { MovePane "left"; }
               bind "j" "down" { MovePane "down"; }
               bind "k" "up" { MovePane "up"; }
               bind "l" "right" { MovePane "right"; }
-              bind "Alt m" { SwitchToMode "locked"; }
+              bind "Ctrl m" { SwitchToMode "locked"; }
               bind "n" { MovePane; }
               bind "p" { MovePaneBackwards; }
               bind "tab" { MovePane; }
@@ -187,7 +186,7 @@ in
                   }
                   SwitchToMode "locked"
               }
-              bind "Alt u" { SwitchToMode "locked"; }
+              bind "Ctrl u" { SwitchToMode "locked"; }
               bind "p" {
                   LaunchOrFocusPlugin "plugin-manager" {
                       floating true
@@ -239,10 +238,10 @@ in
               bind "Ctrl Shift l" { MovePane "right"; SwitchToMode "locked"; }
           }
           shared_except "locked" "move" {
-              bind "Alt m" { SwitchToMode "move"; }
+              bind "Ctrl m" { SwitchToMode "move"; }
           }
           shared_except "locked" "session" {
-              bind "Alt u" { SwitchToMode "session"; }
+              bind "Ctrl u" { SwitchToMode "session"; }
           }
           shared_except "locked" "scroll" "search" {
               bind "Ctrl s" { SwitchToMode "scroll"; }
